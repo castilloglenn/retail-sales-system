@@ -41,7 +41,7 @@ public class Main {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("This came from github");
+		JLabel lblNewLabel = new JLabel("Testing eclipse github feature");
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setBounds(151, 116, 145, 14);
 		frame.getContentPane().add(lblNewLabel);

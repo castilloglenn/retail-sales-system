@@ -1,6 +1,9 @@
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import java.awt.BorderLayout;
+import javax.swing.SwingConstants;
 
 public class Main {
 
@@ -36,6 +39,11 @@ public class Main {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		JLabel lblNewLabel = new JLabel("This came from github");
+		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel.setBounds(151, 116, 145, 14);
+		frame.getContentPane().add(lblNewLabel);
 	}
-
 }

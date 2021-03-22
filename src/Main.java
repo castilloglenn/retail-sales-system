@@ -14,8 +14,6 @@ import javax.swing.SwingConstants;
 import java.awt.Font;
 import java.awt.Color;
 import javax.swing.JPanel;
-import javax.swing.JLayeredPane;
-import java.awt.Dimension;
 import javax.swing.border.BevelBorder;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JTextField;
@@ -34,7 +32,7 @@ public class Main {
 	private ImageIcon icon = new ImageIcon("images/icon.png");
 	private ImageIcon resizedLogo;
 
-	private JFrame frame;
+	private JFrame frmSecuredLogin;
 	private JTextField idField;
 	private JPasswordField passField;
 
@@ -43,7 +41,7 @@ public class Main {
 			public void run() {
 				try {
 					Main window = new Main();
-					window.frame.setVisible(true);
+					window.frmSecuredLogin.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -68,15 +66,15 @@ public class Main {
 	}
 
 	private void initialize() {
-		frame = new JFrame();
-		frame.setResizable(false);
-		frame.setTitle("Secure Login");
-		frame.setSize(400, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setIconImage(icon.getImage());
-		frame.getContentPane().setBackground(new Color(51, 51, 51));
-		frame.setLocationRelativeTo(null);
-		frame.getContentPane().setLayout(null);
+		frmSecuredLogin = new JFrame();
+		frmSecuredLogin.setResizable(false);
+		frmSecuredLogin.setTitle("Secure Login");
+		frmSecuredLogin.setSize(400, 300);
+		frmSecuredLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmSecuredLogin.setIconImage(icon.getImage());
+		frmSecuredLogin.getContentPane().setBackground(new Color(51, 51, 51));
+		frmSecuredLogin.setLocationRelativeTo(null);
+		frmSecuredLogin.getContentPane().setLayout(null);
 		
 		JLabel title = new JLabel(
 			"<html>"
@@ -89,18 +87,18 @@ public class Main {
 		title.setForeground(Color.WHITE);
 		title.setFont(new Font("Tahoma", Font.BOLD, 18));
 		title.setBounds(84, 11, 290, 64);
-		frame.getContentPane().add(title);
+		frmSecuredLogin.getContentPane().add(title);
 		
 		JLabel logo = new JLabel(resizedLogo);
 		title.setLabelFor(logo);
 		logo.setBounds(10, 11, 64, 64);
-		frame.getContentPane().add(logo);
+		frmSecuredLogin.getContentPane().add(logo);
 		
 		JPanel loginPanel = new JPanel();
 		loginPanel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		loginPanel.setBackground(new Color(45, 65, 65));
 		loginPanel.setBounds(10, 86, 364, 164);
-		frame.getContentPane().add(loginPanel);
+		frmSecuredLogin.getContentPane().add(loginPanel);
 		loginPanel.setLayout(null);
 		
 		JLabel loginHeader = new JLabel("LOGIN");
@@ -168,7 +166,7 @@ public class Main {
 		forgotLabel.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		forgotLabel.setToolTipText(
 			"<html>"
-				+ "This will request a password retrieval to your<br>"
+				+ "This will request a password retrieval notice to your<br>"
 				+ "supervisor/manager in order to reset your password."
 			+ "</html>"
 		);
@@ -190,6 +188,7 @@ public class Main {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == 10) {
 					submitButton.doClick();
+					passField.setText(null);
 					idField.requestFocus();
 				}
 			}
@@ -203,6 +202,6 @@ public class Main {
 		titlePanel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		titlePanel.setBackground(new Color(45, 65, 65));
 		titlePanel.setBounds(84, 11, 290, 64);
-		frame.getContentPane().add(titlePanel);
+		frmSecuredLogin.getContentPane().add(titlePanel);
 	}
 }

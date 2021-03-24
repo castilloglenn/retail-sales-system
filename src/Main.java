@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+
 import java.awt.Font;
 import java.awt.Color;
 import javax.swing.JPanel;
@@ -26,15 +28,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.JToggleButton;
 
 public class Main {
 	
 	private ImageIcon icon = new ImageIcon("images/icon.png");
-	private ImageIcon resizedLogo;
+	private ImageIcon resizedLogo, resizedShow, resizedHide;
 
 	private JFrame frmSecuredLogin;
-	private JTextField idField;
 	private JPasswordField passField;
+	private JPasswordField idField;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -55,11 +58,19 @@ public class Main {
 	}
 	
 	private void resizeLogo() {
-		BufferedImage img = null;
+		BufferedImage img1 = null;
+		BufferedImage img2 = null;
+		BufferedImage img3 = null;
 		try {
-		    img = ImageIO.read(new File("images/logo.png"));
-		    Image dimg = img.getScaledInstance(64, 64, Image.SCALE_SMOOTH);
-		    resizedLogo = new ImageIcon(dimg);
+		    img1 = ImageIO.read(new File("images/logo.png"));
+		    img2 = ImageIO.read(new File("images/show.png"));
+		    img3 = ImageIO.read(new File("images/hide.png"));
+		    Image dimg1 = img1.getScaledInstance(64, 64, Image.SCALE_SMOOTH);
+		    Image dimg2 = img2.getScaledInstance(24, 24, Image.SCALE_SMOOTH);
+		    Image dimg3 = img3.getScaledInstance(24, 24, Image.SCALE_SMOOTH);
+		    resizedLogo = new ImageIcon(dimg1);
+		    resizedShow = new ImageIcon(dimg2);
+		    resizedHide = new ImageIcon(dimg3);
 		} catch (IOException e) {
 		    e.printStackTrace();
 		}
@@ -115,7 +126,14 @@ public class Main {
 		idLabel.setBounds(15, 34, 102, 24);
 		loginPanel.add(idLabel);
 		
-		idField = new JTextField();
+		JLabel passLabel = new JLabel("PASSWORD:");
+		passLabel.setHorizontalAlignment(SwingConstants.TRAILING);
+		passLabel.setForeground(Color.WHITE);
+		passLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
+		passLabel.setBounds(15, 63, 102, 24);
+		loginPanel.add(passLabel);
+		
+		idField = new JPasswordField();
 		idField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -124,21 +142,13 @@ public class Main {
 				}
 			}
 		});
-		idField.setToolTipText("Enter your Employee ID.");
-		idField.setBounds(127, 34, 224, 24);
+		idField.setToolTipText("Enter your employee ID.");
+		idField.setBounds(127, 34, 193, 24);
 		loginPanel.add(idField);
-		idField.setColumns(10);
-		
-		JLabel passLabel = new JLabel("PASSWORD:");
-		passLabel.setHorizontalAlignment(SwingConstants.TRAILING);
-		passLabel.setForeground(Color.WHITE);
-		passLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
-		passLabel.setBounds(15, 63, 102, 24);
-		loginPanel.add(passLabel);
 		
 		passField = new JPasswordField();
 		passField.setToolTipText("Please enter your password.");
-		passField.setBounds(127, 63, 224, 24);
+		passField.setBounds(127, 63, 193, 24);
 		loginPanel.add(passField);
 		
 		JLabel forgotLabel = new JLabel(
@@ -197,6 +207,39 @@ public class Main {
 		submitButton.setToolTipText("You can also press enter to submit.");
 		submitButton.setBounds(10, 123, 344, 30);
 		loginPanel.add(submitButton);
+		
+		JToggleButton idVisibility = new JToggleButton();
+		idVisibility.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (idVisibility.isSelected()) {
+					idField.setEchoChar('\u0000');
+				} else if (!idVisibility.isSelected()) {
+					idField.setEchoChar((Character) UIManager.get("PasswordField.echoChar"));
+				}
+			}
+		});
+		idVisibility.setBackground(Color.WHITE);
+		idVisibility.setIcon(resizedShow);
+		idVisibility.setSelectedIcon(resizedHide);
+		idVisibility.setBounds(319, 34, 35, 24);
+		loginPanel.add(idVisibility);
+		
+		JButton passVisibility = new JButton(resizedShow);
+		passVisibility.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				passVisibility.setIcon(resizedHide);
+				passField.setEchoChar('\u0000');
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				passVisibility.setIcon(resizedShow);
+				passField.setEchoChar((Character) UIManager.get("PasswordField.echoChar"));
+			}
+		});
+		passVisibility.setBackground(Color.WHITE);
+		passVisibility.setBounds(319, 63, 35, 24);
+		loginPanel.add(passVisibility);
 		
 		JPanel titlePanel = new JPanel();
 		titlePanel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));

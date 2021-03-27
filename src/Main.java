@@ -5,7 +5,6 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import java.awt.BorderLayout;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +16,6 @@ import java.awt.Font;
 import java.awt.Color;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
-import net.miginfocom.swing.MigLayout;
-import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import java.awt.Cursor;
 import javax.swing.JButton;
@@ -56,6 +53,14 @@ public class Main {
 		resizeLogo();
 		initialize();
 	}
+	
+//	=====THIS WILL INCLUDE IN SEPARATE CLASS NAMED UTILITY========
+//	Calendar c = Calendar.getInstance();
+//	long millis = c.getTimeInMillis();
+//	DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss:SSS Z");
+//	Date d = new Date(millis);
+//	System.out.println(millis);
+//	System.out.println(df.format(d));
 	
 	private void resizeLogo() {
 		BufferedImage img1 = null;

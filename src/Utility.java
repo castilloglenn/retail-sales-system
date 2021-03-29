@@ -20,11 +20,15 @@ public class Utility {
 	}
 	
 	public String getConfig(String tag) {
-        Element doc = dom.getDocumentElement();
-        NodeList nl = doc.getElementsByTagName(tag);
-        String value = nl.item(0).getFirstChild().getNodeValue();
-        System.out.println(value);
-        return value;
+		try {
+	        Element doc = dom.getDocumentElement();
+	        NodeList nl = doc.getElementsByTagName(tag);
+	        String value = nl.item(0).getFirstChild().getNodeValue();
+	        
+	        return (value == null) ? "" : value;
+		} catch (DOMException | NullPointerException e) {
+			return "";
+		}
     }
 
 }

@@ -16,6 +16,7 @@ public class Database {
 		this.url = ut.getConfig("db_url");
 		this.user = ut.getConfig("db_user");
 		this.pass = ut.getConfig("db_pass");
+		this.db = ut.getConfig("db_name");
 		
 		try {
 			con = DriverManager.getConnection(url, user, pass);

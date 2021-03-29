@@ -35,6 +35,9 @@ public class Main {
 	private JFrame frmSecuredLogin;
 	private JPasswordField passField;
 	private JPasswordField idField;
+	
+	Database db;
+	Utility ut;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -50,17 +53,15 @@ public class Main {
 	}
 
 	public Main() {
+		setupDatabase();
 		resizeLogo();
 		initialize();
 	}
 	
-//	=====THIS WILL INCLUDE IN SEPARATE CLASS NAMED UTILITY========
-//	Calendar c = Calendar.getInstance();
-//	long millis = c.getTimeInMillis();
-//	DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss:SSS Z");
-//	Date d = new Date(millis);
-//	System.out.println(millis);
-//	System.out.println(df.format(d));
+	private void setupDatabase() {
+		ut = new Utility();
+		db = new Database(ut);
+	}
 	
 	private void resizeLogo() {
 		BufferedImage img1 = null;

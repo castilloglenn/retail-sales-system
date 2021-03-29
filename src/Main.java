@@ -29,15 +29,14 @@ import javax.swing.JToggleButton;
 
 public class Main {
 	
-	private ImageIcon icon = new ImageIcon("images/icon.png");
 	private ImageIcon resizedLogo, resizedShow, resizedHide;
 
 	private JFrame frmSecuredLogin;
 	private JPasswordField passField;
 	private JPasswordField idField;
 	
-	Database db;
-	Utility ut;
+	private Database db;
+	private Utility ut;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -88,7 +87,7 @@ public class Main {
 		frmSecuredLogin.setTitle("Secure Login");
 		frmSecuredLogin.setSize(400, 300);
 		frmSecuredLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frmSecuredLogin.setIconImage(icon.getImage());
+		frmSecuredLogin.setIconImage(new ImageIcon("images/icon.png").getImage());
 		frmSecuredLogin.getContentPane().setBackground(new Color(51, 51, 51));
 		frmSecuredLogin.setLocationRelativeTo(null);
 		frmSecuredLogin.getContentPane().setLayout(null);

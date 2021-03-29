@@ -9,10 +9,14 @@ public class Utility {
 	Document dom;
 	
 	Utility() {
+		setupXMLConfigurations();
+	}
+	
+	private void setupXMLConfigurations() {
 		try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
-            dom = db.parse("config.xml");
+            dom = db.parse("./config/config.xml");
         } catch (ParserConfigurationException | 
                  SAXException | IOException e) {
             e.printStackTrace();
@@ -23,9 +27,7 @@ public class Utility {
 		try {
 	        Element doc = dom.getDocumentElement();
 	        NodeList nl = doc.getElementsByTagName(tag);
-	        String value = nl.item(0).getFirstChild().getNodeValue();
-	        
-	        return (value == null) ? "" : value;
+	        return nl.item(0).getFirstChild().getNodeValue();
 		} catch (DOMException | NullPointerException e) {
 			return "";
 		}

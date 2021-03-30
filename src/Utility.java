@@ -99,11 +99,12 @@ public class Utility {
     }
 	
 	public void adjustFont(JComponent comp, JPanel panel, double minWidth, int minSize) {
+		int maxSize = minSize + 6;
 		// ratio between panel's width divided by minimum font size
-		double adaptiveWidth = panel.getSize().width / (minWidth / minSize);
+		int adaptiveWidth = (int) (panel.getSize().width / (minWidth / minSize));
 		comp.setFont(new Font(
 			"Tahoma", (comp.getFont().isBold()) ? Font.BOLD : Font.PLAIN,
-			(int) adaptiveWidth)
+			(adaptiveWidth > maxSize) ? maxSize : adaptiveWidth)
 		);
 	}
 

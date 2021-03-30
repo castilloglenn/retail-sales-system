@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE system SYSTEM "config.dtd">
 <system>
 	
-	<!-- DATABASE CONSTANTS -->
+	<!-- DEFAULT DATABASE CONSTANTS -->
 	<db_url>jdbc:mysql://localhost/?serverTimezone=UTC</db_url>
 	<db_user>root</db_user>
 	<db_pass></db_pass>

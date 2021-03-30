@@ -1,0 +1,5 @@
+<!ELEMENT system (db_url,db_user,db_pass,db_name)>
+<!ELEMENT db_url (#PCDATA)>
+<!ELEMENT db_user (#PCDATA)>
+<!ELEMENT db_pass EMPTY>
+<!ELEMENT db_name (#PCDATA)>

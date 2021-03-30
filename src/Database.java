@@ -149,4 +149,20 @@ public class Database {
 		);
 	}
 	
+	public int fetchManagers() {
+		try {
+			ps = con.prepareStatement(
+				  "SELECT COUNT(employee_id) "
+				+ "FROM employee "
+				+ "WHERE position=?;"
+			);
+			ps.setString(1, "Manager");
+			ResultSet count = ps.executeQuery();
+			if (count.next()) return count.getInt(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
 }

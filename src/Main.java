@@ -139,10 +139,11 @@ public class Main {
 		loginPanel.add(passLabel);
 		
 		idField = new JPasswordField();
+		idField.setFocusTraversalKeysEnabled(false);
 		idField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == 10) {
+				if (e.getKeyCode() == 9 || e.getKeyCode() == 10) {
 					passField.requestFocus();
 				}
 			}
@@ -153,6 +154,7 @@ public class Main {
 		
 		passField = new JPasswordField();
 		passField.setToolTipText("Please enter your password.");
+		passField.setFocusTraversalKeysEnabled(false);
 		passField.setBounds(127, 63, 193, 24);
 		loginPanel.add(passField);
 		
@@ -201,7 +203,9 @@ public class Main {
 		passField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == 10) {
+				if (e.getKeyCode() == 9) {
+					idField.requestFocus();
+				} else if (e.getKeyCode() == 10) {
 					submitButton.doClick();
 					passField.setText(null);
 					idField.requestFocus();

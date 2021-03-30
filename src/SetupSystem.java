@@ -18,6 +18,11 @@ import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import java.awt.Insets;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.JTextArea;
 
 @SuppressWarnings("serial")
 public class SetupSystem extends JFrame {
@@ -44,6 +49,13 @@ public class SetupSystem extends JFrame {
 	private JTextField fnameField;
 	private JLabel mnameLabel;
 	private JTextField mnameField;
+	private JLabel lnameLabel;
+	private JTextField lnameField;
+	private JLabel addressLabel;
+	private JTextField addressField;
+	private JLabel payLabel;
+	private JLabel terms;
+	private JLabel termsNotice;
 
 	public SetupSystem(Gallery gl, Database db, Utility ut) {
 		this.gl = gl; this.db = db; this.ut = ut;
@@ -94,7 +106,6 @@ public class SetupSystem extends JFrame {
 		form.add(formNotice);
 		
 		form2 = new JPanel();
-		sl_form.putConstraint(SpringLayout.SOUTH, form2, -10, SpringLayout.SOUTH, form);
 		sl_form.putConstraint(SpringLayout.EAST, form2, -10, SpringLayout.EAST, form);
 		form2.setBorder(new TitledBorder(null, "Personal Information", TitledBorder.LEADING, TitledBorder.TOP, null));
 		sl_form.putConstraint(SpringLayout.NORTH, form2, 6, SpringLayout.SOUTH, formNotice);
@@ -103,7 +114,7 @@ public class SetupSystem extends JFrame {
 		SpringLayout sl_form2 = new SpringLayout();
 		form2.setLayout(sl_form2);
 		
-		idLabel = new JLabel("EMPLOYEE ID:");
+		idLabel = new JLabel("Employee ID:");
 		idLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		sl_form2.putConstraint(SpringLayout.NORTH, idLabel, 10, SpringLayout.NORTH, form2);
 		sl_form2.putConstraint(SpringLayout.WEST, idLabel, 10, SpringLayout.WEST, form2);
@@ -114,13 +125,12 @@ public class SetupSystem extends JFrame {
 		idField.setEditable(false);
 		idField.setHorizontalAlignment(SwingConstants.CENTER);
 		sl_form2.putConstraint(SpringLayout.NORTH, idField, -2, SpringLayout.NORTH, idLabel);
-		sl_form2.putConstraint(SpringLayout.WEST, idField, 6, SpringLayout.EAST, idLabel);
 		sl_form2.putConstraint(SpringLayout.SOUTH, idField, 2, SpringLayout.SOUTH, idLabel);
 		sl_form2.putConstraint(SpringLayout.EAST, idField, -10, SpringLayout.EAST, form2);
 		form2.add(idField);
 		idField.setColumns(10);
 		
-		positionLabel = new JLabel("POSITION:");
+		positionLabel = new JLabel("Position:");
 		positionLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		sl_form2.putConstraint(SpringLayout.NORTH, positionLabel, 6, SpringLayout.SOUTH, idLabel);
 		sl_form2.putConstraint(SpringLayout.WEST, positionLabel, 0, SpringLayout.WEST, idLabel);
@@ -128,9 +138,9 @@ public class SetupSystem extends JFrame {
 		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
 		listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER);
 		
-		fnameLabel = new JLabel("FIRST NAME:");
+		fnameLabel = new JLabel("First Name:");
+		sl_form2.putConstraint(SpringLayout.NORTH, fnameLabel, 18, SpringLayout.SOUTH, positionLabel);
 		fnameLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		sl_form2.putConstraint(SpringLayout.NORTH, fnameLabel, 6, SpringLayout.SOUTH, positionLabel);
 		sl_form2.putConstraint(SpringLayout.WEST, fnameLabel, 0, SpringLayout.WEST, idLabel);
 		form2.add(fnameLabel);
 		
@@ -140,7 +150,6 @@ public class SetupSystem extends JFrame {
 		positionField.setText("MANAGER");
 		positionField.setEditable(false);
 		sl_form2.putConstraint(SpringLayout.NORTH, positionField, -2, SpringLayout.NORTH, positionLabel);
-		sl_form2.putConstraint(SpringLayout.WEST, positionField, 6, SpringLayout.EAST, positionLabel);
 		sl_form2.putConstraint(SpringLayout.SOUTH, positionField, 2, SpringLayout.SOUTH, positionLabel);
 		sl_form2.putConstraint(SpringLayout.EAST, positionField, -10, SpringLayout.EAST, form2);
 		form2.add(positionField);
@@ -150,19 +159,21 @@ public class SetupSystem extends JFrame {
 		fnameField.setMargin(new Insets(2, 5, 2, 5));
 		fnameField.setHorizontalAlignment(SwingConstants.RIGHT);
 		sl_form2.putConstraint(SpringLayout.NORTH, fnameField, -2, SpringLayout.NORTH, fnameLabel);
-		sl_form2.putConstraint(SpringLayout.WEST, fnameField, 6, SpringLayout.EAST, fnameLabel);
 		sl_form2.putConstraint(SpringLayout.SOUTH, fnameField, 2, SpringLayout.SOUTH, fnameLabel);
 		sl_form2.putConstraint(SpringLayout.EAST, fnameField, -10, SpringLayout.EAST, form2);
 		form2.add(fnameField);
 		fnameField.setColumns(10);
 		
-		mnameLabel = new JLabel("MIDDLE NAME:");
+		mnameLabel = new JLabel("Middle Name:");
 		mnameLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		sl_form2.putConstraint(SpringLayout.NORTH, mnameLabel, 6, SpringLayout.SOUTH, fnameLabel);
 		sl_form2.putConstraint(SpringLayout.WEST, mnameLabel, 0, SpringLayout.WEST, idLabel);
 		form2.add(mnameLabel);
 		
 		mnameField = new JTextField();
+		sl_form2.putConstraint(SpringLayout.WEST, fnameField, 0, SpringLayout.WEST, mnameField);
+		sl_form2.putConstraint(SpringLayout.WEST, positionField, 0, SpringLayout.WEST, mnameField);
+		sl_form2.putConstraint(SpringLayout.WEST, idField, 0, SpringLayout.WEST, mnameField);
 		mnameField.setHorizontalAlignment(SwingConstants.RIGHT);
 		mnameField.setMargin(new Insets(2, 5, 2, 5));
 		sl_form2.putConstraint(SpringLayout.NORTH, mnameField, -2, SpringLayout.NORTH, mnameLabel);
@@ -171,6 +182,61 @@ public class SetupSystem extends JFrame {
 		sl_form2.putConstraint(SpringLayout.EAST, mnameField, -10, SpringLayout.EAST, form2);
 		form2.add(mnameField);
 		mnameField.setColumns(10);
+		
+		lnameLabel = new JLabel("Last Name:");
+		lnameLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		sl_form2.putConstraint(SpringLayout.NORTH, lnameLabel, 6, SpringLayout.SOUTH, mnameLabel);
+		sl_form2.putConstraint(SpringLayout.WEST, lnameLabel, 0, SpringLayout.WEST, idLabel);
+		form2.add(lnameLabel);
+		
+		lnameField = new JTextField();
+		lnameField.setHorizontalAlignment(SwingConstants.RIGHT);
+		lnameField.setMargin(new Insets(2, 5, 2, 5));
+		sl_form2.putConstraint(SpringLayout.NORTH, lnameField, -2, SpringLayout.NORTH, lnameLabel);
+		sl_form2.putConstraint(SpringLayout.WEST, lnameField, 0, SpringLayout.WEST, mnameField);
+		sl_form2.putConstraint(SpringLayout.SOUTH, lnameField, 2, SpringLayout.SOUTH, lnameLabel);
+		sl_form2.putConstraint(SpringLayout.EAST, lnameField, -10, SpringLayout.EAST, form2);
+		form2.add(lnameField);
+		lnameField.setColumns(10);
+		
+		addressLabel = new JLabel("Full Address:");
+		sl_form2.putConstraint(SpringLayout.NORTH, addressLabel, 6, SpringLayout.SOUTH, lnameLabel);
+		addressLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		sl_form2.putConstraint(SpringLayout.WEST, addressLabel, 0, SpringLayout.WEST, idLabel);
+		form2.add(addressLabel);
+		
+		addressField = new JTextField();
+		addressField.setHorizontalAlignment(SwingConstants.RIGHT);
+		addressField.setMargin(new Insets(2, 5, 2, 5));
+		sl_form2.putConstraint(SpringLayout.NORTH, addressField, -2, SpringLayout.NORTH, addressLabel);
+		sl_form2.putConstraint(SpringLayout.WEST, addressField, 0, SpringLayout.WEST, mnameField);
+		sl_form2.putConstraint(SpringLayout.SOUTH, addressField, 2, SpringLayout.SOUTH, addressLabel);
+		sl_form2.putConstraint(SpringLayout.EAST, addressField, -10, SpringLayout.EAST, form2);
+		form2.add(addressField);
+		addressField.setColumns(10);
+		
+		payLabel = new JLabel("Basic Pay:");
+		payLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		sl_form2.putConstraint(SpringLayout.NORTH, payLabel, 6, SpringLayout.SOUTH, addressLabel);
+		sl_form2.putConstraint(SpringLayout.WEST, payLabel, 0, SpringLayout.WEST, idLabel);
+		form2.add(payLabel);
+		
+		JSpinner paySpinner = new JSpinner();
+		paySpinner.setModel(new SpinnerNumberModel(1000.0, 1000.0, 99999.0, 1.0));
+		paySpinner.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		sl_form2.putConstraint(SpringLayout.NORTH, paySpinner, -2, SpringLayout.NORTH, payLabel);
+		sl_form2.putConstraint(SpringLayout.WEST, paySpinner, 0, SpringLayout.WEST, mnameField);
+		sl_form2.putConstraint(SpringLayout.SOUTH, paySpinner, 2, SpringLayout.SOUTH, payLabel);
+		sl_form2.putConstraint(SpringLayout.EAST, paySpinner, -10, SpringLayout.EAST, form2);
+		form2.add(paySpinner);
+		
+		JPanel submit = new JPanel();
+		sl_form.putConstraint(SpringLayout.SOUTH, form2, -6, SpringLayout.NORTH, submit);
+		sl_form.putConstraint(SpringLayout.NORTH, submit, -50, SpringLayout.SOUTH, form);
+		sl_form.putConstraint(SpringLayout.WEST, submit, 10, SpringLayout.WEST, form);
+		sl_form.putConstraint(SpringLayout.SOUTH, submit, -10, SpringLayout.SOUTH, form);
+		sl_form.putConstraint(SpringLayout.EAST, submit, -10, SpringLayout.EAST, form);
+		form.add(submit);
 		
 		container2 = new JPanel();
 		container.add(container2);
@@ -200,7 +266,36 @@ public class SetupSystem extends JFrame {
 		manual = new JPanel();
 		manual.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		container2.add(manual);
-		manual.setLayout(new SpringLayout());
+		SpringLayout sl_manual = new SpringLayout();
+		manual.setLayout(sl_manual);
+		
+		terms = new JLabel("TERMS AND CONDITION");
+		terms.setFont(new Font("Tahoma", Font.BOLD, 12));
+		sl_manual.putConstraint(SpringLayout.NORTH, terms, 10, SpringLayout.NORTH, manual);
+		sl_manual.putConstraint(SpringLayout.WEST, terms, 10, SpringLayout.WEST, manual);
+		manual.add(terms);
+		
+		termsNotice = new JLabel("<html><p style=\"text-align: left;\">Please read the terms and conditions when using the software.</p></html>");
+		termsNotice.setFont(new Font("Tahoma", Font.PLAIN, 10));
+		sl_manual.putConstraint(SpringLayout.NORTH, termsNotice, 6, SpringLayout.SOUTH, terms);
+		sl_manual.putConstraint(SpringLayout.WEST, termsNotice, 0, SpringLayout.WEST, terms);
+		sl_manual.putConstraint(SpringLayout.EAST, termsNotice, -10, SpringLayout.EAST, manual);
+		manual.add(termsNotice);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		sl_manual.putConstraint(SpringLayout.NORTH, scrollPane, 6, SpringLayout.SOUTH, termsNotice);
+		sl_manual.putConstraint(SpringLayout.WEST, scrollPane, 10, SpringLayout.WEST, manual);
+		sl_manual.putConstraint(SpringLayout.SOUTH, scrollPane, -10, SpringLayout.SOUTH, manual);
+		sl_manual.putConstraint(SpringLayout.EAST, scrollPane, -10, SpringLayout.EAST, manual);
+		manual.add(scrollPane);
+		
+		JTextArea termsField = new JTextArea(ut.getTermsAndConditions());
+		termsField.setMargin(new Insets(10, 10, 10, 10));
+		termsField.setLineWrap(true);
+		termsField.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		termsField.setEditable(false);
+		scrollPane.setViewportView(termsField);
 		
 		
 		
@@ -216,21 +311,29 @@ public class SetupSystem extends JFrame {
 		addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
-				double formMinWidth = 297;
-				double form2MinWidth = 273;
+				double standard = 297;
+				double insideStandard = 273;
 				
-				ut.adjustFont(formTitle, form, formMinWidth, 12);
-				ut.adjustFont(databaseTitle, database, formMinWidth, 12);
-				ut.adjustFont(formNotice, form, formMinWidth, 10);
-				ut.adjustFont(databaseNotice, database, formMinWidth, 10);
-				ut.adjustFont(idLabel, form2, form2MinWidth, 11);
-				ut.adjustFont(idField, form2, form2MinWidth, 11);
-				ut.adjustFont(positionLabel, form2, form2MinWidth, 11);
-				ut.adjustFont(positionField, form2, form2MinWidth, 11);
-				ut.adjustFont(fnameLabel, form2, form2MinWidth, 11);
-				ut.adjustFont(fnameField, form2, form2MinWidth, 11);
-				ut.adjustFont(mnameLabel, form2, form2MinWidth, 11);
-				ut.adjustFont(mnameField, form2, form2MinWidth, 11);
+				ut.adjustFont(formTitle, form, standard, 12);
+				ut.adjustFont(formNotice, form, standard, 10);
+				ut.adjustFont(databaseTitle, database, standard, 12);
+				ut.adjustFont(databaseNotice, database, standard, 10);
+				ut.adjustFont(terms, manual, standard, 12);
+				ut.adjustFont(termsNotice, manual, standard, 10);
+				ut.adjustFont(idLabel, form2, insideStandard, 11);
+				ut.adjustFont(idField, form2, insideStandard, 11);
+				ut.adjustFont(positionLabel, form2, insideStandard, 11);
+				ut.adjustFont(positionField, form2, insideStandard, 11);
+				ut.adjustFont(fnameLabel, form2, insideStandard, 11);
+				ut.adjustFont(fnameField, form2, insideStandard, 11);
+				ut.adjustFont(mnameLabel, form2, insideStandard, 11);
+				ut.adjustFont(mnameField, form2, insideStandard, 11);
+				ut.adjustFont(lnameLabel, form2, insideStandard, 11);
+				ut.adjustFont(lnameField, form2, insideStandard, 11);
+				ut.adjustFont(addressLabel, form2, insideStandard, 11);
+				ut.adjustFont(addressField, form2, insideStandard, 11);
+				ut.adjustFont(payLabel, form2, insideStandard, 11);
+				ut.adjustFont(paySpinner, form2, insideStandard, 11);
 			}
 		});
 		

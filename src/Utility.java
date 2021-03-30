@@ -13,8 +13,11 @@ import java.util.Base64;
 
 import java.io.FileOutputStream;
 import java.awt.Font;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Properties;
+import java.util.Scanner;
 
 public class Utility {
 	
@@ -106,6 +109,24 @@ public class Utility {
 			"Tahoma", (comp.getFont().isBold()) ? Font.BOLD : Font.PLAIN,
 			(adaptiveWidth > maxSize) ? maxSize : adaptiveWidth)
 		);
+	}
+	
+	public String getTermsAndConditions() {
+		try {
+			File myObj = new File("./config/terms.txt");
+			Scanner myReader = new Scanner(myObj);
+			
+			StringBuilder sb = new StringBuilder();
+			while (myReader.hasNextLine()) {
+				sb.append(myReader.nextLine());
+				sb.append("\n");
+			}
+			myReader.close();
+			return sb.toString();
+	    } catch (FileNotFoundException e) {
+	      e.printStackTrace();
+	    }
+		return null;
 	}
 
 }

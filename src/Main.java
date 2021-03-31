@@ -5,7 +5,7 @@ import utils.Utility;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
@@ -54,11 +54,12 @@ public class Main {
 		ut = new Utility();
 		db = new Database(ut);
 
-		if (db.fetchManagers() == 0) {
-			new SetupSystem(gl, db, ut);
-		} else {
-			initialize();
-		}
+//		if (db.fetchManagers() == 0) {
+//			new SetupSystem(gl, ut, db);
+//		} else {
+//			initialize();
+//		}
+		new EmployeeAdmin(gl, ut, db);
 	}
 
 	/**
@@ -187,7 +188,7 @@ public class Main {
 		submitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (checkFields()) {
-					
+					// Open Portal Here
 				}
 			}
 		});
@@ -278,15 +279,34 @@ public class Main {
 		String[] errors = new String[2];
 		String id = new String(idField.getPassword());
 		String pass = new String(passField.getPassword());
+		boolean flagged = false;
 		
-		if (id.isBlank()) errors[0] = "• ID field cannot be empty.";
+		if (id.isBlank()) errors[0] = "• ID field cannot be empty.\n";
 		if (pass.isBlank()) errors[1] = "• Password field cannot be empty.";
 		
-		
-		
-		
-		if (db.checkLogin(id, pass)) {
-			System.out.println("CORRECT!");
+		String message = "Please check your inputs:\n";
+		for (String err : errors) {
+			if (err != null) {
+				flagged = true;
+				message += err;
+			}
+		}
+
+		if (flagged) {
+			JOptionPane.showMessageDialog(
+				null, message, "Invalid input | " + Main.SYSTEM_NAME, 
+				JOptionPane.WARNING_MESSAGE
+			);
+			return false;
+		} else {
+			if (db.checkLogin(id, pass)) {
+				System.out.println("CORRECT!");
+			} else {
+				JOptionPane.showMessageDialog(
+					null, "Incorrect ID or Password", "Invalid input | " + Main.SYSTEM_NAME, 
+					JOptionPane.WARNING_MESSAGE
+				);
+			}
 		}
 		
 		return false;

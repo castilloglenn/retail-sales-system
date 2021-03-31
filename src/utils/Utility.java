@@ -190,7 +190,10 @@ public class Utility {
 		int month = c.get(Calendar.MONTH) + 1;
 		if (month < 10) markup.append("0");
 		markup.append(Integer.toString(month));
-		markup.append(Integer.toString(c.get(Calendar.DAY_OF_MONTH)));
+		
+		int day = c.get(Calendar.DAY_OF_MONTH);
+		if (day < 10) markup.append("0");
+		markup.append(Integer.toString(day));
 		
 		long latest = lastID;
 		if (latest == -1) {

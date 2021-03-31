@@ -88,7 +88,7 @@ public class Database {
 					+ "log_id BIGINT PRIMARY KEY,"
 					+ "employee_id BIGINT NOT NULL,"
 					+ "type VARCHAR(255) NOT NULL,"
-					+ "description VARCHAR(255) NOT NULL,"
+					+ "description VARCHAR(512) NOT NULL,"
 					+ "date DATETIME NOT NULL,"
 					+ "FOREIGN KEY (employee_id)"
 					+ "REFERENCES employee(employee_id)"
@@ -225,8 +225,6 @@ public class Database {
 			check.getLong(1);
 			return true;
 		} catch (SQLException | NumberFormatException e) {
-			System.out.println("Nope");
-			e.printStackTrace();
 			return false;
 		}
 	}

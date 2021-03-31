@@ -59,11 +59,11 @@ public class SetupSystem extends JFrame {
 	private JMenuItem themeSwitcher;
 	
 	private Gallery gl;
-	private Database db;
 	private Utility ut;
+	private Database db;
 
-	public SetupSystem(Gallery gl, Database db, Utility ut) {
-		this.gl = gl; this.db = db; this.ut = ut;
+	public SetupSystem(Gallery gl, Utility ut, Database db) {
+		this.gl = gl; this.ut = ut; this.db = db;
 		
 		setTitle("Initial System Setup | " + Main.SYSTEM_NAME);
 		setIconImage(gl.businessLogo);

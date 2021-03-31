@@ -565,9 +565,9 @@ public class SetupSystem extends JFrame {
 		if (pass.isBlank()) {
 			errors[7] = "• Password field cannot be empty.";
 		} else if (pass.length() < 6 || pass.length() > 15) {
-			errors[7] = "• Password must be 6 to 15 characters in length";
+			errors[7] = "• Password must be 6 to 15 characters in length.";
 		} else if (!pass.equals(vpass)) {
-			errors[7] = "• Passwords doesn't match";
+			errors[7] = "• Passwords doesn't match.";
 		}
 
 		String message = "Please check your inputs:\n";
@@ -592,11 +592,11 @@ public class SetupSystem extends JFrame {
 	private void insertRecord() {
 		Object[] data = {
 				Long.parseLong(idField.getText()),
-				positionField.getText(),
-				fnameField.getText(),
-				mnameField.getText(),
-				lnameField.getText(),
-				addressField.getText(),
+				ut.encodeData(positionField.getText()),
+				ut.encodeData(fnameField.getText().toUpperCase()),
+				ut.encodeData(mnameField.getText().toUpperCase()),
+				ut.encodeData(lnameField.getText().toUpperCase()),
+				ut.encodeData(addressField.getText().toUpperCase()),
 				Double.parseDouble(paySpinner.getValue().toString()),
 				ut.hashData(new String(passField.getPassword()))
 		};
@@ -613,7 +613,7 @@ public class SetupSystem extends JFrame {
 						+ "especially your employee ID:</p>"
 						+ "<h1 style=\"text-align: center;\">" + idField.getText() + "</h1>"
 						+ "<p style=\"text-align: center;\">This will be used to log in your account <br>"
-						+ "and also for the attendace, thank you! <br>"
+						+ "and also for the attendance, thank you! <br>"
 						+ "Note: Please reopen the application to start</p>"
 						+ "<h3>(Your ID has been copied automatically)<h3>"
 						+ "</html>", 

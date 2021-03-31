@@ -196,7 +196,7 @@ public class Utility {
 		if (latest == -1) {
 			markup.append("001");
 		} else {
-			String lastNum = Long.toString(latest).substring(7);
+			String lastNum = Long.toString(latest).substring(8);
 			int increment = Integer.parseInt(lastNum) + 1;
 			markup.append(String.format("%03d", increment));
 		}

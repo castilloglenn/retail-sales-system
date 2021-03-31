@@ -77,7 +77,7 @@ public class Main {
 		title = new JLabel(
 			"<html>"
 				+ "<p style=\"text-align:center;\">"
-					+ "PRIMORDIAL RETAIL & SALES<br>MANAGEMENT SYSTEM"
+					+ Main.SYSTEM_NAME.toUpperCase()
 				+ "</p>"
 			+ "</html>"
 		);
@@ -186,9 +186,9 @@ public class Main {
 		});
 		submitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Database search and confirmation etc.
-				// Show result
-				
+				if (checkFields()) {
+					
+				}
 			}
 		});
 		passField.addKeyListener(new KeyAdapter() {
@@ -273,4 +273,23 @@ public class Main {
 			gl.isDark = true;
 		}
 	}
+	
+	private boolean checkFields() {
+		String[] errors = new String[2];
+		String id = new String(idField.getPassword());
+		String pass = new String(passField.getPassword());
+		
+		if (id.isBlank()) errors[0] = "• ID field cannot be empty.";
+		if (pass.isBlank()) errors[1] = "• Password field cannot be empty.";
+		
+		
+		
+		
+		if (db.checkLogin(id, pass)) {
+			System.out.println("CORRECT!");
+		}
+		
+		return false;
+	}
+	
 }

@@ -11,8 +11,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
-import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.ColorUIResource;
 
 public class Gallery {
 	

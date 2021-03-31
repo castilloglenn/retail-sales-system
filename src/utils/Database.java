@@ -7,6 +7,10 @@ import java.sql.*;
 import javax.swing.JOptionPane;
 
 public class Database {
+	
+	private double SSS_RATE = 0.045;
+	private double PHILHEALTH_RATE = 0.035;
+	private double PAGIBIG_RATE = 100;
 
 	private String db_url;
 	private String db_name;
@@ -45,14 +49,12 @@ public class Database {
 	private void setupDatabaseLogin() {
 		File f = new File("./config/setup.properties");
 		if(f.isFile() && !f.isDirectory()) { 
-		    System.out.println("It exists! Now using data from properties file.");
 		    String password = ut.decodeData(ut.getDatabaseProperty(ut.encodeData("password")));
 		    db_url = ut.decodeData(ut.getDatabaseProperty(ut.encodeData("url")));
 		    db_name = ut.decodeData(ut.getDatabaseProperty(ut.encodeData("database")));
 		    db_user = ut.decodeData(ut.getDatabaseProperty(ut.encodeData("username")));
 		    db_pass = (password.equals("emptypassword")) ? "" : password;
 		} else {
-			System.out.println("Uses default from XML.");
 			db_url = ut.getConfig("db_url");
 			db_name = ut.getConfig("db_name");
 			db_user = ut.getConfig("db_user"); 
@@ -184,23 +186,49 @@ public class Database {
 				+ "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
 				+ ");"
 			);
-			ps.setLong(1, (long) data[0]);			// employee id
-			ps.setString(2, (String) data[1]);		// position 
-			ps.setString(3, (String) data[2]);		// first name
-			ps.setString(4, (String) data[3]);		// middle name
-			ps.setString(5, (String) data[4]);		// last name
-			ps.setString(6, (String) data[5]);		// address
-			ps.setDouble(7, (double) data[6]);		// basic pay		total contributions: 8% + 100
-			ps.setDouble(8, 0);						// incentives       sss: 4.5% (min=3000 max=25000 increment=500)
-			ps.setDouble(9, ((double) data[6] * 0.08) + 100);//			philhealth: 3.5%
-			ps.setDouble(10, 0);					// penalty			pag ibig: (income > 5000) = Php 100 constant
-			ps.setString(11, ut.hashData((String) data[7])); // password
+			ps.setLong(1, (long) data[0]);
+			ps.setString(2, (String) data[1]); 
+			ps.setString(3, (String) data[2]);
+			ps.setString(4, (String) data[3]);
+			ps.setString(5, (String) data[4]);
+			ps.setString(6, (String) data[5]);
+			ps.setDouble(7, (double) data[6]);
+			ps.setDouble(8, 0);	
+			ps.setDouble(9, (
+				(double) data[6] * 
+					(SSS_RATE + PHILHEALTH_RATE)) 
+					+ PAGIBIG_RATE
+			);
+			ps.setDouble(10, 0);					
+			ps.setString(11, (String) data[7]);
 			ps.executeUpdate();
 			return true;
 		} catch (SQLException e ) {
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+	public boolean checkLogin(String user, String pass) {
+		try {
+			ps = con.prepareStatement(
+				  "SELECT employee_id "
+				+ "FROM employee "
+				+ "WHERE employee_id=? "
+				+ "AND password=?;"
+			);
+			ps.setLong(1, Long.parseLong(user));
+			ps.setString(2, ut.hashData(pass));
+			ResultSet check = ps.executeQuery();
+			check.next();
+			// If this is an empty ResultSet if will throw error
+			check.getLong(1);
+			return true;
+		} catch (SQLException | NumberFormatException e) {
+			System.out.println("Nope");
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	public int fetchManagers() {
@@ -210,7 +238,7 @@ public class Database {
 				+ "FROM employee "
 				+ "WHERE position=?;"
 			);
-			ps.setString(1, "MANAGER");
+			ps.setString(1, ut.encodeData("MANAGER"));
 			ResultSet count = ps.executeQuery();
 			if (count.next()) return count.getInt(1);
 		} catch (SQLException e) {
@@ -221,11 +249,9 @@ public class Database {
 	
 	public long fetchLastIDByTable(String table, String idColumn) {
 		try {
-			ps = con.prepareStatement(
-				"SELECT MAX(?) FROM " + table + ";"
+			ResultSet pid = stmt.executeQuery(
+				"SELECT MAX(" + idColumn + ") FROM " + table + ";"
 			);
-			ps.setString(1, idColumn);
-			ResultSet pid = ps.executeQuery();
 			pid.next();
 			if (pid.getLong(1) != 0) return pid.getLong(1);
 		} catch (SQLException e) {

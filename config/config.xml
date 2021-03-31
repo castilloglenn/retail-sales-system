@@ -1,13 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE system SYSTEM "config.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xml-model href="config.dtd"?>
 <system>
 	
-	<!-- DEFAULT DATABASE CONSTANTS -->
+	<!-- Default Database Login -->
 	<db_url>jdbc:mysql://localhost/?serverTimezone=UTC</db_url>
 	<db_user>root</db_user>
 	<db_pass></db_pass>
 	<db_name>retail_system</db_name>
-	
-	
 	
 </system>

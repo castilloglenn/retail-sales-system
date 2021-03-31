@@ -1,18 +1,21 @@
+package utils;
+
+
 import java.sql.*;
 
 import javax.swing.JOptionPane;
 
 public class Database {
 	
-	private String db;
+	private String db_name;
 	private Connection con;
 	private Statement stmt;
 	private PreparedStatement ps;
 	private Utility ut;
 	
-	Database(Utility ut) {
+	public Database(Utility ut) {
 		this.ut = ut;
-		this.db = ut.getConfig("db_name");
+		this.db_name = ut.getConfig("db_name");
 		
 		try {
 			con = DriverManager.getConnection(
@@ -37,8 +40,8 @@ public class Database {
 	}
 	
 	public void createDatabase() throws SQLException {
-		stmt.execute(String.format("CREATE DATABASE IF NOT EXISTS %s;", db));
-		stmt.execute(String.format("USE %s;", db));
+		stmt.execute(String.format("CREATE DATABASE IF NOT EXISTS %s;", db_name));
+		stmt.execute(String.format("USE %s;", db_name));
 	}
 	
 	public void createTables() throws SQLException {
@@ -148,6 +151,30 @@ public class Database {
 		);
 	}
 	
+	public boolean insertNewEmployee(Object[] data) {
+		// data format: id, fname, mname, lname, adress, basic
+		// data index:   0,     1,     2,     3,      4,     5
+		if (data.length != 6) return false;
+		try {
+			ps = con.prepareStatement(
+				"INSERT INTO employee VALUES ("
+				+ "?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
+				+ ");"
+			);
+			ps.setLong(1, (long) data[0]);
+			ps.setString(2, (String) data[1]);
+			ps.setString(3, (String) data[2]);
+			ps.setString(4, (String) data[3]);
+			ps.setString(5, (String) data[4]);
+			ps.setDouble(6, (double) data[5]);
+			ps.setDouble(7, 0);
+			
+		} catch (SQLException e ) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	public int fetchManagers() {
 		try {
 			ps = con.prepareStatement(
@@ -158,6 +185,21 @@ public class Database {
 			ps.setString(1, "Manager");
 			ResultSet count = ps.executeQuery();
 			if (count.next()) return count.getInt(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public long fetchLastIDByTable(String table, String idColumn) {
+		try {
+			ps = con.prepareStatement(
+				"SELECT MAX(?) FROM " + table + ";"
+			);
+			ps.setString(1, idColumn);
+			ResultSet pid = ps.executeQuery();
+			pid.next();
+			if (pid.getLong(1) != 0) return pid.getLong(1);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

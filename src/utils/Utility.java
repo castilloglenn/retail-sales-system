@@ -1,3 +1,5 @@
+package utils;
+
 import java.io.IOException;
 
 import javax.swing.JComponent;
@@ -10,7 +12,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.math.BigInteger;
 import java.util.Base64;
-
+import java.util.Calendar;
 import java.io.FileOutputStream;
 import java.awt.Font;
 import java.io.File;
@@ -21,9 +23,9 @@ import java.util.Scanner;
 
 public class Utility {
 	
-	Document dom;
+	private Document dom;
 	
-	Utility() {
+	public Utility() {
 		setupXMLConfigurations();
 	}
 	
@@ -101,13 +103,17 @@ public class Utility {
         return null;
     }
 	
-	public void adjustFont(JComponent comp, JPanel panel, double minWidth, int minSize) {
-		int maxSize = minSize + 6;
-		// ratio between panel's width divided by minimum font size
-		int adaptiveWidth = (int) (panel.getSize().width / (minWidth / minSize));
+	public void adjustFont(JComponent comp, JPanel panel, int minWidth, int minSize) {
+		int maxSize = minSize + 7;
+		int ratio = minWidth / minSize;
+		int adaptiveWidth = panel.getSize().width / ratio;
+
+		if (adaptiveWidth > maxSize) adaptiveWidth = maxSize;
+		if (adaptiveWidth < minSize) adaptiveWidth = minSize;
+		
 		comp.setFont(new Font(
 			"Tahoma", (comp.getFont().isBold()) ? Font.BOLD : Font.PLAIN,
-			(adaptiveWidth > maxSize) ? maxSize : adaptiveWidth)
+			adaptiveWidth)
 		);
 	}
 	
@@ -129,4 +135,45 @@ public class Utility {
 		return null;
 	}
 
+	/*
+	 * Employee ID Format:
+	 * example:  51210325001
+	 * 		5-1-21-03-25-001
+	 *  5 = Employee Code
+	 *  1 = Level of Access
+	 *        { 0 : Store Assistant
+	 *        	1 : Inventory Clerk
+	 *        	2 : Cashier
+	 *        	3 : Junior Supervisor
+	 *        	4 : Senior Supervisor
+	 *        	5 : Manager/Owner }
+	 *  21 = Year
+	 *  03 = Month
+	 *  25 = Day
+	 *  001 = auto-increment first is 1, second is 2, etc.
+	 */
+	public long generateEmployeeID(long lastID, int level) {
+		StringBuilder markup = new StringBuilder("5");
+		
+		markup.append(Integer.toString(level));
+		
+		Calendar c = Calendar.getInstance();
+		markup.append(Integer.toString(c.get(Calendar.YEAR)).substring(2));
+		
+		int month = c.get(Calendar.MONTH) + 1;
+		if (month < 10) markup.append("0");
+		markup.append(Integer.toString(month));
+		markup.append(Integer.toString(c.get(Calendar.DAY_OF_MONTH)));
+		
+		long latest = lastID;
+		if (latest == -1) {
+			markup.append("001");
+		} else {
+			String lastNum = Long.toString(latest).substring(7);
+			int increment = Integer.parseInt(lastNum) + 1;
+			markup.append(String.format("%03d", increment));
+		}
+		
+		return Long.parseLong(markup.toString());
+	}
 }

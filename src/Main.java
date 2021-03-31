@@ -54,12 +54,9 @@ public class Main {
 		ut = new Utility();
 		db = new Database(ut);
 
-		if (db.fetchManagers() == 0)  {
-			new SetupSystem(gl, db, ut);
-		} else {
-			initialize();
-		}
-//		initialize();
+		if (db.fetchManagers() == 0) new SetupSystem(gl, db, ut);
+		System.out.println(db.fetchManagers());
+		if (db.fetchManagers() != 0) initialize();
 	}
 
 	/**
@@ -258,6 +255,7 @@ public class Main {
 	}
 	
 	private void adjustTheme() {
+		gl.designOptionPanes();
 		gl.adjustTheme(new JComponent[] {title, loginPanel, loginHeader, 
 				idLabel, passLabel, forgotLabel, titlePanel});
 		

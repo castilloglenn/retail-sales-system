@@ -34,8 +34,11 @@ import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JPasswordField;
 
 @SuppressWarnings("serial")
 public class SetupSystem extends JFrame {
@@ -44,9 +47,9 @@ public class SetupSystem extends JFrame {
 	private SpringLayout sl_form, sl_contentPane;
 	private JLabel formTitle, databaseTitle, databaseNotice, formNotice, idLabel, positionLabel, 
 				fnameLabel, mnameLabel, lnameLabel, addressLabel, payLabel, terms, termsNotice,
-				userLabel, passLabel;
+				dbUserLabel, dbPassLabel;
 	private JTextField idField, positionField, fnameField, mnameField, lnameField, addressField,
-				userField, passField;
+				dbUserField, dbPassField;
 	private JCheckBox submitCheckBox, defaultCheckBox;
 	private JTextArea termsField;
 	private JSpinner paySpinner;
@@ -57,6 +60,10 @@ public class SetupSystem extends JFrame {
 	private Gallery gl;
 	private Database db;
 	private Utility ut;
+	private JLabel passLabel;
+	private JPasswordField passField;
+	private JLabel verifyLabel;
+	private JPasswordField verifyField;
 
 	public SetupSystem(Gallery gl, Database db, Utility ut) {
 		this.gl = gl; this.db = db; this.ut = ut;
@@ -178,13 +185,9 @@ public class SetupSystem extends JFrame {
 		form2.add(mnameLabel);
 		
 		mnameField = new JTextField();
-		sl_form2.putConstraint(SpringLayout.WEST, fnameField, 0, SpringLayout.WEST, mnameField);
-		sl_form2.putConstraint(SpringLayout.WEST, positionField, 0, SpringLayout.WEST, mnameField);
-		sl_form2.putConstraint(SpringLayout.WEST, idField, 0, SpringLayout.WEST, mnameField);
 		mnameField.setHorizontalAlignment(SwingConstants.CENTER);
 		mnameField.setMargin(new Insets(2, 5, 2, 5));
 		sl_form2.putConstraint(SpringLayout.NORTH, mnameField, -2, SpringLayout.NORTH, mnameLabel);
-		sl_form2.putConstraint(SpringLayout.WEST, mnameField, 6, SpringLayout.EAST, mnameLabel);
 		sl_form2.putConstraint(SpringLayout.SOUTH, mnameField, 2, SpringLayout.SOUTH, mnameLabel);
 		sl_form2.putConstraint(SpringLayout.EAST, mnameField, -10, SpringLayout.EAST, form2);
 		form2.add(mnameField);
@@ -200,7 +203,6 @@ public class SetupSystem extends JFrame {
 		lnameField.setHorizontalAlignment(SwingConstants.CENTER);
 		lnameField.setMargin(new Insets(2, 5, 2, 5));
 		sl_form2.putConstraint(SpringLayout.NORTH, lnameField, -2, SpringLayout.NORTH, lnameLabel);
-		sl_form2.putConstraint(SpringLayout.WEST, lnameField, 0, SpringLayout.WEST, mnameField);
 		sl_form2.putConstraint(SpringLayout.SOUTH, lnameField, 2, SpringLayout.SOUTH, lnameLabel);
 		sl_form2.putConstraint(SpringLayout.EAST, lnameField, -10, SpringLayout.EAST, form2);
 		form2.add(lnameField);
@@ -216,7 +218,6 @@ public class SetupSystem extends JFrame {
 		addressField.setHorizontalAlignment(SwingConstants.CENTER);
 		addressField.setMargin(new Insets(2, 5, 2, 5));
 		sl_form2.putConstraint(SpringLayout.NORTH, addressField, -2, SpringLayout.NORTH, addressLabel);
-		sl_form2.putConstraint(SpringLayout.WEST, addressField, 0, SpringLayout.WEST, mnameField);
 		sl_form2.putConstraint(SpringLayout.SOUTH, addressField, 2, SpringLayout.SOUTH, addressLabel);
 		sl_form2.putConstraint(SpringLayout.EAST, addressField, -10, SpringLayout.EAST, form2);
 		form2.add(addressField);
@@ -235,7 +236,6 @@ public class SetupSystem extends JFrame {
 		de.getTextField().setHorizontalAlignment(JTextField.CENTER);
 		paySpinner.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		sl_form2.putConstraint(SpringLayout.NORTH, paySpinner, -2, SpringLayout.NORTH, payLabel);
-		sl_form2.putConstraint(SpringLayout.WEST, paySpinner, 0, SpringLayout.WEST, mnameField);
 		sl_form2.putConstraint(SpringLayout.SOUTH, paySpinner, 2, SpringLayout.SOUTH, payLabel);
 		sl_form2.putConstraint(SpringLayout.EAST, paySpinner, -10, SpringLayout.EAST, form2);
 		form2.add(paySpinner);
@@ -243,6 +243,45 @@ public class SetupSystem extends JFrame {
 		submit = new JPanel();
 		sl_form.putConstraint(SpringLayout.NORTH, submit, -75, SpringLayout.SOUTH, form);
 		sl_form.putConstraint(SpringLayout.SOUTH, form2, -6, SpringLayout.NORTH, submit);
+		
+		passLabel = new JLabel("Password:");
+		passLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		sl_form2.putConstraint(SpringLayout.NORTH, passLabel, 18, SpringLayout.SOUTH, payLabel);
+		sl_form2.putConstraint(SpringLayout.WEST, passLabel, 0, SpringLayout.WEST, idLabel);
+		form2.add(passLabel);
+		
+		passField = new JPasswordField();
+		passField.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		passField.setHorizontalAlignment(SwingConstants.CENTER);
+		passField.setMargin(new Insets(2, 5, 2, 5));
+		sl_form2.putConstraint(SpringLayout.NORTH, passField, -2, SpringLayout.NORTH, passLabel);
+		sl_form2.putConstraint(SpringLayout.SOUTH, passField, 2, SpringLayout.SOUTH, passLabel);
+		sl_form2.putConstraint(SpringLayout.EAST, passField, -10, SpringLayout.EAST, form2);
+		form2.add(passField);
+		
+		verifyLabel = new JLabel("Verify Password:");
+		sl_form2.putConstraint(SpringLayout.NORTH, verifyLabel, 6, SpringLayout.SOUTH, passLabel);
+		sl_form2.putConstraint(SpringLayout.WEST, verifyLabel, 0, SpringLayout.WEST, idLabel);
+		verifyLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		form2.add(verifyLabel);
+		
+		verifyField = new JPasswordField();
+		sl_form2.putConstraint(SpringLayout.WEST, mnameField, 0, SpringLayout.WEST, verifyField);
+		sl_form2.putConstraint(SpringLayout.WEST, idField, 0, SpringLayout.WEST, verifyField);
+		sl_form2.putConstraint(SpringLayout.WEST, positionField, 0, SpringLayout.WEST, verifyField);
+		sl_form2.putConstraint(SpringLayout.WEST, fnameField, 0, SpringLayout.WEST, verifyField);
+		sl_form2.putConstraint(SpringLayout.WEST, lnameField, 0, SpringLayout.WEST, verifyField);
+		sl_form2.putConstraint(SpringLayout.WEST, addressField, 0, SpringLayout.WEST, verifyField);
+		sl_form2.putConstraint(SpringLayout.WEST, paySpinner, 0, SpringLayout.WEST, verifyField);
+		sl_form2.putConstraint(SpringLayout.WEST, passField, 0, SpringLayout.WEST, verifyField);
+		sl_form2.putConstraint(SpringLayout.NORTH, verifyField, -2, SpringLayout.NORTH, verifyLabel);
+		sl_form2.putConstraint(SpringLayout.WEST, verifyField, 6, SpringLayout.EAST, verifyLabel);
+		sl_form2.putConstraint(SpringLayout.SOUTH, verifyField, 2, SpringLayout.SOUTH, verifyLabel);
+		sl_form2.putConstraint(SpringLayout.EAST, verifyField, -10, SpringLayout.EAST, form2);
+		verifyField.setMargin(new Insets(2, 5, 2, 5));
+		verifyField.setHorizontalAlignment(SwingConstants.CENTER);
+		verifyField.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		form2.add(verifyField);
 		sl_form.putConstraint(SpringLayout.WEST, submit, 10, SpringLayout.WEST, form);
 		sl_form.putConstraint(SpringLayout.SOUTH, submit, -10, SpringLayout.SOUTH, form);
 		sl_form.putConstraint(SpringLayout.EAST, submit, -10, SpringLayout.EAST, form);
@@ -293,46 +332,46 @@ public class SetupSystem extends JFrame {
 		SpringLayout sl_database2 = new SpringLayout();
 		database2.setLayout(sl_database2);
 		
-		userLabel = new JLabel("Username:");
-		userLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		sl_database2.putConstraint(SpringLayout.NORTH, userLabel, 10, SpringLayout.NORTH, database2);
-		sl_database2.putConstraint(SpringLayout.WEST, userLabel, 10, SpringLayout.WEST, database2);
-		database2.add(userLabel);
+		dbUserLabel = new JLabel("Username:");
+		dbUserLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		sl_database2.putConstraint(SpringLayout.NORTH, dbUserLabel, 10, SpringLayout.NORTH, database2);
+		sl_database2.putConstraint(SpringLayout.WEST, dbUserLabel, 10, SpringLayout.WEST, database2);
+		database2.add(dbUserLabel);
 		
-		userField = new JTextField();
-		userField.setEditable(false);
-		userField.setText("root");
-		userField.setHorizontalAlignment(SwingConstants.CENTER);
-		userField.setMargin(new Insets(2, 5, 2, 5));
-		sl_database2.putConstraint(SpringLayout.NORTH, userField, -2, SpringLayout.NORTH, userLabel);
-		sl_database2.putConstraint(SpringLayout.WEST, userField, 6, SpringLayout.EAST, userLabel);
-		sl_database2.putConstraint(SpringLayout.SOUTH, userField, 2, SpringLayout.SOUTH, userLabel);
-		sl_database2.putConstraint(SpringLayout.EAST, userField, -10, SpringLayout.EAST, database2);
-		database2.add(userField);
-		userField.setColumns(10);
+		dbUserField = new JTextField();
+		dbUserField.setEditable(false);
+		dbUserField.setText("root");
+		dbUserField.setHorizontalAlignment(SwingConstants.CENTER);
+		dbUserField.setMargin(new Insets(2, 5, 2, 5));
+		sl_database2.putConstraint(SpringLayout.NORTH, dbUserField, -2, SpringLayout.NORTH, dbUserLabel);
+		sl_database2.putConstraint(SpringLayout.WEST, dbUserField, 6, SpringLayout.EAST, dbUserLabel);
+		sl_database2.putConstraint(SpringLayout.SOUTH, dbUserField, 2, SpringLayout.SOUTH, dbUserLabel);
+		sl_database2.putConstraint(SpringLayout.EAST, dbUserField, -10, SpringLayout.EAST, database2);
+		database2.add(dbUserField);
+		dbUserField.setColumns(10);
 		
-		passLabel = new JLabel("Password:");
-		passLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		sl_database2.putConstraint(SpringLayout.NORTH, passLabel, 6, SpringLayout.SOUTH, userLabel);
-		sl_database2.putConstraint(SpringLayout.WEST, passLabel, 0, SpringLayout.WEST, userLabel);
-		database2.add(passLabel);
+		dbPassLabel = new JLabel("Password:");
+		dbPassLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		sl_database2.putConstraint(SpringLayout.NORTH, dbPassLabel, 6, SpringLayout.SOUTH, dbUserLabel);
+		sl_database2.putConstraint(SpringLayout.WEST, dbPassLabel, 0, SpringLayout.WEST, dbUserLabel);
+		database2.add(dbPassLabel);
 		
-		passField = new JTextField();
-		passField.setHorizontalAlignment(SwingConstants.CENTER);
-		passField.setMargin(new Insets(2, 5, 2, 5));
-		sl_database2.putConstraint(SpringLayout.NORTH, passField, -2, SpringLayout.NORTH, passLabel);
-		sl_database2.putConstraint(SpringLayout.SOUTH, passField, 2, SpringLayout.SOUTH, passLabel);
-		sl_database2.putConstraint(SpringLayout.EAST, passField, -10, SpringLayout.EAST, database2);
-		passField.setEditable(false);
-		sl_database2.putConstraint(SpringLayout.WEST, passField, 0, SpringLayout.WEST, userField);
-		database2.add(passField);
-		passField.setColumns(10);
+		dbPassField = new JTextField();
+		dbPassField.setHorizontalAlignment(SwingConstants.CENTER);
+		dbPassField.setMargin(new Insets(2, 5, 2, 5));
+		sl_database2.putConstraint(SpringLayout.NORTH, dbPassField, -2, SpringLayout.NORTH, dbPassLabel);
+		sl_database2.putConstraint(SpringLayout.SOUTH, dbPassField, 2, SpringLayout.SOUTH, dbPassLabel);
+		sl_database2.putConstraint(SpringLayout.EAST, dbPassField, -10, SpringLayout.EAST, database2);
+		dbPassField.setEditable(false);
+		sl_database2.putConstraint(SpringLayout.WEST, dbPassField, 0, SpringLayout.WEST, dbUserField);
+		database2.add(dbPassField);
+		dbPassField.setColumns(10);
 
 		defaultCheckBox = new JCheckBox("Use default login");
 		defaultCheckBox.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		defaultCheckBox.setSelected(true);
-		sl_database2.putConstraint(SpringLayout.NORTH, defaultCheckBox, 6, SpringLayout.SOUTH, passLabel);
-		sl_database2.putConstraint(SpringLayout.WEST, defaultCheckBox, 0, SpringLayout.WEST, userLabel);
+		sl_database2.putConstraint(SpringLayout.NORTH, defaultCheckBox, 6, SpringLayout.SOUTH, dbPassLabel);
+		sl_database2.putConstraint(SpringLayout.WEST, defaultCheckBox, 0, SpringLayout.WEST, dbUserLabel);
 		database2.add(defaultCheckBox);
 		
 		manual = new JPanel();
@@ -371,21 +410,23 @@ public class SetupSystem extends JFrame {
 
 		submitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				checkFields();
+				if (checkFields()) {
+					insertRecord();
+				}
 			}
 		});
 		defaultCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (defaultCheckBox.isSelected()) {
-					userField.setText("root");
-					userField.setEditable(false);
-					passField.setText("");
-					passField.setEditable(false);
+					dbUserField.setText("root");
+					dbUserField.setEditable(false);
+					dbPassField.setText("");
+					dbPassField.setEditable(false);
 				} else {
-					userField.setText("");
-					userField.setEditable(true);
-					passField.setText("");
-					passField.setEditable(true);
+					dbUserField.setText("");
+					dbUserField.setEditable(true);
+					dbPassField.setText("");
+					dbPassField.setEditable(true);
 				}
 			}
 		});
@@ -456,10 +497,14 @@ public class SetupSystem extends JFrame {
 		ut.adjustFont(addressField, form2, insideStandard, 11);
 		ut.adjustFont(payLabel, form2, insideStandard, 11);
 		ut.adjustFont(paySpinner, form2, insideStandard, 11);
-		ut.adjustFont(userLabel, form2, insideStandard, 11);
-		ut.adjustFont(userField, form2, insideStandard, 11);
 		ut.adjustFont(passLabel, form2, insideStandard, 11);
 		ut.adjustFont(passField, form2, insideStandard, 11);
+		ut.adjustFont(verifyLabel, form2, insideStandard, 11);
+		ut.adjustFont(verifyField, form2, insideStandard, 11);
+		ut.adjustFont(dbUserLabel, form2, insideStandard, 11);
+		ut.adjustFont(dbUserField, form2, insideStandard, 11);
+		ut.adjustFont(dbPassLabel, form2, insideStandard, 11);
+		ut.adjustFont(dbPassField, form2, insideStandard, 11);
 		ut.adjustFont(defaultCheckBox, database2, insideStandard, 10);
 		ut.adjustFont(submitCheckBox, submit, insideStandard, 11);
 		ut.adjustFont(submitButton, submit, insideStandard, 11);
@@ -482,9 +527,11 @@ public class SetupSystem extends JFrame {
 	}
 	
 	private void adjustTheme() {
+		gl.designOptionPanes();
 		gl.adjustTheme(new JComponent[] {form, formTitle, database, databaseTitle, manual, databaseNotice, 
 				formNotice, form2, idLabel, positionLabel, fnameLabel, mnameLabel, lnameLabel, addressLabel, 
-				payLabel, terms, termsNotice, database2, userLabel, passLabel, submit, submitCheckBox, defaultCheckBox});
+				payLabel, terms, termsNotice, database2, dbUserLabel, dbPassLabel, submit, submitCheckBox, 
+				defaultCheckBox, passLabel, verifyLabel});
 		themeSwitcher.setText((gl.isDark) ? "Switch to Light Theme" : "Switch to Dark Theme");
 		
 		if (gl.isDark) {
@@ -504,7 +551,78 @@ public class SetupSystem extends JFrame {
 		}
 	}
 	
-	private void checkFields() {
+	private boolean checkFields() {
+		String[] errors = new String[8];
+		String pass = new String(passField.getPassword());
+		String vpass = new String(verifyField.getPassword());
+		boolean flagged = false;
 		
+		if (fnameField.getText().isBlank()) errors[0] = "• First name field cannot be empty.\n";
+		if (lnameField.getText().isBlank()) errors[1] = "• Last name field cannot be empty.\n";
+		if (addressField.getText().isBlank()) errors[2] = "• Address field cannot be empty.\n";
+		if (dbUserField.getText().isBlank()) errors[3] = "• Database username field cannot be empty.\n";
+		if (dbPassField.getText().isBlank() && !defaultCheckBox.isSelected()) errors[4] = "• Database password field cannot be empty.\n";
+		if (scrollPane.getVerticalScrollBar().getValue() == 0) errors[5] = "• Please read the terms and conditions.\n";
+		if (!submitCheckBox.isSelected()) errors[6] = "• You must agree to our terms and conditions\n  before using the system.\n";
+		
+		if (pass.isBlank()) {
+			errors[7] = "• Password field cannot be empty.";
+		} else if (pass.length() < 6 || pass.length() > 15) {
+			errors[7] = "• Password must be 6 to 15 characters in length";
+		} else if (!pass.equals(vpass)) {
+			errors[7] = "• Passwords doesn't match";
+		}
+
+		String message = "Please check your inputs:\n";
+		for (String err : errors) {
+			if (err != null) {
+				flagged = true;
+				message += err;
+			}
+		}
+
+		if (flagged) {
+			JOptionPane.showMessageDialog(
+				null, message, "Invalid input | " + Main.SYSTEM_NAME, 
+				JOptionPane.WARNING_MESSAGE
+			);
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	private void insertRecord() {
+		Object[] data = {
+				Long.parseLong(idField.getText()),
+				positionField.getText(),
+				fnameField.getText(),
+				mnameField.getText(),
+				lnameField.getText(),
+				addressField.getText(),
+				Double.parseDouble(paySpinner.getValue().toString()),
+				ut.hashData(new String(passField.getPassword()))
+		};
+		
+		if (db.insertNewEmployee(data)) {
+			if (ut.setDatabaseProperties("jdbc:mysql://localhost/?serverTimezone=UTC", 
+				"retail_system", dbUserField.getText(), dbPassField.getText())) {
+
+				JOptionPane.showMessageDialog(
+						null, 
+						  "<html>"
+						+ "<p style=\"text-align: center;\">You have successfully setup the system. <br>"
+						+ "Please remember your login credentials <br>"
+						+ "especially your employee ID:</p>"
+						+ "<h1 style=\"text-align: center;\">" + idField.getText() + "</h1>"
+						+ "<p style=\"text-align: center;\">This will be used to log in your account <br>"
+						+ "and also for the attendace, thank you!</p>"
+						+ "<h3>(Your ID has been copied automatically)<h3>"
+						+ "</html>", 
+						"Success! | " + Main.SYSTEM_NAME, JOptionPane.INFORMATION_MESSAGE);
+				ut.copyToClipboard(idField.getText());
+				dispose();
+			}
+		}
 	}
 }

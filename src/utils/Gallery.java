@@ -10,6 +10,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.ColorUIResource;
 
 public class Gallery {
 	
@@ -35,6 +38,8 @@ public class Gallery {
 	public boolean isDark = true;
 	
 	public Gallery() {
+		designOptionPanes();
+		
 		loginIcon = new ImageIcon("images/icon.png").getImage();
 		businessLogo = new ImageIcon("images/logo.png").getImage();
 		
@@ -55,6 +60,18 @@ public class Gallery {
 		    e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public void designOptionPanes() {
+		if (isDark) {
+			UIManager.put("OptionPane.background", DPANEL_BACKGROUND);
+			UIManager.put("OptionPane.messageForeground", DFONT);
+			UIManager.put("Panel.background", DPANEL_BACKGROUND);
+		} else {
+			UIManager.put("OptionPane.background", LPANEL_BACKGROUND);
+			UIManager.put("OptionPane.messageForeground", LFONT);
+			UIManager.put("Panel.background", LPANEL_BACKGROUND);
+		}
 	}
 	
 	public void adjustTheme(JComponent[] components) {

@@ -15,6 +15,12 @@ import java.util.Base64;
 import java.util.Calendar;
 import java.io.FileOutputStream;
 import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -50,8 +56,10 @@ public class Utility {
 		}
     }
 	
-	public boolean setDatabaseProperties(String user, String pass) {
+	public boolean setDatabaseProperties(String url, String database, String user, String pass) {
 		Properties p = new Properties();
+        p.put(encodeData("url"), encodeData(url));
+        p.put(encodeData("database"), encodeData(database));
         p.put(encodeData("username"), encodeData(user));
         p.put(encodeData("password"), encodeData(pass));
         try {
@@ -76,18 +84,18 @@ public class Utility {
 		return null;
 	}
 	
-    public static String encodeData(String data) {
+    public String encodeData(String data) {
     	String value = (data.equals("")) ? "emptypassword" : data;
         Base64.Encoder enc = Base64.getEncoder();
         return enc.encodeToString(value.getBytes());
     }
 
-    public static String decodeData(String data) {
+    public String decodeData(String data) {
         Base64.Decoder dec = Base64.getDecoder();
         return new String(dec.decode(data));
     }
 
-    public static String hashData(String data) {
+    public String hashData(String data) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] messageDigest = md.digest(data.getBytes());
@@ -132,6 +140,25 @@ public class Utility {
 	    } catch (FileNotFoundException e) {
 	      e.printStackTrace();
 	    }
+		return null;
+	}
+	
+	public void copyToClipboard(String text) {
+		StringSelection ss = new StringSelection(text);
+		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+		cb.setContents(ss, null);
+	}
+	
+	public String getFromClipboard() {
+		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+		Transferable t = cb.getContents(null);
+		if (t != null && t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+			try {
+				return (String) t.getTransferData(DataFlavor.stringFlavor);
+			} catch (UnsupportedFlavorException | IOException e1) {
+				e1.printStackTrace();
+			}
+		}
 		return null;
 	}
 

@@ -1,13 +1,18 @@
 package utils;
 
 
+import java.io.File;
 import java.sql.*;
 
 import javax.swing.JOptionPane;
 
 public class Database {
-	
+
+	private String db_url;
 	private String db_name;
+	private String db_user;
+	private String db_pass;
+	
 	private Connection con;
 	private Statement stmt;
 	private PreparedStatement ps;
@@ -15,13 +20,11 @@ public class Database {
 	
 	public Database(Utility ut) {
 		this.ut = ut;
-		this.db_name = ut.getConfig("db_name");
+		setupDatabaseLogin();
 		
 		try {
 			con = DriverManager.getConnection(
-				ut.getConfig("db_url"), 
-				ut.getConfig("db_user"), 
-				ut.getConfig("db_pass")
+				db_url, db_user, db_pass
 			);
 			stmt = con.createStatement();
 			createDatabase();
@@ -36,6 +39,24 @@ public class Database {
 				JOptionPane.WARNING_MESSAGE
 			);
 			System.exit(0);
+		}
+	}
+	
+	private void setupDatabaseLogin() {
+		File f = new File("./config/setup.properties");
+		if(f.isFile() && !f.isDirectory()) { 
+		    System.out.println("It exists! Now using data from properties file.");
+		    String password = ut.decodeData(ut.getDatabaseProperty(ut.encodeData("password")));
+		    db_url = ut.decodeData(ut.getDatabaseProperty(ut.encodeData("url")));
+		    db_name = ut.decodeData(ut.getDatabaseProperty(ut.encodeData("database")));
+		    db_user = ut.decodeData(ut.getDatabaseProperty(ut.encodeData("username")));
+		    db_pass = (password.equals("emptypassword")) ? "" : password;
+		} else {
+			System.out.println("Uses default from XML.");
+			db_url = ut.getConfig("db_url");
+			db_name = ut.getConfig("db_name");
+			db_user = ut.getConfig("db_user"); 
+			db_pass = ut.getConfig("db_pass");
 		}
 	}
 	
@@ -56,7 +77,8 @@ public class Database {
 					+ "basic DOUBLE(8, 2) NOT NULL,"
 					+ "incentives DOUBLE(8, 2) NOT NULL,"
 					+ "contributions DOUBLE(8, 2) NOT NULL,"
-					+ "penalty DOUBLE(8, 2) NOT NULL"
+					+ "penalty DOUBLE(8, 2) NOT NULL,"
+					+ "password VARCHAR(255) NOT NULL"
 			+ ");"
 		);
 		stmt.execute(
@@ -152,23 +174,29 @@ public class Database {
 	}
 	
 	public boolean insertNewEmployee(Object[] data) {
-		// data format: id, fname, mname, lname, adress, basic
-		// data index:   0,     1,     2,     3,      4,     5
-		if (data.length != 6) return false;
+		// data format: id, position, fname, mname, lname, adress, basic, password
+		// data index:   0,        1,     2,     3,     4,      5,     6,		 7
+		if (data.length != 8) return false;
+		
 		try {
 			ps = con.prepareStatement(
 				"INSERT INTO employee VALUES ("
-				+ "?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
+				+ "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
 				+ ");"
 			);
-			ps.setLong(1, (long) data[0]);
-			ps.setString(2, (String) data[1]);
-			ps.setString(3, (String) data[2]);
-			ps.setString(4, (String) data[3]);
-			ps.setString(5, (String) data[4]);
-			ps.setDouble(6, (double) data[5]);
-			ps.setDouble(7, 0);
-			
+			ps.setLong(1, (long) data[0]);			// employee id
+			ps.setString(2, (String) data[1]);		// position 
+			ps.setString(3, (String) data[2]);		// first name
+			ps.setString(4, (String) data[3]);		// middle name
+			ps.setString(5, (String) data[4]);		// last name
+			ps.setString(6, (String) data[5]);		// address
+			ps.setDouble(7, (double) data[6]);		// basic pay		total contributions: 8% + 100
+			ps.setDouble(8, 0);						// incentives       sss: 4.5% (min=3000 max=25000 increment=500)
+			ps.setDouble(9, ((double) data[6] * 0.08) + 100);//			philhealth: 3.5%
+			ps.setDouble(10, 0);					// penalty			pag ibig: (income > 5000) = Php 100 constant
+			ps.setString(11, ut.hashData((String) data[7])); // password
+			ps.executeUpdate();
+			return true;
 		} catch (SQLException e ) {
 			e.printStackTrace();
 		}

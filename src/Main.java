@@ -54,15 +54,17 @@ public class Main {
 		ut = new Utility();
 		db = new Database(ut);
 
-		if (db.fetchManagers() == 0) new SetupSystem(gl, db, ut);
-		System.out.println(db.fetchManagers());
-		if (db.fetchManagers() != 0) initialize();
+		if (db.fetchManagers() == 0) {
+			new SetupSystem(gl, db, ut);
+		} else {
+			initialize();
+		}
 	}
 
 	/**
 	 * @wbp.parser.entryPoint
 	 */
-	private void initialize() {
+	public void initialize() {
 		mainFrame = new JFrame();
 		mainFrame.setResizable(false);
 		mainFrame.setTitle("Secure Login");

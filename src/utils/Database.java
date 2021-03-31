@@ -210,7 +210,7 @@ public class Database {
 				+ "FROM employee "
 				+ "WHERE position=?;"
 			);
-			ps.setString(1, "Manager");
+			ps.setString(1, "MANAGER");
 			ResultSet count = ps.executeQuery();
 			if (count.next()) return count.getInt(1);
 		} catch (SQLException e) {

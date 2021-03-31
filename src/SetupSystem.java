@@ -47,10 +47,11 @@ public class SetupSystem extends JFrame {
 	private SpringLayout sl_form, sl_contentPane;
 	private JLabel formTitle, databaseTitle, databaseNotice, formNotice, idLabel, positionLabel, 
 				fnameLabel, mnameLabel, lnameLabel, addressLabel, payLabel, terms, termsNotice,
-				dbUserLabel, dbPassLabel;
+				dbUserLabel, dbPassLabel, passLabel, verifyLabel;
 	private JTextField idField, positionField, fnameField, mnameField, lnameField, addressField,
 				dbUserField, dbPassField;
 	private JCheckBox submitCheckBox, defaultCheckBox;
+	private JPasswordField passField, verifyField;
 	private JTextArea termsField;
 	private JSpinner paySpinner;
 	private JScrollPane scrollPane;
@@ -60,10 +61,6 @@ public class SetupSystem extends JFrame {
 	private Gallery gl;
 	private Database db;
 	private Utility ut;
-	private JLabel passLabel;
-	private JPasswordField passField;
-	private JLabel verifyLabel;
-	private JPasswordField verifyField;
 
 	public SetupSystem(Gallery gl, Database db, Utility ut) {
 		this.gl = gl; this.db = db; this.ut = ut;
@@ -616,7 +613,8 @@ public class SetupSystem extends JFrame {
 						+ "especially your employee ID:</p>"
 						+ "<h1 style=\"text-align: center;\">" + idField.getText() + "</h1>"
 						+ "<p style=\"text-align: center;\">This will be used to log in your account <br>"
-						+ "and also for the attendace, thank you!</p>"
+						+ "and also for the attendace, thank you! <br>"
+						+ "Note: Please reopen the application to start</p>"
 						+ "<h3>(Your ID has been copied automatically)<h3>"
 						+ "</html>", 
 						"Success! | " + Main.SYSTEM_NAME, JOptionPane.INFORMATION_MESSAGE);

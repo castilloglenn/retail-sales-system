@@ -8,7 +8,6 @@ public class Database {
 	private Connection con;
 	private Statement stmt;
 	private PreparedStatement ps;
-	
 	private Utility ut;
 	
 	Database(Utility ut) {

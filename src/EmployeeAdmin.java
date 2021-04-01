@@ -378,8 +378,16 @@ public class EmployeeAdmin extends JFrame {
 	
 	private void adjustFonts() {
 		int minTitle = 604;
+		int minDisplay = 469;
 		
 		ut.adjustFont(titleTitle, title, minTitle, 18);
+		ut.adjustFont(dashboardTitle, dashboard, minDisplay, 14);
+		ut.adjustFont(notificationTitle, notification, minDisplay, 14);
+		ut.adjustFont(attendanceTitle, attendance, minDisplay, 14);
+		ut.adjustFont(logTitle, log, minDisplay, 14);
+		ut.adjustFont(scheduleTitle, schedule, minDisplay, 14);
+		ut.adjustFont(payrollTitle, payroll, minDisplay, 14);
+		ut.adjustFont(manageTitle, manage, minDisplay, 14);
 	}
 	
 	private void adjustContainer() {

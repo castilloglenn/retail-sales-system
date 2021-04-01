@@ -20,11 +20,14 @@ import javax.swing.JComponent;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JToggleButton;
+import java.awt.Insets;
 
 public class Main {
 	
@@ -59,6 +62,9 @@ public class Main {
 //		} else {
 //			initialize();
 //		}
+		
+//		======Tests========
+//		initialize();
 		new EmployeeAdmin(gl, ut, db);
 //		new SetupSystem(gl, ut, db);
 	}
@@ -118,12 +124,14 @@ public class Main {
 		loginPanel.add(passLabel);
 		
 		idField = new JPasswordField();
+		idField.setMargin(new Insets(2, 10, 2, 10));
 		idField.setFocusTraversalKeysEnabled(false);
 		idField.setToolTipText("Enter your employee ID.");
 		idField.setBounds(127, 34, 193, 24);
 		loginPanel.add(idField);
 		
 		passField = new JPasswordField();
+		passField.setMargin(new Insets(2, 10, 2, 10));
 		passField.setToolTipText("Please enter your password.");
 		passField.setFocusTraversalKeysEnabled(false);
 		passField.setBounds(127, 63, 193, 24);
@@ -149,27 +157,24 @@ public class Main {
 		loginPanel.add(forgotLabel);
 		
 		submitButton = new JButton("SUBMIT");
-		submitButton.setBackground(gl.COMP_BACKGROUND);
+		submitButton.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		submitButton.setFont(new Font("Tahoma", Font.BOLD, 14));
 		submitButton.setToolTipText("You can also press enter to submit.");
 		submitButton.setBounds(45, 123, 309, 30);
 		loginPanel.add(submitButton);
 		
 		idVisibility = new JToggleButton();
-		idVisibility.setBackground(gl.COMP_BACKGROUND);
-		idVisibility.setIcon(gl.resizedShow);
-		idVisibility.setSelectedIcon(gl.resizedHide);
+		idVisibility.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		idVisibility.setBounds(319, 34, 35, 24);
 		loginPanel.add(idVisibility);
 		
-		passVisibility = new JButton(gl.resizedShow);
-		passVisibility.setBackground(gl.COMP_BACKGROUND);
+		passVisibility = new JButton();
+		passVisibility.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		passVisibility.setBounds(319, 63, 35, 24);
 		loginPanel.add(passVisibility);
 		
 		theme = new JToggleButton();
-		theme.setBackground(gl.COMP_BACKGROUND);
-		theme.setIcon(gl.resizedDark);
+		theme.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		theme.setBounds(10, 123, 35, 30);
 		loginPanel.add(theme);
 		
@@ -208,8 +213,10 @@ public class Main {
 		idVisibility.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (idVisibility.isSelected()) {
+					idVisibility.setIcon((gl.isDark) ? gl.darkHide : gl.lightHide);
 					idField.setEchoChar('\u0000');
 				} else if (!idVisibility.isSelected()) {
+					idVisibility.setIcon((gl.isDark) ? gl.darkShow : gl.lightShow);
 					idField.setEchoChar((Character) UIManager.get("PasswordField.echoChar"));
 				}
 			}
@@ -217,30 +224,30 @@ public class Main {
 		passVisibility.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				passVisibility.setIcon(gl.resizedHide);
+				passVisibility.setIcon((gl.isDark) ? gl.darkHide : gl.lightHide);
 				passField.setEchoChar('\u0000');
 			}
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				passVisibility.setIcon(gl.resizedShow);
+				passVisibility.setIcon((gl.isDark) ? gl.darkShow : gl.lightShow);
 				passField.setEchoChar((Character) UIManager.get("PasswordField.echoChar"));
 			}
 		});
 		forgotLabel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				if (theme.isSelected()) {
-					forgotLabel.setForeground(gl.LFONT_HOVER);
-				} else {
+				if (gl.isDark) {
 					forgotLabel.setForeground(gl.DFONT_HOVER);
+				} else {
+					forgotLabel.setForeground(gl.LFONT_HOVER);
 				}
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
-				if (theme.isSelected()) {
-					forgotLabel.setForeground(gl.LFONT);
-				} else {
+				if (gl.isDark) {
 					forgotLabel.setForeground(gl.DFONT);
+				} else {
+					forgotLabel.setForeground(gl.LFONT);
 				}
 			}
 			@Override
@@ -250,29 +257,43 @@ public class Main {
 		});
 		theme.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				adjustTheme();
+				adjustTheme(true);
+			}
+		});
+		mainFrame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowActivated(WindowEvent e) {
+				adjustTheme(false);
 			}
 		});
 		
-		adjustTheme();
+		adjustTheme(false);
 		mainFrame.setVisible(true);
 	}
 	
-	private void adjustTheme() {
-		gl.designOptionPanes();
-		gl.adjustTheme(new JComponent[] {title, loginPanel, loginHeader, 
-				idLabel, passLabel, forgotLabel, titlePanel});
+	private void adjustTheme(boolean change) {
+		if (change) gl.isDark = (gl.isDark) ? false : true;
 		
+		gl.designOptionPanes();
+		gl.adjustTheme(new JComponent[] {title, loginPanel, loginHeader, idLabel, passLabel, 
+			forgotLabel, titlePanel, idField, idVisibility, passField, passVisibility,
+			submitButton, theme});
+		
+		if (idVisibility.isSelected()) {
+			idVisibility.setIcon((gl.isDark) ? gl.darkHide : gl.lightHide);
+		} else  {
+			idVisibility.setIcon((gl.isDark) ? gl.darkShow : gl.lightShow);
+		}
+		passVisibility.setIcon((gl.isDark) ? gl.darkShow : gl.lightShow);
+
 		if (gl.isDark) {
-			theme.setIcon(gl.resizedDark);
-			logo.setIcon(gl.resizedDarkLogo);
+			theme.setIcon(gl.darkSymbol);
+			logo.setIcon(gl.darkLogo);
 			mainFrame.getContentPane().setBackground(gl.DFRAME_BACKGROUND);
-			gl.isDark = false;
 		} else {
-			theme.setIcon(gl.resizedLight);
-			logo.setIcon(gl.resizedLightLogo);
+			theme.setIcon(gl.lightSymbol);
+			logo.setIcon(gl.lightLogo);
 			mainFrame.getContentPane().setBackground(gl.LFRAME_BACKGROUND);
-			gl.isDark = true;
 		}
 	}
 	

@@ -30,6 +30,7 @@ import javax.swing.JButton;
 import java.awt.event.WindowStateListener;
 import java.awt.event.WindowEvent;
 import javax.swing.JPopupMenu;
+
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -39,6 +40,7 @@ import javax.swing.JOptionPane;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
+import java.awt.event.WindowAdapter;
 
 @SuppressWarnings("serial")
 public class SetupSystem extends JFrame {
@@ -57,6 +59,7 @@ public class SetupSystem extends JFrame {
 	private JScrollPane scrollPane;
 	private JButton submitButton;
 	private JMenuItem themeSwitcher;
+	private JSpinner.DefaultEditor de;
 	
 	private Gallery gl;
 	private Utility ut;
@@ -229,7 +232,7 @@ public class SetupSystem extends JFrame {
 		paySpinner = new JSpinner();
 		paySpinner.setModel(new SpinnerNumberModel(1000.0, 1000.0, 99999.0, 1.0));
 		JComponent editor = paySpinner.getEditor();
-		JSpinner.DefaultEditor de = (JSpinner.DefaultEditor) editor;
+		de = (JSpinner.DefaultEditor) editor;
 		de.getTextField().setHorizontalAlignment(JTextField.CENTER);
 		paySpinner.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		sl_form2.putConstraint(SpringLayout.NORTH, paySpinner, -2, SpringLayout.NORTH, payLabel);
@@ -290,8 +293,8 @@ public class SetupSystem extends JFrame {
 		submit.add(submitCheckBox);
 		
 		submitButton = new JButton("SUBMIT AND START THE SYSTEM");
+		submitButton.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		submitButton.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		submitButton.setBackground(gl.COMP_BACKGROUND);
 		submit.add(submitButton);
 		
 		container2 = new JPanel();
@@ -444,11 +447,17 @@ public class SetupSystem extends JFrame {
 		});
 		themeSwitcher.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				adjustTheme();
+				adjustTheme(true);
+			}
+		});
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowActivated(WindowEvent e) {
+				adjustTheme(false);
 			}
 		});
 
-		adjustTheme();
+		adjustTheme(false);
 		setVisible(true);
 	}
 	
@@ -523,12 +532,16 @@ public class SetupSystem extends JFrame {
 		sl_contentPane.putConstraint(SpringLayout.SOUTH, container, -heightOverflow, SpringLayout.SOUTH, contentPane);
 	}
 	
-	private void adjustTheme() {
+	private void adjustTheme(boolean change) {
+		if (change) gl.isDark = (gl.isDark) ? false : true;
+		
 		gl.designOptionPanes();
 		gl.adjustTheme(new JComponent[] {form, formTitle, database, databaseTitle, manual, databaseNotice, 
 				formNotice, form2, idLabel, positionLabel, fnameLabel, mnameLabel, lnameLabel, addressLabel, 
 				payLabel, terms, termsNotice, database2, dbUserLabel, dbPassLabel, submit, submitCheckBox, 
-				defaultCheckBox, passLabel, verifyLabel});
+				defaultCheckBox, passLabel, verifyLabel, idField, positionField, fnameField, mnameField,
+				lnameField, addressField, passField, verifyField, de.getTextField(), dbUserField, dbPassField,
+				submitButton, termsField});
 		themeSwitcher.setText((gl.isDark) ? "Switch to Light Theme" : "Switch to Dark Theme");
 		
 		if (gl.isDark) {
@@ -537,14 +550,12 @@ public class SetupSystem extends JFrame {
 			container2.setBackground(gl.DFRAME_BACKGROUND);
 			form2.setBorder(new TitledBorder(null, "Personal Information", TitledBorder.LEADING, TitledBorder.TOP, null, gl.DFONT));
 			database2.setBorder(new TitledBorder(null, "Database Login Information", TitledBorder.LEADING, TitledBorder.TOP, null, gl.DFONT));
-			gl.isDark = false;
 		} else {
 			contentPane.setBackground(gl.LFRAME_BACKGROUND);
 			container.setBackground(gl.LFRAME_BACKGROUND);
 			container2.setBackground(gl.LFRAME_BACKGROUND);
 			form2.setBorder(new TitledBorder(null, "Personal Information", TitledBorder.LEADING, TitledBorder.TOP, null, gl.LFONT));
 			database2.setBorder(new TitledBorder(null, "Database Login Information", TitledBorder.LEADING, TitledBorder.TOP, null, gl.LFONT));
-			gl.isDark = true;
 		}
 	}
 	

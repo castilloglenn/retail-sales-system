@@ -4,7 +4,6 @@ import javax.swing.JPanel;
 import java.awt.Dimension;
 
 import javax.swing.SpringLayout;
-import java.awt.GridLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
@@ -22,30 +21,37 @@ import javax.swing.JMenuItem;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import javax.swing.border.BevelBorder;
+import java.awt.CardLayout;
 import javax.swing.JLabel;
 import java.awt.Font;
-import javax.swing.JButton;
-import java.awt.Insets;
 import javax.swing.SwingConstants;
+import javax.swing.JToggleButton;
+import java.awt.Insets;
+import java.awt.event.WindowAdapter;
 
 @SuppressWarnings("serial")
 public class EmployeeAdmin extends JFrame {
 
-	private JPanel container, contentPane, dashboard, alerts, manage, payroll, schedule, crud, notification,
-		late, absent;
-	private JLabel payrollTitle;
-	private JButton managePayroll, generatePayroll;
-	private SpringLayout sl_contentPane;
+	private JPanel container, contentPane, title, navigation, display, dashboard, manage,
+		payroll, schedule, log, attendance, notification;
+	private JToggleButton dashboardLabel, notificationLabel, attendanceLabel, logLabel, 
+		manageLabel, scheduleLabel, payrollLabel;
+	private JLabel photo, titleTitle, dashboardTitle, notificationTitle, attendanceTitle,
+		logTitle, scheduleTitle, payrollTitle, manageTitle;
 	private JMenuItem themeSwitcher;
+	private SpringLayout sl_contentPane;
+	private CardLayout cl;
 	
 	private Gallery gl;
 	private Utility ut;
 	private Database db;
+	
+	private long id;
 
 	public EmployeeAdmin(Gallery gl, Utility ut, Database db) {
 		this.gl = gl; this.ut = ut; this.db = db;
+		id = db.fetchLastIDByTable("employee", "employee_id");
 		
 		setTitle("Employee Management | " + Main.SYSTEM_NAME);
 		setIconImage(gl.businessLogo);
@@ -70,71 +76,253 @@ public class EmployeeAdmin extends JFrame {
 		sl_contentPane.putConstraint(SpringLayout.SOUTH, container, -10, SpringLayout.SOUTH, contentPane);
 		sl_contentPane.putConstraint(SpringLayout.EAST, container, -10, SpringLayout.EAST, contentPane);
 		contentPane.add(container);
-		container.setLayout(new BorderLayout(10, 10));
+		SpringLayout sl_container = new SpringLayout();
+		container.setLayout(sl_container);
+		
+		title = new JPanel();
+		sl_container.putConstraint(SpringLayout.SOUTH, title, 40, SpringLayout.NORTH, container);
+		title.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		sl_container.putConstraint(SpringLayout.NORTH, title, 0, SpringLayout.NORTH, container);
+		sl_container.putConstraint(SpringLayout.WEST, title, 0, SpringLayout.WEST, container);
+		sl_container.putConstraint(SpringLayout.EAST, title, 0, SpringLayout.EAST, container);
+		container.add(title);
+		
+		navigation = new JPanel();
+		navigation.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		sl_container.putConstraint(SpringLayout.NORTH, navigation, 10, SpringLayout.SOUTH, title);
+		sl_container.putConstraint(SpringLayout.WEST, navigation, 0, SpringLayout.WEST, container);
+		sl_container.putConstraint(SpringLayout.SOUTH, navigation, 0, SpringLayout.SOUTH, container);
+		sl_container.putConstraint(SpringLayout.EAST, navigation, 125, SpringLayout.WEST, container);
+		container.add(navigation);
+		
+		display = new JPanel();
+		sl_container.putConstraint(SpringLayout.NORTH, display, 10, SpringLayout.SOUTH, title);
+		
+		titleTitle = new JLabel("EMPLOYEE MANAGEMENT SYSTEM");
+		titleTitle.setHorizontalAlignment(SwingConstants.CENTER);
+		titleTitle.setFont(new Font("Tahoma", Font.BOLD, 18));
+		title.add(titleTitle);
+		sl_container.putConstraint(SpringLayout.WEST, display, 10, SpringLayout.EAST, navigation);
+		SpringLayout sl_navigation = new SpringLayout();
+		navigation.setLayout(sl_navigation);
+		
+		dashboardLabel = new JToggleButton("DASHBOARD");
+		dashboardLabel.setFocusable(false);
+		dashboardLabel.setEnabled(false);
+		dashboardLabel.setSelected(true);
+		dashboardLabel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		dashboardLabel.setMargin(new Insets(10, 0, 10, 0));
+		dashboardLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
+		sl_navigation.putConstraint(SpringLayout.WEST, dashboardLabel, 10, SpringLayout.WEST, navigation);
+		sl_navigation.putConstraint(SpringLayout.EAST, dashboardLabel, -10, SpringLayout.EAST, navigation);
+		navigation.add(dashboardLabel);
+		
+		notificationLabel = new JToggleButton("NOTIFICATIONS");
+		notificationLabel.setFocusable(false);
+		notificationLabel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		notificationLabel.setMargin(new Insets(10, 0, 10, 0));
+		notificationLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
+		sl_navigation.putConstraint(SpringLayout.NORTH, notificationLabel, 6, SpringLayout.SOUTH, dashboardLabel);
+		sl_navigation.putConstraint(SpringLayout.WEST, notificationLabel, 0, SpringLayout.WEST, dashboardLabel);
+		sl_navigation.putConstraint(SpringLayout.EAST, notificationLabel, 0, SpringLayout.EAST, dashboardLabel);
+		navigation.add(notificationLabel);
+		
+		attendanceLabel = new JToggleButton("ATTENDANCE");
+		attendanceLabel.setFocusable(false);
+		attendanceLabel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		attendanceLabel.setMargin(new Insets(10, 0, 10, 0));
+		sl_navigation.putConstraint(SpringLayout.EAST, attendanceLabel, 0, SpringLayout.EAST, notificationLabel);
+		attendanceLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
+		sl_navigation.putConstraint(SpringLayout.WEST, attendanceLabel, 0, SpringLayout.WEST, dashboardLabel);
+		navigation.add(attendanceLabel);
+		
+		logLabel = new JToggleButton("LOGS");
+		logLabel.setFocusable(false);
+		logLabel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		logLabel.setMargin(new Insets(10, 0, 10, 0));
+		sl_navigation.putConstraint(SpringLayout.SOUTH, attendanceLabel, -6, SpringLayout.NORTH, logLabel);
+		sl_navigation.putConstraint(SpringLayout.EAST, logLabel, 0, SpringLayout.EAST, attendanceLabel);
+		logLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
+		sl_navigation.putConstraint(SpringLayout.WEST, logLabel, 0, SpringLayout.WEST, dashboardLabel);
+		navigation.add(logLabel);
+		
+		manageLabel = new JToggleButton("MANAGE");
+		manageLabel.setFocusable(false);
+		manageLabel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		manageLabel.setMargin(new Insets(10, 0, 10, 0));
+		sl_navigation.putConstraint(SpringLayout.SOUTH, manageLabel, -10, SpringLayout.SOUTH, navigation);
+		sl_navigation.putConstraint(SpringLayout.EAST, manageLabel, 0, SpringLayout.EAST, logLabel);
+		manageLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
+		sl_navigation.putConstraint(SpringLayout.WEST, manageLabel, 0, SpringLayout.WEST, dashboardLabel);
+		navigation.add(manageLabel);
+		
+		scheduleLabel = new JToggleButton("SCHEDULE");
+		scheduleLabel.setFocusable(false);
+		scheduleLabel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		scheduleLabel.setMargin(new Insets(10, 0, 10, 0));
+		sl_navigation.putConstraint(SpringLayout.SOUTH, logLabel, -6, SpringLayout.NORTH, scheduleLabel);
+		scheduleLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
+		sl_navigation.putConstraint(SpringLayout.WEST, scheduleLabel, 0, SpringLayout.WEST, dashboardLabel);
+		sl_navigation.putConstraint(SpringLayout.EAST, scheduleLabel, 0, SpringLayout.EAST, manageLabel);
+		navigation.add(scheduleLabel);
+		
+		payrollLabel = new JToggleButton("PAYROLL");
+		payrollLabel.setFocusable(false);
+		payrollLabel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		payrollLabel.setMargin(new Insets(10, 0, 10, 0));
+		sl_navigation.putConstraint(SpringLayout.SOUTH, scheduleLabel, -6, SpringLayout.NORTH, payrollLabel);
+		sl_navigation.putConstraint(SpringLayout.WEST, payrollLabel, 10, SpringLayout.WEST, navigation);
+		sl_navigation.putConstraint(SpringLayout.EAST, payrollLabel, -10, SpringLayout.EAST, navigation);
+		sl_navigation.putConstraint(SpringLayout.SOUTH, payrollLabel, -6, SpringLayout.NORTH, manageLabel);
+		payrollLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
+		navigation.add(payrollLabel);
+		
+		photo = new JLabel((gl.isDark) ? gl.darkEmployee : gl.lightEmployee);
+		sl_navigation.putConstraint(SpringLayout.NORTH, dashboardLabel, 10, SpringLayout.SOUTH, photo);
+		sl_navigation.putConstraint(SpringLayout.NORTH, photo, 10, SpringLayout.NORTH, navigation);
+		sl_navigation.putConstraint(SpringLayout.WEST, photo, 10, SpringLayout.WEST, navigation);
+		sl_navigation.putConstraint(SpringLayout.EAST, photo, -10, SpringLayout.EAST, navigation);
+		navigation.add(photo);
+		sl_container.putConstraint(SpringLayout.SOUTH, display, 0, SpringLayout.SOUTH, container);
+		sl_container.putConstraint(SpringLayout.EAST, display, 0, SpringLayout.EAST, container);
+		container.add(display);
+		cl = new CardLayout(0, 0);
+		display.setLayout(cl);
 		
 		dashboard = new JPanel();
-		container.add(dashboard, BorderLayout.CENTER);
-		dashboard.setLayout(new SpringLayout());
+		dashboard.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		display.add(dashboard, "dashboard");
+		SpringLayout sl_dashboard = new SpringLayout();
+		dashboard.setLayout(sl_dashboard);
 		
-		alerts = new JPanel();
-		container.add(alerts, BorderLayout.EAST);
-		alerts.setLayout(new GridLayout(3, 0, 0, 10));
+		dashboardTitle = new JLabel("DASHBOARD");
+		dashboardTitle.setFont(new Font("Tahoma", Font.BOLD, 14));
+		sl_dashboard.putConstraint(SpringLayout.NORTH, dashboardTitle, 10, SpringLayout.NORTH, dashboard);
+		sl_dashboard.putConstraint(SpringLayout.WEST, dashboardTitle, 10, SpringLayout.WEST, dashboard);
+		dashboard.add(dashboardTitle);
 		
 		notification = new JPanel();
-		alerts.add(notification);
-		notification.setLayout(new SpringLayout());
+		notification.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		display.add(notification, "notification");
+		SpringLayout sl_notification = new SpringLayout();
+		notification.setLayout(sl_notification);
 		
-		late = new JPanel();
-		alerts.add(late);
-		late.setLayout(new SpringLayout());
+		notificationTitle = new JLabel("NOTIFICATIONS");
+		notificationTitle.setFont(new Font("Tahoma", Font.BOLD, 14));
+		sl_notification.putConstraint(SpringLayout.NORTH, notificationTitle, 10, SpringLayout.NORTH, notification);
+		sl_notification.putConstraint(SpringLayout.WEST, notificationTitle, 10, SpringLayout.WEST, notification);
+		notification.add(notificationTitle);
 		
-		absent = new JPanel();
-		alerts.add(absent);
-		absent.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 0));
+		attendance = new JPanel();
+		attendance.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		display.add(attendance, "attendance");
+		SpringLayout sl_attendance = new SpringLayout();
+		attendance.setLayout(sl_attendance);
 		
-		manage = new JPanel();
-		container.add(manage, BorderLayout.SOUTH);
-		manage.setLayout(new GridLayout(0, 3, 10, 0));
+		attendanceTitle = new JLabel("ATTENDANCE");
+		attendanceTitle.setFont(new Font("Tahoma", Font.BOLD, 14));
+		sl_attendance.putConstraint(SpringLayout.NORTH, attendanceTitle, 10, SpringLayout.NORTH, attendance);
+		sl_attendance.putConstraint(SpringLayout.WEST, attendanceTitle, 10, SpringLayout.WEST, attendance);
+		attendance.add(attendanceTitle);
+		
+		log = new JPanel();
+		log.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		display.add(log, "log");
+		SpringLayout sl_log = new SpringLayout();
+		log.setLayout(sl_log);
+		
+		logTitle = new JLabel("LOGS");
+		logTitle.setFont(new Font("Tahoma", Font.BOLD, 14));
+		sl_log.putConstraint(SpringLayout.NORTH, logTitle, 10, SpringLayout.NORTH, log);
+		sl_log.putConstraint(SpringLayout.WEST, logTitle, 10, SpringLayout.WEST, log);
+		log.add(logTitle);
+		
+		schedule = new JPanel();
+		schedule.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		display.add(schedule, "schedule");
+		SpringLayout sl_schedule = new SpringLayout();
+		schedule.setLayout(sl_schedule);
+		
+		scheduleTitle = new JLabel("SCHEDULE");
+		scheduleTitle.setFont(new Font("Tahoma", Font.BOLD, 14));
+		sl_schedule.putConstraint(SpringLayout.NORTH, scheduleTitle, 10, SpringLayout.NORTH, schedule);
+		sl_schedule.putConstraint(SpringLayout.WEST, scheduleTitle, 10, SpringLayout.WEST, schedule);
+		schedule.add(scheduleTitle);
 		
 		payroll = new JPanel();
-		manage.add(payroll);
+		payroll.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		display.add(payroll, "payroll");
 		SpringLayout sl_payroll = new SpringLayout();
 		payroll.setLayout(sl_payroll);
 		
-		payrollTitle = new JLabel("EMPLOYEE PAYROLL");
-		payrollTitle.setHorizontalAlignment(SwingConstants.CENTER);
-		sl_payroll.putConstraint(SpringLayout.NORTH, payrollTitle, 3, SpringLayout.NORTH, payroll);
-		sl_payroll.putConstraint(SpringLayout.WEST, payrollTitle, 5, SpringLayout.WEST, payroll);
-		sl_payroll.putConstraint(SpringLayout.EAST, payrollTitle, -5, SpringLayout.EAST, payroll);
-		payrollTitle.setFont(new Font("Tahoma", Font.BOLD, 11));
+		payrollTitle = new JLabel("PAYROLL");
+		payrollTitle.setFont(new Font("Tahoma", Font.BOLD, 14));
+		sl_payroll.putConstraint(SpringLayout.NORTH, payrollTitle, 10, SpringLayout.NORTH, payroll);
+		sl_payroll.putConstraint(SpringLayout.WEST, payrollTitle, 10, SpringLayout.WEST, payroll);
 		payroll.add(payrollTitle);
 		
-		managePayroll = new JButton("MANAGE PAYROLL");
-		sl_payroll.putConstraint(SpringLayout.EAST, managePayroll, 0, SpringLayout.EAST, payrollTitle);
-		managePayroll.setMargin(new Insets(1, 14, 1, 14));
-		managePayroll.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		managePayroll.setBackground(gl.COMP_BACKGROUND);
-		sl_payroll.putConstraint(SpringLayout.NORTH, managePayroll, 6, SpringLayout.SOUTH, payrollTitle);
-		sl_payroll.putConstraint(SpringLayout.WEST, managePayroll, 0, SpringLayout.WEST, payrollTitle);
-		payroll.add(managePayroll);
+		manage = new JPanel();
+		manage.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		display.add(manage, "manage");
+		SpringLayout sl_manage = new SpringLayout();
+		manage.setLayout(sl_manage);
 		
-		generatePayroll = new JButton("GENERATE PAYROLL");
-		sl_payroll.putConstraint(SpringLayout.EAST, generatePayroll, 0, SpringLayout.EAST, managePayroll);
-		generatePayroll.setMargin(new Insets(1, 14, 1, 14));
-		generatePayroll.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		generatePayroll.setBackground(gl.COMP_BACKGROUND);
-		sl_payroll.putConstraint(SpringLayout.NORTH, generatePayroll, 6, SpringLayout.SOUTH, managePayroll);
-		sl_payroll.putConstraint(SpringLayout.WEST, generatePayroll, 0, SpringLayout.WEST, payrollTitle);
-		payroll.add(generatePayroll);
+		manageTitle = new JLabel("MANAGE EMPLOYEES");
+		manageTitle.setFont(new Font("Tahoma", Font.BOLD, 14));
+		sl_manage.putConstraint(SpringLayout.NORTH, manageTitle, 10, SpringLayout.NORTH, manage);
+		sl_manage.putConstraint(SpringLayout.WEST, manageTitle, 10, SpringLayout.WEST, manage);
+		manage.add(manageTitle);
+
 		
-		schedule = new JPanel();
-		manage.add(schedule);
-		schedule.setLayout(new SpringLayout());
 		
-		crud = new JPanel();
-		manage.add(crud);
-		crud.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 50));
 		
+		
+		
+		
+		
+		
+		dashboardLabel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				toggleOne(dashboardLabel);
+				cl.show(display, "dashboard");
+			}
+		});
+		notificationLabel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				toggleOne(notificationLabel);
+				cl.show(display, "notification");
+			}
+		});
+		attendanceLabel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				toggleOne(attendanceLabel);
+				cl.show(display, "attendance");
+			}
+		});
+		logLabel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				toggleOne(logLabel);
+				cl.show(display, "log");
+			}
+		});
+		scheduleLabel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				toggleOne(scheduleLabel);
+				cl.show(display, "schedule");
+			}
+		});
+		payrollLabel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				toggleOne(payrollLabel);
+				cl.show(display, "payroll");
+			}
+		});
+		manageLabel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				toggleOne(manageLabel);
+				cl.show(display, "manage");
+			}
+		});
 		addWindowStateListener(new WindowStateListener() {
 			public void windowStateChanged(WindowEvent e) {
 				if (e.getNewState() == 0) {
@@ -152,11 +340,21 @@ public class EmployeeAdmin extends JFrame {
 		});
 		themeSwitcher.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				adjustTheme();
+				adjustTheme(true);
 			}
 		});
-
-		adjustTheme();
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowOpened(WindowEvent e) {
+				adjustTheme(false);
+			}
+			@Override
+			public void windowActivated(WindowEvent e) {
+				adjustTheme(false);
+			}
+		});
+		
+		adjustTheme(false);
 		setVisible(true);
 	}
 	
@@ -179,16 +377,14 @@ public class EmployeeAdmin extends JFrame {
 	}
 	
 	private void adjustFonts() {
-		int lower = 194;
+		int minTitle = 604;
 		
-		ut.adjustFont(payrollTitle, payroll, lower, 11);
-		ut.adjustFont(managePayroll, payroll, lower, 10);
-		ut.adjustFont(generatePayroll, payroll, lower, 10);
+		ut.adjustFont(titleTitle, title, minTitle, 18);
 	}
 	
 	private void adjustContainer() {
-		int maxWidth = 1200;
-		int maxHeight = 700;
+		int maxWidth = 1000;
+		int maxHeight = 600;
 
 		int width = container.getSize().width;
 		int height = container.getSize().height;
@@ -202,23 +398,36 @@ public class EmployeeAdmin extends JFrame {
 		sl_contentPane.putConstraint(SpringLayout.SOUTH, container, -heightOverflow, SpringLayout.SOUTH, contentPane);
 	}
 	
-	private void adjustTheme() {
+	private void adjustTheme(boolean change) {
+		if (change) gl.isDark = (gl.isDark) ? false : true;
+		
 		gl.designOptionPanes();
-		gl.adjustTheme(new JComponent[] {dashboard, payroll, schedule, crud, notification, late, absent, payrollTitle});
+		gl.adjustTheme(new JComponent[] {title, navigation, display, titleTitle, dashboard, dashboardLabel, notificationLabel,
+				attendanceLabel, logLabel, scheduleLabel, payrollLabel, manageLabel, dashboard, manage, payroll, schedule, 
+				log, attendance, notification, dashboardTitle, notificationTitle, attendanceTitle, logTitle, scheduleTitle, 
+				payrollTitle, manageTitle});
 		themeSwitcher.setText((gl.isDark) ? "Switch to Light Theme" : "Switch to Dark Theme");
 		
 		if (gl.isDark) {
 			contentPane.setBackground(gl.DFRAME_BACKGROUND);
 			container.setBackground(gl.DFRAME_BACKGROUND);
-			alerts.setBackground(gl.DFRAME_BACKGROUND);
-			manage.setBackground(gl.DFRAME_BACKGROUND);
-			gl.isDark = false;
+			photo.setIcon(gl.darkEmployee);
 		} else {
 			contentPane.setBackground(gl.LFRAME_BACKGROUND);
 			container.setBackground(gl.LFRAME_BACKGROUND);
-			alerts.setBackground(gl.LFRAME_BACKGROUND);
-			manage.setBackground(gl.LFRAME_BACKGROUND);
-			gl.isDark = true;
+			photo.setIcon(gl.lightEmployee);
 		}
+	}
+	
+	private void toggleOne(JToggleButton enabled) {
+		JToggleButton[] list = {dashboardLabel, notificationLabel, attendanceLabel, logLabel, 
+				manageLabel, scheduleLabel, payrollLabel};
+		for (JToggleButton b : list) {
+			if (b != enabled) {
+				b.setSelected(false);
+				b.setEnabled(true);
+			}
+		}
+		enabled.setEnabled(false);
 	}
 }

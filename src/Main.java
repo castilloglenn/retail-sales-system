@@ -60,6 +60,7 @@ public class Main {
 //			initialize();
 //		}
 		new EmployeeAdmin(gl, ut, db);
+//		new SetupSystem(gl, ut, db);
 	}
 
 	/**

@@ -27,6 +27,11 @@ import java.io.FileNotFoundException;
 import java.util.Properties;
 import java.util.Scanner;
 
+/**
+ * 
+ * @author Allen Glenn E. Castillo
+ *
+ */
 public class Utility {
 	
 	private Document dom;
@@ -162,22 +167,24 @@ public class Utility {
 		return null;
 	}
 
-	/*
-	 * Employee ID Format:
-	 * example:  51210325001
-	 * 		5-1-21-03-25-001
-	 *  5 = Employee Code
-	 *  1 = Level of Access
-	 *        { 0 : Store Assistant
-	 *        	1 : Inventory Clerk
-	 *        	2 : Cashier
-	 *        	3 : Junior Supervisor
-	 *        	4 : Senior Supervisor
-	 *        	5 : Manager/Owner }
-	 *  21 = Year
-	 *  03 = Month
-	 *  25 = Day
-	 *  001 = auto-increment first is 1, second is 2, etc.
+	/**
+	 * Employee ID Format: <br>
+	 * example:  51210325001 <br>
+	 * 		5-1-21-03-25-001 <p>
+	 * 
+	 *  5 = Employee Code <br>
+	 *  1 = Level of Access <br>
+	 *        { 0 : Store Assistant <br>
+	 *        	1 : Inventory Clerk <br>
+	 *        	2 : Cashier <br>
+	 *        	3 : Junior Supervisor <br>
+	 *        	4 : Senior Supervisor <br>
+	 *        	5 : Manager/Owner } <br>
+	 *  21 = Year <br>
+	 *  03 = Month <br>
+	 *  25 = Day <br>
+	 *  001 = auto-increment first is 1, second is 2, etc. <p>
+	 *  
 	 */
 	public long generateEmployeeID(long lastID, int level) {
 		StringBuilder markup = new StringBuilder("5");
@@ -203,6 +210,50 @@ public class Utility {
 			int increment = Integer.parseInt(lastNum) + 1;
 			markup.append(String.format("%03d", increment));
 		}
+		
+		return Long.parseLong(markup.toString());
+	}
+	
+	/**
+	 * Log ID Format: <br>
+	 * example:  14100000001 <br>
+	 * 		1-4-0000001 <p>
+	 * 
+	 *  1 = Log Code <br>
+	 *  4 = Log Type <br>
+	 *  1 = Log Status <br>
+	 *  00000001 = auto increment <br>
+	 *  0 = Message Part <p>
+	 *  
+	 *  @param isSubMessage = determines if the log transaction will be incremented
+	 *  	by 1, because if not, it will remain the same as the latest id which would be
+	 *  	the message head by the normal process.
+	 */
+	public long generateLogID(long lastID, int type,
+			int part, boolean isSubMessage) {
+		StringBuilder markup = new StringBuilder("1");
+		
+		markup.append(Integer.toString(type));
+		
+		// all new logs will be unread initially by the manager.
+		markup.append("1");
+		
+		long latest = lastID;
+		if (latest == -1) {
+			markup.append("00000001");
+		} else {
+			String lastNum = Long.toString(latest).substring(3, 8);
+			int value;
+			if (isSubMessage) {
+				markup.append(lastNum);
+			} else {
+				value = Integer.parseInt(lastNum) + 1;
+				markup.append(String.format("%08d", value));
+			}
+		}
+		
+		// message part
+		markup.append(Integer.toString(part));
 		
 		return Long.parseLong(markup.toString());
 	}

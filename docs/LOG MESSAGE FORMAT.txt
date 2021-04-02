@@ -8,7 +8,7 @@ date datetime
 
 LOG ID FORMAT: MAX: 9223372036854775807
 ex: 141000000010
-    1-4-0000001-0
+    1-4-1-00000001-0
  1 = Log Code
  4 = Log Type
  1 = Log Status

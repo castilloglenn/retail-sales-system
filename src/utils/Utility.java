@@ -202,11 +202,10 @@ public class Utility {
 		if (day < 10) markup.append("0");
 		markup.append(Integer.toString(day));
 		
-		long latest = lastID;
-		if (latest == -1) {
+		if (lastID == -1) {
 			markup.append("001");
 		} else {
-			String lastNum = Long.toString(latest).substring(8);
+			String lastNum = Long.toString(lastID).substring(8);
 			int increment = Integer.parseInt(lastNum) + 1;
 			markup.append(String.format("%03d", increment));
 		}
@@ -216,8 +215,8 @@ public class Utility {
 	
 	/**
 	 * Log ID Format: <br>
-	 * example:  14100000001 <br>
-	 * 		1-4-0000001 <p>
+	 * example:  141000000010 <br>
+	 * 		1-4-1-00000001-0 <p>
 	 * 
 	 *  1 = Log Code <br>
 	 *  4 = Log Type <br>
@@ -225,12 +224,19 @@ public class Utility {
 	 *  00000001 = auto increment <br>
 	 *  0 = Message Part <p>
 	 *  
-	 *  @param isSubMessage = determines if the log transaction will be incremented
-	 *  	by 1, because if not, it will remain the same as the latest id which would be
-	 *  	the message head by the normal process.
+	 *  @param lastID = requires the last log id in order to increment it
+	 *  @param type =  <br>1-PRODUCT INQUIRY - contains all the searches of employees of a 	certain product.  <br>
+			2-ATTENDANCE - contains all the login/logout of employees <br>
+			3-LATE/ABSENT - auto generates if an employee did not meet 	his/her schedule on time (late) or after 30 minutes (absent)  <br>
+			4-LOST PASSWORD - when an employeee requests a forgot password notification  <br>
+			5-SCHEDULE - format to follow when the manager/supervisor 	creates a schedule.  <br>
+			6-PRODUCT REQUESTS - creates when the inventory clerk requests an out of stock or high demand product  <br>
+			7-DELIVERY - when a supplier delivers product and it 	registers through the system  <br>
+			8-PULL-OUT - records all the damaged products and expired goods  <br>
+			9-SYSTEM LOG - records all actions done by the 	manager/employees in the system, system interactions <br>
+	 *  @param part = 0 means new log, head message, 1-9 means it is a continuation/attachment
 	 */
-	public long generateLogID(long lastID, int type,
-			int part, boolean isSubMessage) {
+	public long generateLogID(long lastID, int type, int part) {
 		StringBuilder markup = new StringBuilder("1");
 		
 		markup.append(Integer.toString(type));
@@ -238,17 +244,15 @@ public class Utility {
 		// all new logs will be unread initially by the manager.
 		markup.append("1");
 		
-		long latest = lastID;
-		if (latest == -1) {
+		if (lastID == -1) {
 			markup.append("00000001");
 		} else {
-			String lastNum = Long.toString(latest).substring(3, 8);
-			int value;
-			if (isSubMessage) {
-				markup.append(lastNum);
-			} else {
-				value = Integer.parseInt(lastNum) + 1;
+			String lastNum = Long.toString(lastID).substring(3, 11);
+			if (part == 0) {
+				int value = Integer.parseInt(lastNum) + 1;
 				markup.append(String.format("%08d", value));
+			} else {
+				markup.append(lastNum);
 			}
 		}
 		

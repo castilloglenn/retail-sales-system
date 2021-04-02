@@ -266,4 +266,56 @@ public class Database {
 		return -1;
 	}
 	
+	/**
+	 * Fetches the latest log id not by directly getting the max in id column,
+	 * but by the entry number which is the substring of the full id <p>
+	 * 
+	 * @return returns the latest log by the substring 3 to end.
+	 */
+	public long fetchLastLog() {
+		try {
+			long max = 0;
+			for (int type = 1; type <= 9; type++) {
+				ps = con.prepareStatement(
+					  "SELECT MAX(log_id) "
+					+ "FROM logs "
+					+ "WHERE log_id > ? "
+					+ "AND log_id < ?"
+					+ ";"
+				);
+				StringBuilder least = new StringBuilder("1");
+				StringBuilder most = new StringBuilder("1");
+				
+				least.append(Integer.toString(type));
+				most.append(Integer.toString(type + 1));
+				
+				least.append(String.format("0%08d0", 0));
+				most.append(String.format("0%08d0", 0));
+				
+				ps.setLong(1, Long.parseLong(least.toString()));
+				ps.setLong(2, Long.parseLong(most.toString()));
+				
+				ResultSet pid = ps.executeQuery();
+				pid.next();
+				long current = pid.getLong(1);
+				System.out.println("c: " + current);
+				
+				if (max == 0) {
+					max = current;
+				} else if (current != 0) {
+					long subs = Long.parseLong(Long.toString(current).substring(3));
+					long maxsub = Long.parseLong(Long.toString(max).substring(3));
+					
+					System.out.println("s: " + subs + "max: " + max);
+					if (subs > maxsub) max = current;
+				}
+			}
+			System.out.println(max);
+			if (max != 0) return max;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
 }

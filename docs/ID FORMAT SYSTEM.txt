@@ -1,0 +1,57 @@
+TRANSACTION BIGINT(20) MAX: 9223372036854775807
+ex: 1011616644307939
+    1-01-1616644307939
+ 1 = Transaction Code (can range from 1-4)
+ 01 = Machine Code (can range from 01-99)
+ 1616644307939 = Timestamp (In millis)
+====================================================
+SUPPLIER BIGINT(20) MAX: 9223372036854775807
+ex: 9210325001
+    9-21-03-25-001
+ 9 = Supplier Code
+ 21 = Year
+ 03 = Month
+ 25 = Day
+ 001 = autoincrement 1 is first, 2 is second etc..
+====================================================
+PRODUCT BIGINT(20) MAX: 9223372036854775807
+ex: 8001210325001
+    8-001-21-03-25-001
+ 8 = Product Code
+ 001 = Supplier's autoincrement code
+ 21 = Year
+ 03 = Month
+ 25 = Day
+ 001 = autoincrement unique for every supplier
+====================================================
+PROMO BIGINT(20) MAX: 9223372036854775807
+ex: 7001001
+    7-001-001-01
+ 7 = Promo Code
+ 001 = Supplier's autoincrement code
+ 001 = Product's autoincrement code
+ 01 = autoincrement unique for every product
+====================================================
+CUSTOMER BIGINT(20) MAX: 9223372036854775807
+ex: 6011616644307939
+    6-01-1616644307939
+ 6 = Customer Code
+ 01 = Machine Code
+ 1616644307939 = Timestamp (in millis)
+====================================================
+EMPLOYEE BIGINT(20) MAX: 9223372036854775807
+ex: 51210325001
+    5-1-21-03-25-001
+ 5 = Employee Code
+ 1 = Level of Access
+      { 0 : Store Assistant
+	1 : Inventory Clerk
+	2 : Cashier
+	3 : Junior Supervisor
+	4 : Senior Supervisor
+	5 : Manager/Owner
+       }
+ 21 = Year
+ 03 = Month
+ 25 = Day
+ 001 = autoincrement first is 1, second is 2, etc.

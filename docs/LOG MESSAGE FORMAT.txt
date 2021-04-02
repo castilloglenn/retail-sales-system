@@ -1,0 +1,65 @@
+DB STRUCTURE:
+log_id bigint primary key
+employee_id bigint foreign key
+type varchar 255
+description varchar 512
+date datetime
+
+LOG ID FORMAT: MAX: 9223372036854775807
+ex: 14100000001
+    1-4-0000001
+ 1 = Log Code
+ 4 = Log Type
+ 1 = Log Status
+ 00000001 = auto incremenet
+
+TYPES OF LOG:
+1-PRODUCT INQUIRY
+	- contains all the searches of employees of a 	certain product.
+2-ATTENDANCE
+	- contains all the login/logout of employees
+3-LATE/ABSENT
+	- auto generates if an employee did not meet 	his/her schedule on time (late) or after 30 	minutes (absent)
+4-LOST PASSWORD
+	- when an employeee requests a forgot password
+	notification
+5-SCHEDULE
+	- format to follow when the manager/supervisor 	creates a schedule.
+6-PRODUCT REQUESTS
+	- creates when the inventory clerk requests an
+	out of stock or high demand product
+7-DELIVERY
+	- when a supplier delivers product and it 	registers through the system
+8-PULL-OUT
+	- records all the damaged products and expired 	goods
+9-SYSTEM LOG
+	- records all actions done by the 	manager/employees in the system, system 	interactions
+
+LOG STATUS:
+1 = submitted/unread/new/unapproved
+2 = read
+3 = approved
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

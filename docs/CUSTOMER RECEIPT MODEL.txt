@@ -1,0 +1,34 @@
+META DATA:
+MAX-WIDTH = 32 (sample only)
+	all lines are relative to this width
+
+THE RECEIPT:
+
+	   <BUSINESS NAME>
+	   <BUSINESS NAME>
+	<BUSINESS TIN NUMBER>
+	<BUSINESS ADDRESS>
+
+========================================*MAX-WIDTH
+Date: <DATE>
+Transaction No: <TRANSACTION_NO>
+Cashier: <CASHIER.fname>
+========================================*MAX-WIDTH
+ 
+ <QUANTITY> <PRODUCT_NAME>
+  @ <PRICE> ......... <TOTAL_PRICE>
+ <QUANTITY> <PRODUCT_NAME>
+  @ <PRICE> ......... <TOTAL_PRICE>
+ <QUANTITY> <PRODUCT_NAME>
+  @ <PRICE> ......... <TOTAL_PRICE>
+ 
+ SUB-TOTAL		<TOTAL * 0.88>
+ TAX			<TOTAL * 0.12>
+ TOTAL			<TOTAL>
+
+ TOTAL ITEMS		<TOTAL_ITEMS>
+
+========================================*MAX-WIDTH
+
+ THANK YOU FOR VISITING OUR STORE.
+ COME AGAIN!!!

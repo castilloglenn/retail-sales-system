@@ -1,11 +1,15 @@
 package utils;
 
-
 import java.io.File;
 import java.sql.*;
 
 import javax.swing.JOptionPane;
 
+/**
+ * 
+ * @author Allen Glenn E. Castillo
+ *
+ */
 public class Database {
 	
 	private double SSS_RATE = 0.045;
@@ -173,6 +177,10 @@ public class Database {
 					+ "REFERENCES product(product_id)"
 			+ ");"
 		);
+	}
+	
+	public Connection getConnection() {
+		return con;
 	}
 	
 	public boolean insertNewEmployee(Object[] data) {

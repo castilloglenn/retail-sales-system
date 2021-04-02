@@ -18,6 +18,12 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.UIManager;
 
+
+/**
+ * 
+ * @author Allen Glenn E. Castillo
+ *
+ */
 public class Gallery {
 	
 	// =================== DARK THEME COLORS =======================

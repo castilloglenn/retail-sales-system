@@ -1,4 +1,5 @@
 DB STRUCTURE:
+logs
 log_id bigint primary key
 employee_id bigint foreign key
 type varchar 255
@@ -6,12 +7,13 @@ description varchar 512
 date datetime
 
 LOG ID FORMAT: MAX: 9223372036854775807
-ex: 14100000001
-    1-4-0000001
+ex: 141000000010
+    1-4-0000001-0
  1 = Log Code
  4 = Log Type
  1 = Log Status
  00000001 = auto incremenet
+ 0 = Message Part
 
 TYPES OF LOG:
 1-PRODUCT INQUIRY
@@ -40,26 +42,7 @@ LOG STATUS:
 2 = read
 3 = approved
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+MESSAGE PART:
+0 = main part
+1-9 = attachments
 

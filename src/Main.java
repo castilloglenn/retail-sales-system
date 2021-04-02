@@ -1,5 +1,6 @@
 import utils.Database;
 import utils.Gallery;
+import utils.Logger;
 import utils.Utility;
 
 import java.awt.EventQueue;
@@ -29,6 +30,12 @@ import java.awt.event.KeyEvent;
 import javax.swing.JToggleButton;
 import java.awt.Insets;
 
+
+/**
+ * 
+ * @author Allen Glenn E. Castillo
+ *
+ */
 public class Main {
 	
 	public static final String SYSTEM_NAME = "Primordial Retail & Sales Management System";
@@ -43,6 +50,7 @@ public class Main {
 	private Gallery gl;
 	private Database db;
 	private Utility ut;
+	private Logger log;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -56,6 +64,7 @@ public class Main {
 		gl = new Gallery();
 		ut = new Utility();
 		db = new Database(ut);
+		log = new Logger(db, ut);
 
 //		if (db.fetchManagers() == 0) {
 //			new SetupSystem(gl, ut, db);

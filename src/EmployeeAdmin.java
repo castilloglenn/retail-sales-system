@@ -15,6 +15,7 @@ import java.awt.event.WindowStateListener;
 import java.awt.event.WindowEvent;
 import javax.swing.JPopupMenu;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JMenuItem;
@@ -30,6 +31,12 @@ import javax.swing.JToggleButton;
 import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 
+
+/**
+ * 
+ * @author Allen Glenn E. Castillo
+ *
+ */
 @SuppressWarnings("serial")
 public class EmployeeAdmin extends JFrame {
 
@@ -341,13 +348,13 @@ public class EmployeeAdmin extends JFrame {
 		themeSwitcher.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				adjustTheme(true);
+				Component[] comps = container.getComponents();
+				for (Component c : comps) {
+					System.out.println(c);
+				}
 			}
 		});
 		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowOpened(WindowEvent e) {
-				adjustTheme(false);
-			}
 			@Override
 			public void windowActivated(WindowEvent e) {
 				adjustTheme(false);

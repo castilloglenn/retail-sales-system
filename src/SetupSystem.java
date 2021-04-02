@@ -42,6 +42,12 @@ import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
 import java.awt.event.WindowAdapter;
 
+
+/**
+ * 
+ * @author Allen Glenn E. Castillo
+ *
+ */
 @SuppressWarnings("serial")
 public class SetupSystem extends JFrame {
 

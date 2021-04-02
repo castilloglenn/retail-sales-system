@@ -65,8 +65,8 @@ public class Main {
 		
 //		======Tests========
 //		initialize();
-		new EmployeeAdmin(gl, ut, db);
 //		new SetupSystem(gl, ut, db);
+		new EmployeeAdmin(gl, ut, db);
 	}
 
 	/**

@@ -37,6 +37,8 @@ public class Utility {
 	
 	private Document dom;
 	
+	public boolean initial = true;
+	
 	public Utility() {
 		setupXMLConfigurations();
 	}
@@ -97,6 +99,7 @@ public class Utility {
     }
 
     public String decodeData(String data) {
+    	if (data == null) return "";
         Base64.Decoder dec = Base64.getDecoder();
         return new String(dec.decode(data));
     }

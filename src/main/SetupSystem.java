@@ -600,11 +600,12 @@ public class SetupSystem extends JFrame {
 	}
 	
 	private void insertRecord() {
+		
 		Object[] data = {
 				Long.parseLong(idField.getText()),
 				ut.encodeData(positionField.getText()),
 				ut.encodeData(fnameField.getText().toUpperCase()),
-				ut.encodeData(mnameField.getText().toUpperCase()),
+				(mnameField.getText().isBlank()) ? null : ut.encodeData(mnameField.getText().toUpperCase()),
 				ut.encodeData(lnameField.getText().toUpperCase()),
 				ut.encodeData(addressField.getText().toUpperCase()),
 				Double.parseDouble(paySpinner.getValue().toString()),

@@ -28,6 +28,7 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.SwingConstants;
 import javax.swing.JToggleButton;
+import javax.swing.ListSelectionModel;
 
 import java.awt.Insets;
 import java.awt.event.WindowAdapter;
@@ -352,12 +353,7 @@ public class EmployeeAdmin extends JFrame {
 		sl_manage.putConstraint(SpringLayout.SOUTH, manageScrollPane, -10, SpringLayout.NORTH, manageCrud);
 		
 		manageTable = new JTable();
-		manageTable.setModel(ut.generateTable(db.fetchEmployees(), employeeColumns));
-		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-		for(int col=0; col < 10; col++){
-			manageTable.getColumnModel().getColumn(col).setCellRenderer( centerRenderer );
-	    };
+		manageTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		manageScrollPane.setViewportView(manageTable);
 		sl_manage.putConstraint(SpringLayout.WEST, manageCrud, 10, SpringLayout.WEST, manage);
 		sl_manage.putConstraint(SpringLayout.SOUTH, manageCrud, -10, SpringLayout.SOUTH, manage);
@@ -374,13 +370,6 @@ public class EmployeeAdmin extends JFrame {
 		manageDeleteButton = new JButton("DELETE");
 		manageCrud.add(manageDeleteButton);
 
-		
-		
-		
-		
-		
-		
-		
 		
 		dashboardLabel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -452,6 +441,12 @@ public class EmployeeAdmin extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowActivated(WindowEvent e) {
+				manageTable.setModel(ut.generateTable(db.fetchEmployees(), employeeColumns));
+				DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+				centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+				for(int col=0; col < 10; col++){
+					manageTable.getColumnModel().getColumn(col).setCellRenderer(centerRenderer);
+			    };
 				adjustTheme(false);
 			}
 		});

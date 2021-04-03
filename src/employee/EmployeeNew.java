@@ -11,6 +11,7 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SpringLayout;
 
@@ -21,10 +22,7 @@ import utils.Utility;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import java.awt.Font;
-import javax.swing.JSplitPane;
 import javax.swing.border.TitledBorder;
-import java.awt.Color;
-import javax.swing.border.EtchedBorder;
 import javax.swing.JTextField;
 import java.awt.Insets;
 import javax.swing.SwingConstants;
@@ -37,23 +35,30 @@ import javax.swing.JPasswordField;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.JRadioButton;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.JCheckBox;
+import javax.swing.JButton;
 
 @SuppressWarnings("serial")
 public class EmployeeNew extends JDialog {
 
 	private JLabel title, idLabel, positionLabel, fnameLabel, mnameLabel, lnameLabel, addressLabel,
-		streetLabel, barangayLabel, cityLabel, provinceLabel, passLabel, verifyLabel, chooseLabel;
-	private JTextField idField, fnameFIeld, mnameField, lnameField, streetField, barangayField,
-		cityField, provinceField, passField, verifyField;
+		streetLabel, barangayLabel, cityLabel, provinceLabel, passLabel, verifyLabel, chooseLabel,
+		grossLabel, contributionLabel, sssLabel, philhealthLabel, pagibigLabel, totalContributionLabel,
+		netLabel;
+	private JTextField idField, fnameField, mnameField, lnameField, streetField, barangayField,
+		cityField, provinceField, grossField, sssField, philhealthField,
+		pagibigField, totalContributionField, netField;
+	private JSeparator separator, separator_1, separator_2, separator_3, separator_4;
 	private JSpinner basicMonthlySpinner, basicDailySpinner;
 	private JPanel container, personal, salary;
-	private JSeparator separator, separator_1, separator_2;
+	private JPasswordField passField, verifyField;
+	private JComboBox<String> positionComboBox;
 	private JRadioButton dailyButton;
 	private JMenuItem themeSwitcher;
+	private JCheckBox termsCheckBox;
+	JButton submitButton;
 	
 	private String[] positions = {
 		"Manager", "Senior Supervisor", "Junior Supervisor", "Cashier", 
@@ -66,22 +71,6 @@ public class EmployeeNew extends JDialog {
 	private Gallery gl;
 	private Utility ut;
 	private Database db;
-	
-	private JTextField grossField;
-	private JLabel grossLabel;
-	private JSeparator separator_3;
-	private JLabel contributionLabel;
-	private JLabel sssLabel;
-	private JTextField sssField;
-	private JLabel philhealthLabel;
-	private JTextField philhealthField;
-	private JLabel pagibigLabel;
-	private JTextField pagibigField;
-	private JSeparator separator_4;
-	private JLabel totalContributionLabel;
-	private JTextField totalContributionField;
-	private JLabel netLabel;
-	private JTextField netField;
 	
 	public EmployeeNew(Gallery gl, Utility ut, Database db) {
 		this.gl = gl; this.ut = ut; this.db = db;
@@ -145,7 +134,7 @@ public class EmployeeNew extends JDialog {
 		sl_personal.putConstraint(SpringLayout.WEST, positionLabel, 0, SpringLayout.WEST, idLabel);
 		personal.add(positionLabel);
 		
-		JComboBox<String> positionComboBox = new JComboBox<String>();
+		positionComboBox = new JComboBox<String>();
 		sl_personal.putConstraint(SpringLayout.NORTH, positionComboBox, -2, SpringLayout.NORTH, positionLabel);
 		sl_personal.putConstraint(SpringLayout.SOUTH, positionComboBox, 2, SpringLayout.SOUTH, positionLabel);
 		sl_personal.putConstraint(SpringLayout.EAST, positionComboBox, -10, SpringLayout.EAST, personal);
@@ -166,14 +155,14 @@ public class EmployeeNew extends JDialog {
 		sl_personal.putConstraint(SpringLayout.WEST, fnameLabel, 0, SpringLayout.WEST, idLabel);
 		personal.add(fnameLabel);
 		
-		fnameFIeld = new JTextField();
-		fnameFIeld.setHorizontalAlignment(SwingConstants.CENTER);
-		fnameFIeld.setMargin(new Insets(2, 5, 2, 5));
-		sl_personal.putConstraint(SpringLayout.NORTH, fnameFIeld, -2, SpringLayout.NORTH, fnameLabel);
-		sl_personal.putConstraint(SpringLayout.SOUTH, fnameFIeld, 2, SpringLayout.SOUTH, fnameLabel);
-		sl_personal.putConstraint(SpringLayout.EAST, fnameFIeld, -10, SpringLayout.EAST, personal);
-		personal.add(fnameFIeld);
-		fnameFIeld.setColumns(10);
+		fnameField = new JTextField();
+		fnameField.setHorizontalAlignment(SwingConstants.CENTER);
+		fnameField.setMargin(new Insets(2, 5, 2, 5));
+		sl_personal.putConstraint(SpringLayout.NORTH, fnameField, -2, SpringLayout.NORTH, fnameLabel);
+		sl_personal.putConstraint(SpringLayout.SOUTH, fnameField, 2, SpringLayout.SOUTH, fnameLabel);
+		sl_personal.putConstraint(SpringLayout.EAST, fnameField, -10, SpringLayout.EAST, personal);
+		personal.add(fnameField);
+		fnameField.setColumns(10);
 		
 		mnameLabel = new JLabel("Middle Name:");
 		sl_personal.putConstraint(SpringLayout.NORTH, mnameLabel, 7, SpringLayout.SOUTH, fnameLabel);
@@ -181,7 +170,7 @@ public class EmployeeNew extends JDialog {
 		personal.add(mnameLabel);
 		
 		mnameField = new JTextField();
-		sl_personal.putConstraint(SpringLayout.WEST, fnameFIeld, 0, SpringLayout.WEST, mnameField);
+		sl_personal.putConstraint(SpringLayout.WEST, fnameField, 0, SpringLayout.WEST, mnameField);
 		sl_personal.putConstraint(SpringLayout.WEST, positionComboBox, 0, SpringLayout.WEST, mnameField);
 		sl_personal.putConstraint(SpringLayout.WEST, idField, 0, SpringLayout.WEST, mnameField);
 		mnameField.setHorizontalAlignment(SwingConstants.CENTER);
@@ -217,7 +206,7 @@ public class EmployeeNew extends JDialog {
 		sl_personal.putConstraint(SpringLayout.WEST, addressLabel, 0, SpringLayout.WEST, idLabel);
 		personal.add(addressLabel);
 		
-		streetLabel = new JLabel("Street Name:");
+		streetLabel = new JLabel("Street:");
 		sl_personal.putConstraint(SpringLayout.NORTH, streetLabel, 10, SpringLayout.SOUTH, addressLabel);
 		sl_personal.putConstraint(SpringLayout.WEST, streetLabel, 0, SpringLayout.WEST, idLabel);
 		personal.add(streetLabel);
@@ -471,17 +460,17 @@ public class EmployeeNew extends JDialog {
 		salary.add(netField);
 		netField.setColumns(10);
 		
+		termsCheckBox = new JCheckBox(
+			"<html><i>I hereby certify that all information stated above is true and correct.</i></html>"
+		);
+		termsCheckBox.setBounds(303, 346, 287, 31);
+		container.add(termsCheckBox);
 		
+		submitButton = new JButton("SUBMIT");
+		submitButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+		submitButton.setBounds(307, 384, 287, 23);
+		container.add(submitButton);
 		
-		
-		
-		
-		
-		
-		
-		
-		
-
 		positionComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				idField.setText(
@@ -527,6 +516,13 @@ public class EmployeeNew extends JDialog {
 				updateSalaryFields();
 			}
 		});
+		submitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (checkFields()) {
+					insertRecord();
+				}
+			}
+		});
 		themeSwitcher.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				adjustTheme(true);
@@ -541,7 +537,7 @@ public class EmployeeNew extends JDialog {
 		
 		updateSalaryFields();
 		adjustTheme(false);
-//		setResizable(false);
+		setResizable(false);
 		setModal(true);
 		setVisible(true);
 	}
@@ -598,5 +594,81 @@ public class EmployeeNew extends JDialog {
 			String.format("Php %,.2f", grossPay - 
 				(grossPay * (db.SSS_RATE + db.PHILHEALTH_RATE) + db.PAGIBIG_RATE))
 		);
+	}
+	
+	private boolean checkFields() {
+		String[] errors = new String[5];
+		String pass = new String(passField.getPassword());
+		String vpass = new String(verifyField.getPassword());
+		boolean flagged = false;
+		
+		if (fnameField.getText().isBlank()) errors[0] = "• First name field cannot be empty.\n";
+		if (lnameField.getText().isBlank()) errors[1] = "• Last name field cannot be empty.\n";
+		if (streetField.getText().isBlank() ||
+			barangayField.getText().isBlank() ||
+			cityField.getText().isBlank() ||
+			provinceField.getText().isBlank()) errors[2] = "• One of the address field cannot be empty.\n";
+		
+		if (pass.isBlank()) {
+			errors[3] = "• Password field cannot be empty.\n";
+		} else if (pass.length() < 6 || pass.length() > 15) {
+			errors[3] = "• Password must be 6 to 15 characters in length.\n";
+		} else if (!pass.equals(vpass)) {
+			errors[3] = "• Passwords doesn't match.\n";
+		}
+
+		if (!termsCheckBox.isSelected()) errors[4] = "• You must certify about the informations provided.";
+
+		String message = "Please check your inputs:\n";
+		for (String err : errors) {
+			if (err != null) {
+				flagged = true;
+				message += err;
+			}
+		}
+
+		if (flagged) {
+			JOptionPane.showMessageDialog(
+				null, message, "Invalid input | " + Main.SYSTEM_NAME, 
+				JOptionPane.WARNING_MESSAGE
+			);
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	private void insertRecord() {
+		StringBuilder address = new StringBuilder();
+		address.append(streetField.getText() + ", ");
+		address.append(barangayField.getText() + ", ");
+		address.append(cityField.getText() + ", ");
+		address.append(provinceField.getText());
+		
+		Object[] data = {
+				Long.parseLong(idField.getText()),
+				ut.encodeData(positions[positionComboBox.getSelectedIndex()].toUpperCase()),
+				ut.encodeData(fnameField.getText().toUpperCase()),
+				(mnameField.getText().isBlank()) ? null : ut.encodeData(mnameField.getText().toUpperCase()),
+				ut.encodeData(lnameField.getText().toUpperCase()),
+				ut.encodeData(address.toString().toUpperCase()),
+				(double) basicMonthlySpinner.getValue(),
+				ut.hashData(new String(passField.getPassword()))
+		};
+		
+		if (db.insertNewEmployee(data)) {
+			JOptionPane.showMessageDialog(
+					null, 
+					  "<html>"
+					+ "<p style=\"text-align: center;\">New Employee has been registered into the system. <br>"
+					+ "Please remember your login credentials <br>"
+					+ "especially your employee ID:</p>"
+					+ "<h1 style=\"text-align: center;\">" + idField.getText() + "</h1>"
+					+ "<p style=\"text-align: center;\">This will be used to log in your account <br>"
+					+ "and also for the attendance, thank you!</p>"
+					+ "</html>", 
+					"Success! | " + Main.SYSTEM_NAME, JOptionPane.INFORMATION_MESSAGE);
+			dispose();
+		}
 	}
 }

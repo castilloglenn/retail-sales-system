@@ -260,7 +260,8 @@ public class Database {
 				Object[][] data = new Object[size][10];
 				ResultSet fetchData = stmt.executeQuery(
 					"SELECT employee_id, position, fname, mname, lname, address, "
-					+ "basic, incentives, contributions, penalty FROM employee;"
+					+ "basic, incentives, contributions, penalty FROM employee "
+					+ "ORDER BY employee_id;"
 				);
 				
 				int index = 0;

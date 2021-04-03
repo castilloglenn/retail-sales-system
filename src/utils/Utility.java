@@ -173,11 +173,8 @@ public class Utility {
 		return new DefaultTableModel(
 			rows, column
 			) {
-				boolean[] columnEditables = new boolean[] {
-					false, false, false, false, false, false, false
-				};
 				public boolean isCellEditable(int row, int column) {
-					return columnEditables[column];
+					return false;
 				}
 			};
 	}

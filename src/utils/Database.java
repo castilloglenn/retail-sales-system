@@ -12,9 +12,9 @@ import javax.swing.JOptionPane;
  */
 public class Database {
 	
-	private double SSS_RATE = 0.045;
-	private double PHILHEALTH_RATE = 0.035;
-	private double PAGIBIG_RATE = 100;
+	public final double SSS_RATE = 0.045;
+	public final double PHILHEALTH_RATE = 0.035;
+	public final double PAGIBIG_RATE = 100;
 
 	private String db_url;
 	private String db_name;
@@ -348,7 +348,6 @@ public class Database {
 				ResultSet pid = ps.executeQuery();
 				pid.next();
 				long current = pid.getLong(1);
-				System.out.println("c: " + current);
 				
 				if (max == 0) {
 					max = current;
@@ -356,11 +355,60 @@ public class Database {
 					long subs = Long.parseLong(Long.toString(current).substring(3));
 					long maxsub = Long.parseLong(Long.toString(max).substring(3));
 					
-					System.out.println("s: " + subs + "max: " + max);
 					if (subs > maxsub) max = current;
 				}
 			}
-			System.out.println(max);
+			
+			if (max != 0) return max;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	/**
+	 * Fetches the latest employee id not by directly getting the max in id column,
+	 * but by the entry number which is the substring of the full id <p>
+	 * 
+	 * @return returns the latest employee by the substring 3 to end.
+	 */
+	public long fetchLastEmployee() {
+		try {
+			long max = 0;
+			for (int level = 0; level <= 5; level++) {
+				ps = con.prepareStatement(
+					  "SELECT MAX(employee_id) "
+					+ "FROM employee "
+					+ "WHERE employee_id > ? "
+					+ "AND employee_id < ?"
+					+ ";"
+				);
+				StringBuilder least = new StringBuilder("5");
+				StringBuilder most = new StringBuilder("5");
+				
+				least.append(Integer.toString(level));
+				most.append(Integer.toString(level + 1));
+				
+				least.append(String.format("%09d", 0));
+				most.append(String.format("%09d", 0));
+				
+				ps.setLong(1, Long.parseLong(least.toString()));
+				ps.setLong(2, Long.parseLong(most.toString()));
+				
+				ResultSet pid = ps.executeQuery();
+				pid.next();
+				long current = pid.getLong(1);
+				
+				if (max == 0) {
+					max = current;
+				} else if (current != 0) {
+					long subs = Long.parseLong(Long.toString(current).substring(8));
+					long maxsub = Long.parseLong(Long.toString(max).substring(8));
+					
+					if (subs > maxsub) max = current;
+				}
+			}
+			
 			if (max != 0) return max;
 		} catch (SQLException e) {
 			e.printStackTrace();

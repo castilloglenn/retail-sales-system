@@ -348,9 +348,10 @@ public class EmployeeAdmin extends JFrame {
 		manage.add(manageScrollPane);
 		
 		JPanel manageCrud = new JPanel();
+		sl_manage.putConstraint(SpringLayout.NORTH, manageCrud, -35, SpringLayout.SOUTH, manage);
 		sl_manage.putConstraint(SpringLayout.SOUTH, manageScrollPane, -10, SpringLayout.NORTH, manageCrud);
 		
-		manageTable = new JTable(10, 10);
+		manageTable = new JTable();
 		manageTable.setModel(ut.generateTable(db.fetchEmployees(), employeeColumns));
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
@@ -358,7 +359,6 @@ public class EmployeeAdmin extends JFrame {
 			manageTable.getColumnModel().getColumn(col).setCellRenderer( centerRenderer );
 	    };
 		manageScrollPane.setViewportView(manageTable);
-		sl_manage.putConstraint(SpringLayout.NORTH, manageCrud, -50, SpringLayout.SOUTH, manage);
 		sl_manage.putConstraint(SpringLayout.WEST, manageCrud, 10, SpringLayout.WEST, manage);
 		sl_manage.putConstraint(SpringLayout.SOUTH, manageCrud, -10, SpringLayout.SOUTH, manage);
 		sl_manage.putConstraint(SpringLayout.EAST, manageCrud, -10, SpringLayout.EAST, manage);
@@ -422,6 +422,11 @@ public class EmployeeAdmin extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				toggleOne(manageLabel);
 				cl.show(display, "manage");
+			}
+		});
+		manageAddButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new EmployeeNew(gl, ut, db);
 			}
 		});
 		addWindowStateListener(new WindowStateListener() {

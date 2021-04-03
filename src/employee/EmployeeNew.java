@@ -29,46 +29,59 @@ import javax.swing.JTextField;
 import java.awt.Insets;
 import javax.swing.SwingConstants;
 import javax.swing.JComboBox;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JSeparator;
 import javax.swing.JPasswordField;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.JRadioButton;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 
 @SuppressWarnings("serial")
 public class EmployeeNew extends JDialog {
 
-	private JLabel title, idLabel, positionLabel, fnameLabel;
-	private JTextField idField, fnameFIeld;
+	private JLabel title, idLabel, positionLabel, fnameLabel, mnameLabel, lnameLabel, addressLabel,
+		streetLabel, barangayLabel, cityLabel, provinceLabel, passLabel, verifyLabel, chooseLabel;
+	private JTextField idField, fnameFIeld, mnameField, lnameField, streetField, barangayField,
+		cityField, provinceField, passField, verifyField;
+	private JSpinner basicMonthlySpinner, basicDailySpinner;
 	private JPanel container, personal, salary;
+	private JSeparator separator, separator_1, separator_2;
+	private JRadioButton dailyButton;
 	private JMenuItem themeSwitcher;
 	
 	private String[] positions = {
 		"Manager", "Senior Supervisor", "Junior Supervisor", "Cashier", 
 		"Inventory Clerk", "Store Assistant"
 	};
+	private double[] defaultBasic = {
+		25000.0, 17500.0, 15000.0, 12500.0, 12500.0, 10000
+	};
 
 	private Gallery gl;
 	private Utility ut;
 	private Database db;
-	private JLabel mnameLabel;
-	private JTextField mnameField;
-	private JLabel lnameLabel;
-	private JTextField lnameField;
-	private JSeparator separator_1;
-	private JLabel addressLabel;
-	private JLabel streetLabel;
-	private JTextField streetField;
-	private JLabel barangayLabel;
-	private JTextField barangayField;
-	private JLabel cityLabel;
-	private JTextField cityField;
-	private JLabel provinceLabel;
-	private JTextField provinceField;
-	private JSeparator separator_2;
-	private JLabel passLabel;
-	private JPasswordField passField;
-	private JLabel verifyLabel;
-	private JPasswordField verifyField;
+	
+	private JTextField grossField;
+	private JLabel grossLabel;
+	private JSeparator separator_3;
+	private JLabel contributionLabel;
+	private JLabel sssLabel;
+	private JTextField sssField;
+	private JLabel philhealthLabel;
+	private JTextField philhealthField;
+	private JLabel pagibigLabel;
+	private JTextField pagibigField;
+	private JSeparator separator_4;
+	private JLabel totalContributionLabel;
+	private JTextField totalContributionField;
+	private JLabel netLabel;
+	private JTextField netField;
 	
 	public EmployeeNew(Gallery gl, Utility ut, Database db) {
 		this.gl = gl; this.ut = ut; this.db = db;
@@ -142,7 +155,7 @@ public class EmployeeNew extends JDialog {
 		positionComboBox.setRenderer(listRenderer);
 		personal.add(positionComboBox);
 		
-		JSeparator separator = new JSeparator();
+		separator = new JSeparator();
 		sl_personal.putConstraint(SpringLayout.NORTH, separator, 10, SpringLayout.SOUTH, positionLabel);
 		sl_personal.putConstraint(SpringLayout.WEST, separator, 0, SpringLayout.WEST, idLabel);
 		sl_personal.putConstraint(SpringLayout.EAST, separator, -10, SpringLayout.EAST, personal);
@@ -303,9 +316,160 @@ public class EmployeeNew extends JDialog {
 		verifyField.setColumns(10);
 		
 		salary = new JPanel();
-		salary.setBounds(307, 44, 287, 320);
+		salary.setBounds(307, 44, 287, 295);
 		container.add(salary);
-		salary.setLayout(null);
+		SpringLayout sl_salary = new SpringLayout();
+		salary.setLayout(sl_salary);
+		
+		basicMonthlySpinner = new JSpinner();
+		sl_salary.putConstraint(SpringLayout.EAST, basicMonthlySpinner, -10, SpringLayout.EAST, salary);
+		basicMonthlySpinner.setModel(new SpinnerNumberModel(
+			defaultBasic[positionComboBox.getSelectedIndex()], 5000.0, 99999.0, 1.0));
+		salary.add(basicMonthlySpinner);
+		
+		chooseLabel = new JLabel("Choose one:");
+		salary.add(chooseLabel);
+		
+		JRadioButton monthlyButton = new JRadioButton("Basic Pay (Monthly)");
+		sl_salary.putConstraint(SpringLayout.NORTH, monthlyButton, 2, SpringLayout.SOUTH, chooseLabel);
+		sl_salary.putConstraint(SpringLayout.NORTH, basicMonthlySpinner, 2, SpringLayout.NORTH, monthlyButton);
+		sl_salary.putConstraint(SpringLayout.WEST, basicMonthlySpinner, 6, SpringLayout.EAST, monthlyButton);
+		sl_salary.putConstraint(SpringLayout.SOUTH, basicMonthlySpinner, -2, SpringLayout.SOUTH, monthlyButton);
+		monthlyButton.setSelected(true);
+		sl_salary.putConstraint(SpringLayout.WEST, monthlyButton, 0, SpringLayout.WEST, chooseLabel);
+		ButtonGroup bg = new ButtonGroup();
+		bg.add(monthlyButton);
+		salary.add(monthlyButton);
+		
+		dailyButton = new JRadioButton("Basic Pay (Daily)");
+		sl_salary.putConstraint(SpringLayout.NORTH, dailyButton, 2, SpringLayout.SOUTH, monthlyButton);
+		sl_salary.putConstraint(SpringLayout.WEST, dailyButton, 0, SpringLayout.WEST, chooseLabel);
+		bg.add(dailyButton);
+		salary.add(dailyButton);
+		
+		basicDailySpinner = new JSpinner();
+		basicDailySpinner.setEnabled(false);
+		basicDailySpinner.setModel(new SpinnerNumberModel(
+			((double) basicMonthlySpinner.getValue()) / 30, 150.0, 99999.0, 1.0));
+		sl_salary.putConstraint(SpringLayout.NORTH, basicDailySpinner, 2, SpringLayout.NORTH, dailyButton);
+		sl_salary.putConstraint(SpringLayout.WEST, basicDailySpinner, 0, SpringLayout.WEST, basicMonthlySpinner);
+		sl_salary.putConstraint(SpringLayout.SOUTH, basicDailySpinner, -2, SpringLayout.SOUTH, dailyButton);
+		sl_salary.putConstraint(SpringLayout.EAST, basicDailySpinner, -10, SpringLayout.EAST, salary);
+		salary.add(basicDailySpinner);
+		
+		grossField = new JTextField(String.format("Php %,.2f", defaultBasic[positionComboBox.getSelectedIndex()]));
+		grossField.setHorizontalAlignment(SwingConstants.CENTER);
+		sl_salary.putConstraint(SpringLayout.EAST, grossField, -10, SpringLayout.EAST, salary);
+		grossField.setEditable(false);
+		salary.add(grossField);
+		grossField.setColumns(10);
+		
+		grossLabel = new JLabel("Gross Basic Pay:");
+		sl_salary.putConstraint(SpringLayout.NORTH, chooseLabel, 6, SpringLayout.SOUTH, grossLabel);
+		sl_salary.putConstraint(SpringLayout.WEST, chooseLabel, 0, SpringLayout.WEST, grossLabel);
+		sl_salary.putConstraint(SpringLayout.NORTH, grossField, -2, SpringLayout.NORTH, grossLabel);
+		sl_salary.putConstraint(SpringLayout.SOUTH, grossField, 2, SpringLayout.SOUTH, grossLabel);
+		sl_salary.putConstraint(SpringLayout.NORTH, grossLabel, 10, SpringLayout.NORTH, salary);
+		sl_salary.putConstraint(SpringLayout.WEST, grossLabel, 10, SpringLayout.WEST, salary);
+		salary.add(grossLabel);
+		
+		separator_3 = new JSeparator();
+		sl_salary.putConstraint(SpringLayout.NORTH, separator_3, 10, SpringLayout.SOUTH, dailyButton);
+		sl_salary.putConstraint(SpringLayout.WEST, separator_3, 0, SpringLayout.WEST, grossLabel);
+		sl_salary.putConstraint(SpringLayout.EAST, separator_3, -10, SpringLayout.EAST, salary);
+		salary.add(separator_3);
+		
+		contributionLabel = new JLabel("Contributions");
+		sl_salary.putConstraint(SpringLayout.NORTH, contributionLabel, 6, SpringLayout.SOUTH, separator_3);
+		sl_salary.putConstraint(SpringLayout.WEST, contributionLabel, 0, SpringLayout.WEST, grossLabel);
+		salary.add(contributionLabel);
+		
+		sssLabel = new JLabel("SSS:");
+		sl_salary.putConstraint(SpringLayout.NORTH, sssLabel, 6, SpringLayout.SOUTH, contributionLabel);
+		sl_salary.putConstraint(SpringLayout.WEST, sssLabel, 0, SpringLayout.WEST, grossLabel);
+		salary.add(sssLabel);
+		
+		sssField = new JTextField();
+		sl_salary.putConstraint(SpringLayout.NORTH, sssField, -2, SpringLayout.NORTH, sssLabel);
+		sl_salary.putConstraint(SpringLayout.SOUTH, sssField, 2, SpringLayout.SOUTH, sssLabel);
+		sssField.setHorizontalAlignment(SwingConstants.CENTER);
+		sssField.setMargin(new Insets(2, 5, 2, 5));
+		sssField.setEditable(false);
+		sl_salary.putConstraint(SpringLayout.WEST, sssField, 0, SpringLayout.WEST, grossField);
+		sl_salary.putConstraint(SpringLayout.EAST, sssField, -10, SpringLayout.EAST, salary);
+		salary.add(sssField);
+		sssField.setColumns(10);
+		
+		philhealthLabel = new JLabel("PhilHealth:");
+		sl_salary.putConstraint(SpringLayout.NORTH, philhealthLabel, 6, SpringLayout.SOUTH, sssLabel);
+		sl_salary.putConstraint(SpringLayout.WEST, philhealthLabel, 0, SpringLayout.WEST, grossLabel);
+		salary.add(philhealthLabel);
+		
+		philhealthField = new JTextField();
+		philhealthField.setMargin(new Insets(2, 5, 2, 5));
+		philhealthField.setHorizontalAlignment(SwingConstants.CENTER);
+		sl_salary.putConstraint(SpringLayout.NORTH, philhealthField, -2, SpringLayout.NORTH, philhealthLabel);
+		sl_salary.putConstraint(SpringLayout.WEST, philhealthField, 0, SpringLayout.WEST, grossField);
+		sl_salary.putConstraint(SpringLayout.SOUTH, philhealthField, 2, SpringLayout.SOUTH, philhealthLabel);
+		sl_salary.putConstraint(SpringLayout.EAST, philhealthField, -10, SpringLayout.EAST, salary);
+		philhealthField.setEditable(false);
+		salary.add(philhealthField);
+		philhealthField.setColumns(10);
+		
+		pagibigLabel = new JLabel("Pag-Ibig:");
+		sl_salary.putConstraint(SpringLayout.NORTH, pagibigLabel, 6, SpringLayout.SOUTH, philhealthLabel);
+		sl_salary.putConstraint(SpringLayout.WEST, pagibigLabel, 0, SpringLayout.WEST, grossLabel);
+		salary.add(pagibigLabel);
+		
+		pagibigField = new JTextField();
+		pagibigField.setText(String.format("Php %,.2f", db.PAGIBIG_RATE));
+		sl_salary.putConstraint(SpringLayout.NORTH, pagibigField, -2, SpringLayout.NORTH, pagibigLabel);
+		sl_salary.putConstraint(SpringLayout.SOUTH, pagibigField, 2, SpringLayout.SOUTH, pagibigLabel);
+		sl_salary.putConstraint(SpringLayout.EAST, pagibigField, -10, SpringLayout.EAST, salary);
+		pagibigField.setHorizontalAlignment(SwingConstants.CENTER);
+		pagibigField.setEditable(false);
+		sl_salary.putConstraint(SpringLayout.WEST, pagibigField, 0, SpringLayout.WEST, grossField);
+		salary.add(pagibigField);
+		pagibigField.setColumns(10);
+		
+		separator_4 = new JSeparator();
+		sl_salary.putConstraint(SpringLayout.NORTH, separator_4, 10, SpringLayout.SOUTH, pagibigLabel);
+		sl_salary.putConstraint(SpringLayout.WEST, separator_4, 0, SpringLayout.WEST, grossLabel);
+		sl_salary.putConstraint(SpringLayout.EAST, separator_4, -10, SpringLayout.EAST, salary);
+		salary.add(separator_4);
+		
+		totalContributionLabel = new JLabel("Total Contributions:");
+		sl_salary.putConstraint(SpringLayout.NORTH, totalContributionLabel, 10, SpringLayout.SOUTH, separator_4);
+		sl_salary.putConstraint(SpringLayout.WEST, totalContributionLabel, 0, SpringLayout.WEST, grossLabel);
+		salary.add(totalContributionLabel);
+		
+		totalContributionField = new JTextField();
+		sl_salary.putConstraint(SpringLayout.WEST, grossField, 0, SpringLayout.WEST, totalContributionField);
+		totalContributionField.setMargin(new Insets(2, 5, 2, 5));
+		totalContributionField.setHorizontalAlignment(SwingConstants.CENTER);
+		sl_salary.putConstraint(SpringLayout.NORTH, totalContributionField, -2, SpringLayout.NORTH, totalContributionLabel);
+		sl_salary.putConstraint(SpringLayout.SOUTH, totalContributionField, 2, SpringLayout.SOUTH, totalContributionLabel);
+		totalContributionField.setEditable(false);
+		sl_salary.putConstraint(SpringLayout.WEST, totalContributionField, 6, SpringLayout.EAST, totalContributionLabel);
+		sl_salary.putConstraint(SpringLayout.EAST, totalContributionField, -10, SpringLayout.EAST, salary);
+		salary.add(totalContributionField);
+		totalContributionField.setColumns(10);
+		
+		netLabel = new JLabel("Net Basic Pay:");
+		sl_salary.putConstraint(SpringLayout.NORTH, netLabel, 6, SpringLayout.SOUTH, totalContributionLabel);
+		sl_salary.putConstraint(SpringLayout.WEST, netLabel, 0, SpringLayout.WEST, grossLabel);
+		salary.add(netLabel);
+		
+		netField = new JTextField();
+		netField.setMargin(new Insets(2, 5, 2, 5));
+		netField.setHorizontalAlignment(SwingConstants.CENTER);
+		netField.setEditable(false);
+		sl_salary.putConstraint(SpringLayout.NORTH, netField, -2, SpringLayout.NORTH, netLabel);
+		sl_salary.putConstraint(SpringLayout.WEST, netField, 0, SpringLayout.WEST, totalContributionField);
+		sl_salary.putConstraint(SpringLayout.SOUTH, netField, 2, SpringLayout.SOUTH, netLabel);
+		sl_salary.putConstraint(SpringLayout.EAST, netField, -10, SpringLayout.EAST, salary);
+		salary.add(netField);
+		netField.setColumns(10);
 		
 		
 		
@@ -326,6 +490,41 @@ public class EmployeeNew extends JDialog {
 								db.fetchLastEmployee(), 
 								5 - positionComboBox.getSelectedIndex()))
 				);
+				grossField.setText(
+					String.format("Php %,.2f", defaultBasic[positionComboBox.getSelectedIndex()])
+				);
+				basicMonthlySpinner.setValue(defaultBasic[positionComboBox.getSelectedIndex()]);
+				basicDailySpinner.setValue(((double) basicMonthlySpinner.getValue()) / 30);
+				updateSalaryFields();
+			}
+		});
+		monthlyButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				basicMonthlySpinner.setEnabled(true);
+				basicDailySpinner.setEnabled(false);
+			}
+		});
+		dailyButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				basicDailySpinner.setEnabled(true);
+				basicMonthlySpinner.setEnabled(false);
+			}
+		});
+		basicMonthlySpinner.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				grossField.setText(
+					String.format("Php %,.2f", (double) basicMonthlySpinner.getValue())
+				);
+				updateSalaryFields();
+			}
+		});
+		basicDailySpinner.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				basicMonthlySpinner.setValue(((double) basicDailySpinner.getValue()) * 30);
+				grossField.setText(
+					String.format("Php %,.2f", ((double) basicDailySpinner.getValue()) * 30)
+				);
+				updateSalaryFields();
 			}
 		});
 		themeSwitcher.addActionListener(new ActionListener() {
@@ -340,6 +539,7 @@ public class EmployeeNew extends JDialog {
 			}
 		});
 		
+		updateSalaryFields();
 		adjustTheme(false);
 //		setResizable(false);
 		setModal(true);
@@ -372,7 +572,7 @@ public class EmployeeNew extends JDialog {
 		themeSwitcher.setText((gl.isDark) ? "Switch to Light Theme" : "Switch to Dark Theme");
 		personal.setBorder(new TitledBorder(null, "Personal Information", TitledBorder.LEADING, 
 			TitledBorder.TOP, null, (gl.isDark) ? gl.DFONT : gl.LFONT));
-		salary.setBorder(new TitledBorder(null, "Salary Explanation", TitledBorder.LEADING, 
+		salary.setBorder(new TitledBorder(null, "Salary", TitledBorder.LEADING, 
 			TitledBorder.TOP, null, (gl.isDark) ? gl.DFONT : gl.LFONT));
 		
 		if (gl.isDark) {
@@ -380,5 +580,23 @@ public class EmployeeNew extends JDialog {
 		} else {
 			
 		}
+	}
+	
+	private void updateSalaryFields() {
+		double grossPay = (double) basicMonthlySpinner.getValue();
+		sssField.setText(
+			String.format("Php %,.2f", ((double) basicMonthlySpinner.getValue()) * db.SSS_RATE)
+			);
+		philhealthField.setText(
+			String.format("Php %,.2f", ((double) basicMonthlySpinner.getValue()) * db.PHILHEALTH_RATE)
+		);
+		totalContributionField.setText(
+			String.format("Php %,.2f", grossPay * 
+				(db.SSS_RATE + db.PHILHEALTH_RATE) + db.PAGIBIG_RATE)
+		);
+		netField.setText(
+			String.format("Php %,.2f", grossPay - 
+				(grossPay * (db.SSS_RATE + db.PHILHEALTH_RATE) + db.PAGIBIG_RATE))
+		);
 	}
 }

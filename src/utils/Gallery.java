@@ -16,6 +16,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -135,6 +136,14 @@ public class Gallery {
 				} else {
 					component.setBackground(LFRAME_BACKGROUND);
 				}
+			}
+		} else if (component instanceof JRadioButton) {
+			if (isDark) {
+				component.setForeground(DFONT);
+				component.setBackground(DPANEL_BACKGROUND);
+			} else {
+				component.setForeground(LFONT);
+				component.setBackground(LPANEL_BACKGROUND);
 			}
 		} else if (component instanceof JTextField || component instanceof JTextArea ||
 				component instanceof JPasswordField || component instanceof JButton ||

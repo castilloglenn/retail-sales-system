@@ -1,3 +1,4 @@
+package main;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -87,11 +88,13 @@ public class SetupSystem extends JFrame {
 		addPopup(this, popupMenu);
 		
 		contentPane = new JPanel();
+		contentPane.setName("Frame");
 		setContentPane(contentPane);
 		sl_contentPane = new SpringLayout();
 		contentPane.setLayout(sl_contentPane);
 		
 		container = new JPanel();
+		container.setName("Frame");
 		sl_contentPane.putConstraint(SpringLayout.NORTH, container, 10, SpringLayout.NORTH, contentPane);
 		sl_contentPane.putConstraint(SpringLayout.WEST, container, 10, SpringLayout.WEST, contentPane);
 		sl_contentPane.putConstraint(SpringLayout.SOUTH, container, -10, SpringLayout.SOUTH, contentPane);
@@ -304,6 +307,7 @@ public class SetupSystem extends JFrame {
 		submit.add(submitButton);
 		
 		container2 = new JPanel();
+		container2.setName("Frame");
 		container.add(container2);
 		container2.setLayout(new GridLayout(2, 0, 0, 10));
 
@@ -542,24 +546,13 @@ public class SetupSystem extends JFrame {
 		if (change) gl.isDark = (gl.isDark) ? false : true;
 		
 		gl.designOptionPanes();
-		gl.adjustTheme(new JComponent[] {form, formTitle, database, databaseTitle, manual, databaseNotice, 
-				formNotice, form2, idLabel, positionLabel, fnameLabel, mnameLabel, lnameLabel, addressLabel, 
-				payLabel, terms, termsNotice, database2, dbUserLabel, dbPassLabel, submit, submitCheckBox, 
-				defaultCheckBox, passLabel, verifyLabel, idField, positionField, fnameField, mnameField,
-				lnameField, addressField, passField, verifyField, de.getTextField(), dbUserField, dbPassField,
-				submitButton, termsField});
+		gl.getAllComponentsChangeTheme(this, 9);
 		themeSwitcher.setText((gl.isDark) ? "Switch to Light Theme" : "Switch to Dark Theme");
 		
 		if (gl.isDark) {
-			contentPane.setBackground(gl.DFRAME_BACKGROUND);
-			container.setBackground(gl.DFRAME_BACKGROUND);
-			container2.setBackground(gl.DFRAME_BACKGROUND);
 			form2.setBorder(new TitledBorder(null, "Personal Information", TitledBorder.LEADING, TitledBorder.TOP, null, gl.DFONT));
 			database2.setBorder(new TitledBorder(null, "Database Login Information", TitledBorder.LEADING, TitledBorder.TOP, null, gl.DFONT));
 		} else {
-			contentPane.setBackground(gl.LFRAME_BACKGROUND);
-			container.setBackground(gl.LFRAME_BACKGROUND);
-			container2.setBackground(gl.LFRAME_BACKGROUND);
 			form2.setBorder(new TitledBorder(null, "Personal Information", TitledBorder.LEADING, TitledBorder.TOP, null, gl.LFONT));
 			database2.setBorder(new TitledBorder(null, "Database Login Information", TitledBorder.LEADING, TitledBorder.TOP, null, gl.LFONT));
 		}

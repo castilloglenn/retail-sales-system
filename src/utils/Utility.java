@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.table.DefaultTableModel;
 import javax.xml.parsers.*;
 import org.xml.sax.*;
 import org.w3c.dom.*;
@@ -165,6 +166,20 @@ public class Utility {
 			}
 		}
 		return null;
+	}
+	
+	@SuppressWarnings("serial")
+	public DefaultTableModel generateTable(Object[][] rows, Object[] column) {
+		return new DefaultTableModel(
+			rows, column
+			) {
+				boolean[] columnEditables = new boolean[] {
+					false, false, false, false, false, false, false
+				};
+				public boolean isCellEditable(int row, int column) {
+					return columnEditables[column];
+				}
+			};
 	}
 
 	/**

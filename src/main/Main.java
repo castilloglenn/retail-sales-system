@@ -1,3 +1,5 @@
+package main;
+
 import utils.Database;
 import utils.Gallery;
 import utils.Logger;
@@ -14,10 +16,11 @@ import java.awt.Font;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
+import employee.EmployeeAdmin;
+
 import javax.swing.JPasswordField;
 import java.awt.Cursor;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -203,6 +206,7 @@ public class Main {
 		submitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (checkFields()) {
+					// For attendance log, do the attendace checking algorithm.
 					// Open Portal Here
 				}
 			}
@@ -284,9 +288,7 @@ public class Main {
 		if (change) gl.isDark = (gl.isDark) ? false : true;
 		
 		gl.designOptionPanes();
-		gl.adjustTheme(new JComponent[] {title, loginPanel, loginHeader, idLabel, passLabel, 
-			forgotLabel, titlePanel, idField, idVisibility, passField, passVisibility,
-			submitButton, theme});
+		gl.getAllComponentsChangeTheme(mainFrame, 5);
 		
 		if (idVisibility.isSelected()) {
 			idVisibility.setIcon((gl.isDark) ? gl.darkHide : gl.lightHide);
@@ -298,11 +300,9 @@ public class Main {
 		if (gl.isDark) {
 			theme.setIcon(gl.darkSymbol);
 			logo.setIcon(gl.darkLogo);
-			mainFrame.getContentPane().setBackground(gl.DFRAME_BACKGROUND);
 		} else {
 			theme.setIcon(gl.lightSymbol);
 			logo.setIcon(gl.lightLogo);
-			mainFrame.getContentPane().setBackground(gl.LFRAME_BACKGROUND);
 		}
 	}
 	
@@ -331,7 +331,7 @@ public class Main {
 			return false;
 		} else {
 			if (db.checkLogin(id, pass)) {
-				System.out.println("CORRECT!");
+				return true;
 			} else {
 				JOptionPane.showMessageDialog(
 					null, "Incorrect ID or Password", "Invalid input | " + Main.SYSTEM_NAME, 

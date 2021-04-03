@@ -1,5 +1,7 @@
 package utils;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -9,14 +11,18 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.UIManager;
+import javax.swing.table.JTableHeader;
 
 
 /**
@@ -33,6 +39,7 @@ public class Gallery {
 	public final Color DPANEL_BACKGROUND = new Color(22, 27, 51);
 	public final Color DCOMP_BACKGROUND = new Color(0, 0, 0);
 	public final Color DCOMP_FOREGROUND = new Color(255, 255, 255);
+	public final Color DHEADER_TABLE_BACKGROUND = new Color(255, 255, 255);
 
 	// =================== LIGHT THEME COLORS =======================
 	public final Color LFONT = new Color(0, 0, 0);
@@ -41,7 +48,7 @@ public class Gallery {
 	public final Color LPANEL_BACKGROUND = new Color(255, 255, 255);
 	public final Color LCOMP_BACKGROUND = new Color(255, 255, 255);
 	public final Color LCOMP_FOREGROUND = new Color(0, 0, 0);
-	
+	public final Color LHEADER_TABLE_BACKGROUND = new Color(0, 0, 0);
 	
 	public Image loginIcon, businessLogo;
 	public ImageIcon darkLogo, lightLogo; 
@@ -63,7 +70,6 @@ public class Gallery {
 	    darkHide = resizeImage("images/dark/hide.png", 24, 24);
 	    darkSymbol = resizeImage("images/dark.png", 24, 24);
 	    darkEmployee = resizeImage("images/dark/employee.png", 64, 64);
-	    
 	    
 	    lightLogo = resizeImage("images/light/logo.png", 64, 64);
 	    lightShow = resizeImage("images/light/show.png", 24, 24);
@@ -95,46 +101,85 @@ public class Gallery {
 		}
 	}
 	
-	public void adjustTheme(JComponent[] components) {
-		for (JComponent c : components) {
-			if (c instanceof JPanel) {
-				if (isDark) {
-					c.setBackground(DPANEL_BACKGROUND);
+	public void getAllComponentsChangeTheme(Container container, int depth) {
+		if (depth != 0) {
+			for (Component component : container.getComponents()) {
+				if (component instanceof Container) {
+					adjustTheme(component);
+					getAllComponentsChangeTheme((Container) component, depth - 1);
 				} else {
-					c.setBackground(LPANEL_BACKGROUND);
+					adjustTheme(component);
 				}
-			} else if (c instanceof JScrollPane) {
+			}
+		}
+	}
+	
+	public void adjustTheme(Component component) {
+		if (component instanceof JFrame) {
+			if (isDark) {
+				component.setBackground(DFRAME_BACKGROUND);
+			} else {
+				component.setBackground(LFRAME_BACKGROUND);
+			}
+		} else if (component instanceof JPanel) {
+			if (component.getName() == null) {
 				if (isDark) {
-					c.setBackground(DPANEL_BACKGROUND);
+					component.setBackground(DPANEL_BACKGROUND);
 				} else {
-					c.setBackground(LPANEL_BACKGROUND);
-				}
-			} else if (c instanceof JCheckBox) {
-				if (isDark) {
-					c.setBackground(DPANEL_BACKGROUND);
-					c.setForeground(DFONT);
-				} else {
-					c.setBackground(LPANEL_BACKGROUND);
-					c.setForeground(LFONT);
-				}
-			} else if (c instanceof JTextField ||
-					   c instanceof JTextArea ||
-					   c instanceof JPasswordField ||
-					   c instanceof JButton ||
-					   c instanceof JToggleButton) {
-				if (isDark) {
-					c.setBackground(DCOMP_BACKGROUND);
-					c.setForeground(DCOMP_FOREGROUND);
-				} else {
-					c.setBackground(LCOMP_BACKGROUND);
-					c.setForeground(LCOMP_FOREGROUND);
+					component.setBackground(LPANEL_BACKGROUND);
 				}
 			} else {
 				if (isDark) {
-					c.setForeground(DFONT);
+					component.setBackground(DFRAME_BACKGROUND);
 				} else {
-					c.setForeground(LFONT);
+					component.setBackground(LFRAME_BACKGROUND);
 				}
+			}
+		} else if (component instanceof JTextField || component instanceof JTextArea ||
+				component instanceof JPasswordField || component instanceof JButton ||
+				component instanceof JToggleButton) {
+			if (isDark) {
+				component.setBackground(DCOMP_BACKGROUND);
+				component.setForeground(DCOMP_FOREGROUND);
+			} else {
+				component.setBackground(LCOMP_BACKGROUND);
+				component.setForeground(LCOMP_FOREGROUND);
+			}
+		} else if (component instanceof JScrollPane) {
+			JScrollBar sb = ((JScrollPane) component).getVerticalScrollBar();
+			if (isDark) {
+				((JScrollPane) component).getViewport().setBackground(DPANEL_BACKGROUND);
+				sb.setBackground(DCOMP_BACKGROUND);
+			} else {
+				((JScrollPane) component).getViewport().setBackground(LPANEL_BACKGROUND);
+				sb.setBackground(LCOMP_BACKGROUND);
+			}
+		} else if (component instanceof JTable) {
+			JTable table = ((JTable) component);
+			JTableHeader tableheader = table.getTableHeader();
+			if (isDark) {
+				tableheader.setBackground(DCOMP_BACKGROUND);
+				table.setBackground(DPANEL_BACKGROUND);
+				table.setForeground(DFONT);
+			} else {
+				tableheader.setBackground(LCOMP_BACKGROUND);
+				table.setBackground(LPANEL_BACKGROUND);
+				table.setForeground(LFONT);
+			}
+		} else if (component instanceof JCheckBox ||
+				component instanceof JComboBox) {
+			if (isDark) {
+				component.setBackground(DPANEL_BACKGROUND);
+				component.setForeground(DFONT);
+			} else {
+				component.setBackground(LPANEL_BACKGROUND);
+				component.setForeground(LFONT);
+			}
+		} else {
+			if (isDark) {
+				component.setForeground(DFONT);
+			} else {
+				component.setForeground(LFONT);
 			}
 		}
 	}

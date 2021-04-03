@@ -253,6 +253,56 @@ public class Database {
 		return -1;
 	}
 	
+	public Object[][] fetchEmployees() {
+		try {
+			int size = fetchEmployeeCount();
+			if (size != 0) {
+				Object[][] data = new Object[size][10];
+				ResultSet fetchData = stmt.executeQuery(
+					"SELECT employee_id, position, fname, mname, lname, address, "
+					+ "basic, incentives, contributions, penalty FROM employee;"
+				);
+				
+				int index = 0;
+				while (fetchData.next()) {
+					Object[] row = new Object[10];
+					
+					row[0] = fetchData.getLong(1);
+					row[1] = ut.decodeData(fetchData.getString(2));
+					row[2] = ut.decodeData(fetchData.getString(3));
+					row[3] = ut.decodeData(fetchData.getString(4));
+					row[4] = ut.decodeData(fetchData.getString(5));
+					row[5] = ut.decodeData(fetchData.getString(6));
+					row[6] = fetchData.getDouble(7);
+					row[7] = fetchData.getDouble(8);
+					row[8] = fetchData.getDouble(9);
+					row[9] = fetchData.getDouble(10);
+					
+					data[index] = row;
+					index++;
+				}
+				
+				return data;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return new Object[][] {{}};
+	}
+	
+	public int fetchEmployeeCount() {
+		try {
+			ResultSet fetchCount = stmt.executeQuery(
+				"SELECT COUNT(employee_id) FROM employee;"
+			);
+			fetchCount.next();
+			return fetchCount.getInt(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
 	public long fetchLastIDByTable(String table, String idColumn) {
 		try {
 			ResultSet pid = stmt.executeQuery(

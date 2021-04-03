@@ -418,6 +418,11 @@ public class EmployeeAdmin extends JFrame {
 				new EmployeeNew(gl, ut, db);
 			}
 		});
+		manageUpdateButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new EmployeeUpdate(gl, ut, db);
+			}
+		});
 		addWindowStateListener(new WindowStateListener() {
 			public void windowStateChanged(WindowEvent e) {
 				if (e.getNewState() == 0) {

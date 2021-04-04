@@ -53,11 +53,11 @@ public class Database {
 	private void setupDatabaseLogin() {
 		File f = new File("./config/setup.properties");
 		if(f.isFile() && !f.isDirectory()) { 
-		    String password = ut.decodeData(ut.getDatabaseProperty(ut.encodeData("password")));
-		    db_url = ut.decodeData(ut.getDatabaseProperty(ut.encodeData("url")));
-		    db_name = ut.decodeData(ut.getDatabaseProperty(ut.encodeData("database")));
-		    db_user = ut.decodeData(ut.getDatabaseProperty(ut.encodeData("username")));
-		    db_pass = (password.equals("emptypassword")) ? "" : password;
+		    String password = ut.getDatabaseProperty("password");
+		    db_url = ut.getDatabaseProperty("url");
+		    db_name = ut.getDatabaseProperty("database");
+		    db_user = ut.getDatabaseProperty("username");
+		    db_pass = password;
 		} else {
 			db_url = ut.getConfig("db_url");
 			db_name = ut.getConfig("db_name");
@@ -285,7 +285,7 @@ public class Database {
 				+ "FROM employee "
 				+ "WHERE position=?;"
 			);
-			ps.setString(1, ut.encodeData("MANAGER"));
+			ps.setString(1, "MANAGER");
 			ResultSet count = ps.executeQuery();
 			if (count.next()) return count.getInt(1);
 		} catch (SQLException e) {
@@ -294,31 +294,30 @@ public class Database {
 		return -1;
 	}
 	
-	public Object[][] fetchEmployees() {
+	public Object[][] fetchDataQuery(String table, String column, String query) {
 		try {
-			int size = fetchEmployeeCount();
+			int size = fetchDataQueryCount(table, column, query);
 			if (size != 0) {
-				Object[][] data = new Object[size][10];
+				Object[][] data = new Object[size][11];
 				ResultSet fetchData = stmt.executeQuery(
-					"SELECT employee_id, position, fname, mname, lname, address, "
-					+ "basic, incentives, contributions, penalty FROM employee "
-					+ "ORDER BY employee_id;"
+					  "SELECT * "
+					+ "FROM " + table + " "
+					+ "WHERE " + column + " "
+					+ "LIKE \"%" + query + "%\" "
+					+ "ORDER BY " + column + " ASC;"
 				);
 				
 				int index = 0;
 				while (fetchData.next()) {
-					Object[] row = new Object[10];
+					Object[] row = new Object[11];
 					
-					row[0] = fetchData.getLong(1);
-					row[1] = ut.decodeData(fetchData.getString(2));
-					row[2] = ut.decodeData(fetchData.getString(3));
-					row[3] = ut.decodeData(fetchData.getString(4));
-					row[4] = ut.decodeData(fetchData.getString(5));
-					row[5] = ut.decodeData(fetchData.getString(6));
-					row[6] = fetchData.getDouble(7);
-					row[7] = fetchData.getDouble(8);
-					row[8] = fetchData.getDouble(9);
-					row[9] = fetchData.getDouble(10);
+					for (int index2 = 0; index2 < row.length; index2++) {
+						try {
+							row[index2] = fetchData.getObject(index2 + 1);
+						} catch (SQLException e) {
+							break;
+						}
+					}
 					
 					data[index] = row;
 					index++;
@@ -329,13 +328,16 @@ public class Database {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return new Object[][] {{}};
+		return null;
 	}
 	
-	public int fetchEmployeeCount() {
+	public int fetchDataQueryCount(String table, String column, String query) {
 		try {
 			ResultSet fetchCount = stmt.executeQuery(
-				"SELECT COUNT(employee_id) FROM employee;"
+				  "SELECT COUNT(" + column + ") "
+				+ "FROM " + table + " "
+				+ "WHERE " + column + " "
+				+ "LIKE \"%" + query + "%\";"
 			);
 			fetchCount.next();
 			return fetchCount.getInt(1);
@@ -363,11 +365,11 @@ public class Database {
 			details.next();
 			if (details.getLong(1) != 0) {
 				Object[] data = new Object[7];
-				data[0] = ut.decodeData(details.getString(2));
-				data[1] = ut.decodeData(details.getString(3));
-				data[2] = ut.decodeData(details.getString(4));
-				data[3] = ut.decodeData(details.getString(5));
-				data[4] = ut.decodeData(details.getString(6));
+				data[0] = details.getString(2);
+				data[1] = details.getString(3);
+				data[2] = details.getString(4);
+				data[3] = details.getString(5);
+				data[4] = details.getString(6);
 				data[5] = details.getDouble(7);
 				data[6] = details.getString(11);
 				return data;

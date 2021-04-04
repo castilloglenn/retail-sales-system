@@ -46,8 +46,8 @@ public class Logger {
 				db.fetchLastLog(), type, messagePart)
 			);
 			ps.setLong(2, employee);
-			ps.setString(3, ut.encodeData(logTypes[type - 1]));
-			ps.setString(4, ut.encodeData(description));
+			ps.setString(3, logTypes[type - 1]);
+			ps.setString(4, description);
 			ps.executeUpdate();
 			System.out.println("SUCCESS!");
 			return true;

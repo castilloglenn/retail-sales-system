@@ -208,6 +208,8 @@ public class Main {
 				if (checkFields()) {
 					// For attendance log, do the attendace checking algorithm.
 					// Open Portal Here
+					mainFrame.setVisible(false);
+					new EmployeeAdmin(gl, ut, db);
 				}
 			}
 		});

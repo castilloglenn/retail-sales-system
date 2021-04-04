@@ -603,11 +603,11 @@ public class SetupSystem extends JFrame {
 		
 		Object[] data = {
 				Long.parseLong(idField.getText()),
-				ut.encodeData(positionField.getText()),
-				ut.encodeData(fnameField.getText().toUpperCase()),
-				(mnameField.getText().isBlank()) ? null : ut.encodeData(mnameField.getText().toUpperCase()),
-				ut.encodeData(lnameField.getText().toUpperCase()),
-				ut.encodeData(addressField.getText().toUpperCase()),
+				positionField.getText(),
+				fnameField.getText().toUpperCase(),
+				(mnameField.getText().isBlank()) ? null : mnameField.getText().toUpperCase(),
+				lnameField.getText().toUpperCase(),
+				addressField.getText().toUpperCase(),
 				Double.parseDouble(paySpinner.getValue().toString()),
 				ut.hashData(new String(passField.getPassword()))
 		};

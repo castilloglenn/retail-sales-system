@@ -861,11 +861,11 @@ public class EmployeeUpdate extends JDialog {
 		
 		Object[] data = {
 				Long.parseLong(idField.getText()),
-				ut.encodeData(positions[positionComboBox.getSelectedIndex()].toUpperCase()),
-				ut.encodeData(fnameField.getText().toUpperCase()),
-				(mnameField.getText().isBlank()) ? null : ut.encodeData(mnameField.getText().toUpperCase()),
-				ut.encodeData(lnameField.getText().toUpperCase()),
-				ut.encodeData(address.toString().toUpperCase()),
+				positions[positionComboBox.getSelectedIndex()].toUpperCase(),
+				fnameField.getText().toUpperCase(),
+				(mnameField.getText().isBlank()) ? null : mnameField.getText().toUpperCase(),
+				lnameField.getText().toUpperCase(),
+				address.toString().toUpperCase(),
 				(double) basicMonthlySpinner.getValue(),
 				(new String(passField.getPassword()).isBlank()) ? null : ut.hashData(new String(passField.getPassword()))
 		};

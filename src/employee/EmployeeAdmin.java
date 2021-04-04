@@ -43,6 +43,10 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import main.Main;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JSeparator;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 
 /**
@@ -59,11 +63,14 @@ public class EmployeeAdmin extends JFrame {
 		manageLabel, scheduleLabel, payrollLabel;
 	private JLabel photo, titleTitle, dashboardTitle, notificationTitle, attendanceTitle,
 		logTitle, scheduleTitle, payrollTitle, manageTitle;
-	private JButton searchButton, manageAddButton, manageUpdateButton, manageDeleteButton;
-	private JTextField searchField;
-	private JComboBox<String> searchCategory;
-	private JMenuItem themeSwitcher;
+	private JButton manageSearchButton, manageAddButton, manageUpdateButton, manageDeleteButton;
+	private JTextField manageSearchField;
+	private JMenuItem themeSwitcher, themeSwitcher_1;
+	private JComboBox<String> manageSearchCategory;
 	private SpringLayout sl_contentPane;
+	private JPopupMenu popupMenu_1;
+	private JSeparator separator;
+	private JTable manageTable;
 	private CardLayout cl;
 	
 	private String[] employeeColumns = {
@@ -88,7 +95,6 @@ public class EmployeeAdmin extends JFrame {
 	private Database db;
 	
 	private long id;
-	private JTable manageTable;
 
 	public EmployeeAdmin(Gallery gl, Utility ut, Database db) {
 		this.gl = gl; this.ut = ut; this.db = db;
@@ -316,45 +322,58 @@ public class EmployeeAdmin extends JFrame {
 		sl_manage.putConstraint(SpringLayout.WEST, manageTitle, 10, SpringLayout.WEST, manage);
 		manage.add(manageTitle);
 		
-		searchCategory = new JComboBox<String>();
-		sl_manage.putConstraint(SpringLayout.NORTH, searchCategory, 10, SpringLayout.SOUTH, manageTitle);
-		searchCategory.setModel(new DefaultComboBoxModel<String>(frontEndColumnNames));
+		manageSearchCategory = new JComboBox<String>();
+		sl_manage.putConstraint(SpringLayout.NORTH, manageSearchCategory, 10, SpringLayout.SOUTH, manageTitle);
+		manageSearchCategory.setModel(new DefaultComboBoxModel<String>(frontEndColumnNames));
 		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
 		listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER);
-		searchCategory.setRenderer(listRenderer);
-		sl_manage.putConstraint(SpringLayout.WEST, searchCategory, 0, SpringLayout.WEST, manageTitle);
-		manage.add(searchCategory);
+		manageSearchCategory.setRenderer(listRenderer);
+		sl_manage.putConstraint(SpringLayout.WEST, manageSearchCategory, 0, SpringLayout.WEST, manageTitle);
+		manage.add(manageSearchCategory);
 		
-		searchField = new JTextField();
-		sl_manage.putConstraint(SpringLayout.NORTH, searchField, 0, SpringLayout.NORTH, searchCategory);
-		sl_manage.putConstraint(SpringLayout.SOUTH, searchField, 0, SpringLayout.SOUTH, searchCategory);
-		searchField.setMargin(new Insets(2, 10, 2, 10));
-		sl_manage.putConstraint(SpringLayout.WEST, searchField, 6, SpringLayout.EAST, searchCategory);
-		manage.add(searchField);
-		searchField.setColumns(10);
+		manageSearchField = new JTextField();
+		sl_manage.putConstraint(SpringLayout.NORTH, manageSearchField, 0, SpringLayout.NORTH, manageSearchCategory);
+		sl_manage.putConstraint(SpringLayout.SOUTH, manageSearchField, 0, SpringLayout.SOUTH, manageSearchCategory);
+		manageSearchField.setMargin(new Insets(2, 10, 2, 10));
+		sl_manage.putConstraint(SpringLayout.WEST, manageSearchField, 6, SpringLayout.EAST, manageSearchCategory);
+		manage.add(manageSearchField);
+		manageSearchField.setColumns(10);
 		
-		searchButton = new JButton("SEARCH");
-		sl_manage.putConstraint(SpringLayout.EAST, searchField, -6, SpringLayout.WEST, searchButton);
-		searchButton.setMargin(new Insets(2, 2, 2, 2));
-		sl_manage.putConstraint(SpringLayout.NORTH, searchButton, 0, SpringLayout.NORTH, searchField);
-		sl_manage.putConstraint(SpringLayout.WEST, searchButton, -100, SpringLayout.EAST, manage);
-		sl_manage.putConstraint(SpringLayout.SOUTH, searchButton, 0, SpringLayout.SOUTH, searchField);
-		sl_manage.putConstraint(SpringLayout.EAST, searchButton, -10, SpringLayout.EAST, manage);
-		manage.add(searchButton);
+		manageSearchButton = new JButton("SEARCH");
+		sl_manage.putConstraint(SpringLayout.EAST, manageSearchField, -6, SpringLayout.WEST, manageSearchButton);
+		manageSearchButton.setMargin(new Insets(2, 2, 2, 2));
+		sl_manage.putConstraint(SpringLayout.NORTH, manageSearchButton, 0, SpringLayout.NORTH, manageSearchField);
+		sl_manage.putConstraint(SpringLayout.WEST, manageSearchButton, -100, SpringLayout.EAST, manage);
+		sl_manage.putConstraint(SpringLayout.SOUTH, manageSearchButton, 0, SpringLayout.SOUTH, manageSearchField);
+		sl_manage.putConstraint(SpringLayout.EAST, manageSearchButton, -10, SpringLayout.EAST, manage);
+		manage.add(manageSearchButton);
 		
 		JScrollPane manageScrollPane = new JScrollPane();
-		sl_manage.putConstraint(SpringLayout.NORTH, manageScrollPane, 10, SpringLayout.SOUTH, searchCategory);
+		sl_manage.putConstraint(SpringLayout.NORTH, manageScrollPane, 10, SpringLayout.SOUTH, manageSearchCategory);
 		sl_manage.putConstraint(SpringLayout.WEST, manageScrollPane, 10, SpringLayout.WEST, manage);
 		sl_manage.putConstraint(SpringLayout.EAST, manageScrollPane, -10, SpringLayout.EAST, manage);
 		manage.add(manageScrollPane);
+		addPopup(manageScrollPane, popupMenu);
 		
 		JPanel manageCrud = new JPanel();
 		sl_manage.putConstraint(SpringLayout.NORTH, manageCrud, -35, SpringLayout.SOUTH, manage);
 		sl_manage.putConstraint(SpringLayout.SOUTH, manageScrollPane, -10, SpringLayout.NORTH, manageCrud);
 		
-		manageTable = new JTable();
+		manageTable = new JTable(1, 10);
 		manageTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		manageScrollPane.setViewportView(manageTable);
+		
+		popupMenu_1 = new JPopupMenu();
+		addPopup(manageTable, popupMenu_1);
+		
+		themeSwitcher_1 = new JMenuItem("Switch to Dark Theme");
+		popupMenu_1.add(themeSwitcher_1);
+		
+		separator = new JSeparator();
+		popupMenu_1.add(separator);
+		
+		JMenuItem copyMenu = new JMenuItem("Copy");
+		popupMenu_1.add(copyMenu);
 		sl_manage.putConstraint(SpringLayout.WEST, manageCrud, 10, SpringLayout.WEST, manage);
 		sl_manage.putConstraint(SpringLayout.SOUTH, manageCrud, -10, SpringLayout.SOUTH, manage);
 		sl_manage.putConstraint(SpringLayout.EAST, manageCrud, -10, SpringLayout.EAST, manage);
@@ -413,6 +432,28 @@ public class EmployeeAdmin extends JFrame {
 				cl.show(display, "manage");
 			}
 		});
+		manageSearchField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (e.getKeyCode() == 10) {
+					manageSearchButton.doClick();
+				}
+			}
+		});
+		manageSearchButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				manageTable.setModel(
+					queryDatabase(
+						searchableColumns[manageSearchCategory.getSelectedIndex()], 
+						manageSearchField.getText())
+				);
+				DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+				centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+				for(int col=0; col < 10; col++){
+					manageTable.getColumnModel().getColumn(col).setCellRenderer(centerRenderer);
+			    };
+			}
+		});
 		manageAddButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new EmployeeNew(gl, ut, db);
@@ -421,6 +462,21 @@ public class EmployeeAdmin extends JFrame {
 		manageUpdateButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new EmployeeUpdate(gl, ut, db);
+			}
+		});
+		manageDeleteButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new EmployeeDelete(gl, ut, db);
+			}
+		});
+		copyMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ut.copyToClipboard(
+					manageTable.getValueAt(
+						manageTable.getSelectedRow(), 
+						manageTable.getSelectedColumn()
+					).toString()
+				);
 			}
 		});
 		addWindowStateListener(new WindowStateListener() {
@@ -438,6 +494,11 @@ public class EmployeeAdmin extends JFrame {
 				adjustFonts();
 			}
 		});
+		themeSwitcher_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				adjustTheme(true);
+			}
+		});
 		themeSwitcher.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				adjustTheme(true);
@@ -446,7 +507,7 @@ public class EmployeeAdmin extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowActivated(WindowEvent e) {
-				manageTable.setModel(ut.generateTable(db.fetchEmployees(), employeeColumns));
+				manageTable.setModel(queryDatabase("employee_id", ""));
 				DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 				centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 				for(int col=0; col < 10; col++){
@@ -478,6 +539,30 @@ public class EmployeeAdmin extends JFrame {
 		});
 	}
 	
+	private DefaultTableModel queryDatabase(String column, String query) {
+		Object[][] rows = db.fetchDataQuery("employee", column, query);
+		if (rows == null) return ut.generateTable(new Object[][] {{}}, employeeColumns);
+		
+		Object[][] data = new Object[rows.length][10];
+		int index = 0;
+		for (Object[] columns : rows) {
+			Object[] pickedDatas = new Object[10];
+			pickedDatas[0] = (long) columns[0]; 
+			pickedDatas[1] = columns[1].toString(); 
+			pickedDatas[2] = columns[2].toString();
+			pickedDatas[3] = (columns[3] == null) ? "" : columns[3].toString();
+			pickedDatas[4] = columns[4].toString();
+			pickedDatas[5] = columns[5].toString();
+			pickedDatas[6] = (double) columns[6];
+			pickedDatas[7] = (double) columns[7];
+			pickedDatas[8] = (double) columns[8];
+			pickedDatas[9] = (double) columns[9];
+			data[index] = pickedDatas;
+			index++;
+		}
+		return ut.generateTable(data, employeeColumns);
+	}
+	
 	private void adjustFonts() {
 		int minTitle = 604;
 		int minDisplay = 469;
@@ -490,9 +575,9 @@ public class EmployeeAdmin extends JFrame {
 		ut.adjustFont(scheduleTitle, schedule, minDisplay, 16);
 		ut.adjustFont(payrollTitle, payroll, minDisplay, 16);
 		ut.adjustFont(manageTitle, manage, minDisplay, 16);
-		ut.adjustFont(searchCategory, manage, minDisplay, 11);
-		ut.adjustFont(searchField, manage, minDisplay, 11);
-		ut.adjustFont(searchButton, manage, minDisplay, 11);
+		ut.adjustFont(manageSearchCategory, manage, minDisplay, 11);
+		ut.adjustFont(manageSearchField, manage, minDisplay, 11);
+		ut.adjustFont(manageSearchButton, manage, minDisplay, 11);
 		ut.adjustFont(manageAddButton, manage, minDisplay, 11);
 		ut.adjustFont(manageUpdateButton, manage, minDisplay, 11);
 		ut.adjustFont(manageDeleteButton, manage, minDisplay, 11);

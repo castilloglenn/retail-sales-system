@@ -66,10 +66,10 @@ public class Utility {
 	
 	public boolean setDatabaseProperties(String url, String database, String user, String pass) {
 		Properties p = new Properties();
-        p.put(encodeData("url"), encodeData(url));
-        p.put(encodeData("database"), encodeData(database));
-        p.put(encodeData("username"), encodeData(user));
-        p.put(encodeData("password"), encodeData(pass));
+        p.put("url", url);
+        p.put("database", database);
+        p.put("username", user);
+        p.put("password", pass);
         try {
             FileOutputStream fos = new FileOutputStream("./config/setup.properties");
             p.store(fos, "Important system property, do not change.");
@@ -91,18 +91,6 @@ public class Utility {
         }
 		return null;
 	}
-	
-    public String encodeData(String data) {
-    	String value = (data.equals("")) ? "emptypassword" : data;
-        Base64.Encoder enc = Base64.getEncoder();
-        return enc.encodeToString(value.getBytes());
-    }
-
-    public String decodeData(String data) {
-    	if (data == null) return "";
-        Base64.Decoder dec = Base64.getDecoder();
-        return new String(dec.decode(data));
-    }
 
     public String hashData(String data) {
         try {

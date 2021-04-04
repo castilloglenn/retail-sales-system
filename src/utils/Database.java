@@ -217,6 +217,47 @@ public class Database {
 		return false;
 	}
 	
+	public boolean updateExistingEmployee(Object[] data) {
+		// data format: id, position, fname, mname, lname, adress, basic, password
+		// data index:   0,        1,     2,     3,     4,      5,     6,		 7
+		if (data.length != 8) return false;
+		
+		try {
+			ps = con.prepareStatement(
+				  "UPDATE employee "
+				+ "SET position=?, "
+				+ "fname=?, "
+				+ "mname=?, "
+				+ "lname=?, "
+				+ "address=?, "
+				+ "basic=?, "
+				+ "contributions=? "
+				+ ((data[7] == null) ? "" : ", password=? ")
+				+ "WHERE employee_id=? ;"
+			);
+			ps.setString(1, (String) data[1]);
+			ps.setString(2, (String) data[2]);
+			ps.setString(3, (String) data[3]);
+			ps.setString(4, (String) data[4]);
+			ps.setString(5, (String) data[5]);
+			ps.setDouble(6, (double) data[6]);
+			ps.setDouble(7, ((double) data[6] *
+				(SSS_RATE + PHILHEALTH_RATE)) 
+				+ PAGIBIG_RATE);
+			if (data[7] == null) {
+				ps.setLong(8, (long) data[0]);
+			} else {
+				ps.setString(8, (String) data[7]);
+				ps.setLong(9, (long) data[0]);
+			}
+			ps.executeUpdate();
+			return true;
+		} catch (SQLException e ) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	public boolean checkLogin(String user, String pass) {
 		try {
 			ps = con.prepareStatement(

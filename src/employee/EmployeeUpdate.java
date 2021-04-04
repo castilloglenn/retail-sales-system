@@ -487,11 +487,62 @@ public class EmployeeUpdate extends JDialog {
 		positionComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				grossField.setText(
-					String.format("Php %,.2f", defaultBasic[positionComboBox.getSelectedIndex()])
+					String.format(
+						"Php %,.2f", defaultBasic[positionComboBox.getSelectedIndex()]
+					)
 				);
 				basicMonthlySpinner.setValue(defaultBasic[positionComboBox.getSelectedIndex()]);
 				basicDailySpinner.setValue(((double) basicMonthlySpinner.getValue()) / 30);
 				updateSalaryFields();
+				checkChanged();
+			}
+		});
+		fnameField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				checkChanged();
+			}
+		});
+		mnameField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				checkChanged();
+			}
+		});
+		lnameField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				checkChanged();
+			}
+		});
+		streetField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				checkChanged();
+			}
+		});
+		barangayField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				checkChanged();
+			}
+		});
+		cityField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				checkChanged();
+			}
+		});
+		provinceField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				checkChanged();
+			}
+		});
+		passField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				checkChanged();
 			}
 		});
 		monthlyButton.addActionListener(new ActionListener() {
@@ -512,6 +563,7 @@ public class EmployeeUpdate extends JDialog {
 					String.format("Php %,.2f", (double) basicMonthlySpinner.getValue())
 				);
 				updateSalaryFields();
+				checkChanged();
 			}
 		});
 		basicDailySpinner.addChangeListener(new ChangeListener() {
@@ -521,6 +573,7 @@ public class EmployeeUpdate extends JDialog {
 					String.format("Php %,.2f", ((double) basicDailySpinner.getValue()) * 30)
 				);
 				updateSalaryFields();
+				checkChanged();
 			}
 		});
 		updateButton.addActionListener(new ActionListener() {
@@ -590,10 +643,6 @@ public class EmployeeUpdate extends JDialog {
 		grossField.setText(
 			String.format("Php %,.2f", (double) basicMonthlySpinner.getValue())
 		);
-//		basicMonthlySpinner.setModel(new SpinnerNumberModel(
-//				defaultBasic[positionComboBox.getSelectedIndex()], 5000.0, 99999.0, 1.0));
-//		basicDailySpinner.setModel(new SpinnerNumberModel(
-//				((double) basicMonthlySpinner.getValue()) / 30, 150.0, 99999.0, 1.0));
 		sssField.setText(
 			String.format("Php %,.2f", ((double) basicMonthlySpinner.getValue()) * db.SSS_RATE)
 			);
@@ -636,12 +685,12 @@ public class EmployeeUpdate extends JDialog {
 			cityField.getText().isBlank() ||
 			provinceField.getText().isBlank()) errors[2] = "• One of the address field cannot be empty.\n";
 		
-		if (pass.isBlank()) {
-			errors[3] = "• Password field cannot be empty.\n";
-		} else if (pass.length() < 6 || pass.length() > 15) {
-			errors[3] = "• Password must be 6 to 15 characters in length.\n";
-		} else if (!pass.equals(vpass)) {
-			errors[3] = "• Passwords doesn't match.\n";
+		if (!pass.isBlank()) {
+			if (pass.length() < 6 || pass.length() > 15) {
+				errors[3] = "• New password must be 6 to 15 characters in length.\n";
+			} else if (!pass.equals(vpass)) {
+				errors[3] = "• Passwords doesn't match.\n";
+			}
 		}
 
 		if (!termsCheckBox.isSelected()) errors[4] = "• You must certify about the informations provided.";
@@ -665,11 +714,42 @@ public class EmployeeUpdate extends JDialog {
 		}
 	}
 	
+	private void checkChanged() {
+		if (data != null && address != null) {
+			if ((data[0] != null && !positionComboBox.getSelectedItem().toString().equals(data[0].toString())) ||
+				(data[1] != null && !fnameField.getText().equals(data[1].toString())) ||
+				(data[2] != null && !mnameField.getText().equals(data[2].toString())) ||
+				(data[3] != null && !lnameField.getText().equals(data[3].toString())) ||
+				(address[0] != null && !streetField.getText().equals(address[0])) ||
+				(address[1] != null && !barangayField.getText().equals(address[1])) ||
+				(address[2] != null && !cityField.getText().equals(address[2])) ||
+				(address[3] != null && !provinceField.getText().equals(address[3])) ||
+				(data[5] != null && 
+					Double.parseDouble(
+						basicMonthlySpinner.getValue().toString()) != 
+						Double.parseDouble(data[5].toString())) ||
+				(!new String(passField.getPassword()).isBlank())
+			) {
+				termsCheckBox.setEnabled(true);
+				updateButton.setEnabled(true);
+			} else {
+				termsCheckBox.setEnabled(false);
+				updateButton.setEnabled(false);
+			}
+		}
+	}
+	
 	private void populateFields() {
 		address = collapseAddress(data[4].toString());
 		
 		positionComboBox.setEnabled(true);
 		positionComboBox.setSelectedItem(data[0]);
+		
+		grossField.setText(
+			String.format(
+				"Php %,.2f", Double.parseDouble(data[5].toString())
+			)
+		);
 		basicMonthlySpinner.setEnabled(true);
 		basicMonthlySpinner.setModel(new SpinnerNumberModel(
 			Double.parseDouble(data[5].toString()), MONTHLY_MIN, 99999.0, 1.0)
@@ -704,6 +784,9 @@ public class EmployeeUpdate extends JDialog {
 		pagibigField.setEnabled(true);
 		totalContributionField.setEnabled(true);
 		netField.setEnabled(true);
+
+		termsCheckBox.setEnabled(false);
+		updateButton.setEnabled(false);
 		
 		adjustTheme(false);
 	}
@@ -784,19 +867,14 @@ public class EmployeeUpdate extends JDialog {
 				ut.encodeData(lnameField.getText().toUpperCase()),
 				ut.encodeData(address.toString().toUpperCase()),
 				(double) basicMonthlySpinner.getValue(),
-				ut.hashData(new String(passField.getPassword()))
+				(new String(passField.getPassword()).isBlank()) ? null : ut.hashData(new String(passField.getPassword()))
 		};
 		
-		if (db.insertNewEmployee(data)) {
+		if (db.updateExistingEmployee(data)) {
 			JOptionPane.showMessageDialog(
 					null, 
 					  "<html>"
-					+ "<p style=\"text-align: center;\">New Employee has been registered into the system. <br>"
-					+ "Please remember your login credentials <br>"
-					+ "especially your employee ID:</p>"
-					+ "<h1 style=\"text-align: center;\">" + idField.getText() + "</h1>"
-					+ "<p style=\"text-align: center;\">This will be used to log in your account <br>"
-					+ "and also for the attendance, thank you!</p>"
+					+ "<p style=\"text-align: center;\">Employee has been updated.</p>"
 					+ "</html>", 
 					"Success! | " + Main.SYSTEM_NAME, JOptionPane.INFORMATION_MESSAGE);
 			dispose();

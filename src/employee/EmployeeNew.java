@@ -61,8 +61,8 @@ public class EmployeeNew extends JDialog {
 	JButton submitButton;
 	
 	private String[] positions = {
-		"Manager", "Senior Supervisor", "Junior Supervisor", "Cashier", 
-		"Inventory Clerk", "Store Assistant"
+		"MANAGER", "SENIOR SUPERVISOR", "JUNIOR SUPERVISOR", "CASHIER", 
+		"INVENTORY CLERK", "STORE ASSISTANT"
 	};
 	private double[] defaultBasic = {
 		25000.0, 17500.0, 15000.0, 12500.0, 12500.0, 10000

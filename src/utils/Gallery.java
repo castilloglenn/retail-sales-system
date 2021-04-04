@@ -19,6 +19,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -145,6 +146,16 @@ public class Gallery {
 				component.setForeground(LFONT);
 				component.setBackground(LPANEL_BACKGROUND);
 			}
+		} else if (component instanceof JSpinner) {
+			JTextField tf = (JTextField) ((JSpinner) component).getEditor().getComponent(0);
+			if (isDark) {
+				tf.setForeground(DFONT);
+				tf.setBackground(DPANEL_BACKGROUND);
+			} else {
+				tf.setForeground(LFONT);
+				tf.setBackground(LPANEL_BACKGROUND);
+			}
+			
 		} else if (component instanceof JTextField || component instanceof JTextArea ||
 				component instanceof JPasswordField || component instanceof JButton ||
 				component instanceof JToggleButton) {

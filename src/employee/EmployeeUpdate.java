@@ -39,6 +39,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 @SuppressWarnings("serial")
 public class EmployeeUpdate extends JDialog {
@@ -52,21 +54,25 @@ public class EmployeeUpdate extends JDialog {
 		pagibigField, totalContributionField, netField;
 	private JSeparator separator, separator_1, separator_2, separator_3, separator_4;
 	private JSpinner basicMonthlySpinner, basicDailySpinner;
-	private JPanel container, personal, salary;
+	private JRadioButton dailyButton, monthlyButton;
 	private JPasswordField passField, verifyField;
+	private JPanel container, personal, salary;
 	private JComboBox<String> positionComboBox;
-	private JRadioButton dailyButton;
 	private JMenuItem themeSwitcher;
 	private JCheckBox termsCheckBox;
-	JButton submitButton;
+	private JButton updateButton;
 	
 	private String[] positions = {
-		"Manager", "Senior Supervisor", "Junior Supervisor", "Cashier", 
-		"Inventory Clerk", "Store Assistant"
+		"MANAGER", "SENIOR SUPERVISOR", "JUNIOR SUPERVISOR", "CASHIER", 
+		"INVENTORY CLERK", "STORE ASSISTANT"
 	};
 	private double[] defaultBasic = {
 		25000.0, 17500.0, 15000.0, 12500.0, 12500.0, 10000
 	};
+	private double MONTHLY_MIN = 5000.0;
+	private double DAILY_MIN = 150.0;
+	private String[] address;
+	private Object[] data;
 
 	private Gallery gl;
 	private Utility ut;
@@ -115,7 +121,7 @@ public class EmployeeUpdate extends JDialog {
 		personal.add(idLabel);
 		
 		idField = new JTextField();
-		idField.setFocusable(false);
+		idField.requestFocus();
 		idField.setHorizontalAlignment(SwingConstants.CENTER);
 		idField.setMargin(new Insets(2, 5, 2, 5));
 		sl_personal.putConstraint(SpringLayout.NORTH, idField, -2, SpringLayout.NORTH, idLabel);
@@ -130,7 +136,6 @@ public class EmployeeUpdate extends JDialog {
 		personal.add(positionLabel);
 		
 		positionComboBox = new JComboBox<String>();
-		positionComboBox.setEnabled(false);
 		sl_personal.putConstraint(SpringLayout.NORTH, positionComboBox, -2, SpringLayout.NORTH, positionLabel);
 		sl_personal.putConstraint(SpringLayout.SOUTH, positionComboBox, 2, SpringLayout.SOUTH, positionLabel);
 		sl_personal.putConstraint(SpringLayout.EAST, positionComboBox, -10, SpringLayout.EAST, personal);
@@ -152,7 +157,6 @@ public class EmployeeUpdate extends JDialog {
 		personal.add(fnameLabel);
 		
 		fnameField = new JTextField();
-		fnameField.setEnabled(false);
 		fnameField.setHorizontalAlignment(SwingConstants.CENTER);
 		fnameField.setMargin(new Insets(2, 5, 2, 5));
 		sl_personal.putConstraint(SpringLayout.NORTH, fnameField, -2, SpringLayout.NORTH, fnameLabel);
@@ -167,7 +171,6 @@ public class EmployeeUpdate extends JDialog {
 		personal.add(mnameLabel);
 		
 		mnameField = new JTextField();
-		mnameField.setEnabled(false);
 		sl_personal.putConstraint(SpringLayout.WEST, fnameField, 0, SpringLayout.WEST, mnameField);
 		sl_personal.putConstraint(SpringLayout.WEST, positionComboBox, 0, SpringLayout.WEST, mnameField);
 		sl_personal.putConstraint(SpringLayout.WEST, idField, 0, SpringLayout.WEST, mnameField);
@@ -184,7 +187,6 @@ public class EmployeeUpdate extends JDialog {
 		personal.add(lnameLabel);
 		
 		lnameField = new JTextField();
-		lnameField.setEnabled(false);
 		sl_personal.putConstraint(SpringLayout.WEST, lnameField, 0, SpringLayout.WEST, mnameField);
 		lnameField.setHorizontalAlignment(SwingConstants.CENTER);
 		lnameField.setMargin(new Insets(2, 5, 2, 5));
@@ -211,7 +213,6 @@ public class EmployeeUpdate extends JDialog {
 		personal.add(streetLabel);
 		
 		streetField = new JTextField();
-		streetField.setEnabled(false);
 		streetField.setHorizontalAlignment(SwingConstants.CENTER);
 		sl_personal.putConstraint(SpringLayout.NORTH, streetField, -2, SpringLayout.NORTH, streetLabel);
 		sl_personal.putConstraint(SpringLayout.WEST, streetField, 0, SpringLayout.WEST, mnameField);
@@ -228,7 +229,6 @@ public class EmployeeUpdate extends JDialog {
 		personal.add(barangayLabel);
 		
 		barangayField = new JTextField();
-		barangayField.setEnabled(false);
 		barangayField.setMargin(new Insets(2, 5, 2, 5));
 		barangayField.setHorizontalAlignment(SwingConstants.CENTER);
 		sl_personal.putConstraint(SpringLayout.NORTH, barangayField, -2, SpringLayout.NORTH, barangayLabel);
@@ -244,7 +244,6 @@ public class EmployeeUpdate extends JDialog {
 		personal.add(cityLabel);
 		
 		cityField = new JTextField();
-		cityField.setEnabled(false);
 		sl_personal.putConstraint(SpringLayout.NORTH, cityField, -2, SpringLayout.NORTH, cityLabel);
 		sl_personal.putConstraint(SpringLayout.WEST, cityField, 0, SpringLayout.WEST, mnameField);
 		sl_personal.putConstraint(SpringLayout.SOUTH, cityField, 2, SpringLayout.SOUTH, cityLabel);
@@ -260,7 +259,6 @@ public class EmployeeUpdate extends JDialog {
 		personal.add(provinceLabel);
 		
 		provinceField = new JTextField();
-		provinceField.setEnabled(false);
 		provinceField.setHorizontalAlignment(SwingConstants.CENTER);
 		provinceField.setMargin(new Insets(2, 5, 2, 5));
 		sl_personal.putConstraint(SpringLayout.NORTH, provinceField, -2, SpringLayout.NORTH, provinceLabel);
@@ -276,17 +274,16 @@ public class EmployeeUpdate extends JDialog {
 		sl_personal.putConstraint(SpringLayout.EAST, separator_2, -10, SpringLayout.EAST, personal);
 		personal.add(separator_2);
 		
-		passLabel = new JLabel("Password:");
+		passLabel = new JLabel("Change Password:");
 		sl_personal.putConstraint(SpringLayout.NORTH, passLabel, 10, SpringLayout.SOUTH, separator_2);
 		sl_personal.putConstraint(SpringLayout.WEST, passLabel, 0, SpringLayout.WEST, idLabel);
 		personal.add(passLabel);
 		
 		passField = new JPasswordField();
-		passField.setEnabled(false);
+		sl_personal.putConstraint(SpringLayout.WEST, passField, 6, SpringLayout.EAST, passLabel);
 		passField.setHorizontalAlignment(SwingConstants.CENTER);
 		passField.setMargin(new Insets(2, 5, 2, 5));
 		sl_personal.putConstraint(SpringLayout.NORTH, passField, -2, SpringLayout.NORTH, passLabel);
-		sl_personal.putConstraint(SpringLayout.WEST, passField, 0, SpringLayout.WEST, mnameField);
 		sl_personal.putConstraint(SpringLayout.SOUTH, passField, 2, SpringLayout.SOUTH, passLabel);
 		sl_personal.putConstraint(SpringLayout.EAST, passField, -10, SpringLayout.EAST, personal);
 		personal.add(passField);
@@ -298,12 +295,11 @@ public class EmployeeUpdate extends JDialog {
 		personal.add(verifyLabel);
 		
 		verifyField = new JPasswordField();
-		verifyField.setEnabled(false);
+		sl_personal.putConstraint(SpringLayout.WEST, verifyField, 0, SpringLayout.WEST, passField);
 		sl_personal.putConstraint(SpringLayout.WEST, mnameField, 0, SpringLayout.WEST, verifyField);
 		verifyField.setHorizontalAlignment(SwingConstants.CENTER);
 		verifyField.setMargin(new Insets(2, 5, 2, 5));
 		sl_personal.putConstraint(SpringLayout.NORTH, verifyField, -2, SpringLayout.NORTH, verifyLabel);
-		sl_personal.putConstraint(SpringLayout.WEST, verifyField, 6, SpringLayout.EAST, verifyLabel);
 		sl_personal.putConstraint(SpringLayout.SOUTH, verifyField, 2, SpringLayout.SOUTH, verifyLabel);
 		sl_personal.putConstraint(SpringLayout.EAST, verifyField, -10, SpringLayout.EAST, personal);
 		personal.add(verifyField);
@@ -316,17 +312,14 @@ public class EmployeeUpdate extends JDialog {
 		salary.setLayout(sl_salary);
 		
 		basicMonthlySpinner = new JSpinner();
-		basicMonthlySpinner.setEnabled(false);
 		sl_salary.putConstraint(SpringLayout.EAST, basicMonthlySpinner, -10, SpringLayout.EAST, salary);
-		basicMonthlySpinner.setModel(new SpinnerNumberModel(
-			defaultBasic[positionComboBox.getSelectedIndex()], 5000.0, 99999.0, 1.0));
+		basicMonthlySpinner.setModel(new SpinnerNumberModel(0, 0, 99999.0, 1.0));
 		salary.add(basicMonthlySpinner);
 		
 		chooseLabel = new JLabel("Choose one:");
 		salary.add(chooseLabel);
 		
-		JRadioButton monthlyButton = new JRadioButton("Basic Pay (Monthly)");
-		monthlyButton.setEnabled(false);
+		monthlyButton = new JRadioButton("Basic Pay (Monthly)");
 		sl_salary.putConstraint(SpringLayout.NORTH, monthlyButton, 2, SpringLayout.SOUTH, chooseLabel);
 		sl_salary.putConstraint(SpringLayout.NORTH, basicMonthlySpinner, 2, SpringLayout.NORTH, monthlyButton);
 		sl_salary.putConstraint(SpringLayout.WEST, basicMonthlySpinner, 6, SpringLayout.EAST, monthlyButton);
@@ -338,23 +331,20 @@ public class EmployeeUpdate extends JDialog {
 		salary.add(monthlyButton);
 		
 		dailyButton = new JRadioButton("Basic Pay (Daily)");
-		dailyButton.setEnabled(false);
 		sl_salary.putConstraint(SpringLayout.NORTH, dailyButton, 2, SpringLayout.SOUTH, monthlyButton);
 		sl_salary.putConstraint(SpringLayout.WEST, dailyButton, 0, SpringLayout.WEST, chooseLabel);
 		bg.add(dailyButton);
 		salary.add(dailyButton);
 		
 		basicDailySpinner = new JSpinner();
-		basicDailySpinner.setEnabled(false);
-		basicDailySpinner.setModel(new SpinnerNumberModel(
-			((double) basicMonthlySpinner.getValue()) / 30, 150.0, 99999.0, 1.0));
+		basicDailySpinner.setModel(new SpinnerNumberModel(0, 0, 99999.0, 1.0));
 		sl_salary.putConstraint(SpringLayout.NORTH, basicDailySpinner, 2, SpringLayout.NORTH, dailyButton);
 		sl_salary.putConstraint(SpringLayout.WEST, basicDailySpinner, 0, SpringLayout.WEST, basicMonthlySpinner);
 		sl_salary.putConstraint(SpringLayout.SOUTH, basicDailySpinner, -2, SpringLayout.SOUTH, dailyButton);
 		sl_salary.putConstraint(SpringLayout.EAST, basicDailySpinner, -10, SpringLayout.EAST, salary);
 		salary.add(basicDailySpinner);
 		
-		grossField = new JTextField(String.format("Php %,.2f", defaultBasic[positionComboBox.getSelectedIndex()]));
+		grossField = new JTextField();
 		grossField.setHorizontalAlignment(SwingConstants.CENTER);
 		sl_salary.putConstraint(SpringLayout.EAST, grossField, -10, SpringLayout.EAST, salary);
 		grossField.setEditable(false);
@@ -419,7 +409,6 @@ public class EmployeeUpdate extends JDialog {
 		salary.add(pagibigLabel);
 		
 		pagibigField = new JTextField();
-		pagibigField.setText(String.format("Php %,.2f", db.PAGIBIG_RATE));
 		sl_salary.putConstraint(SpringLayout.NORTH, pagibigField, -2, SpringLayout.NORTH, pagibigLabel);
 		sl_salary.putConstraint(SpringLayout.SOUTH, pagibigField, 2, SpringLayout.SOUTH, pagibigLabel);
 		sl_salary.putConstraint(SpringLayout.EAST, pagibigField, -10, SpringLayout.EAST, salary);
@@ -471,23 +460,32 @@ public class EmployeeUpdate extends JDialog {
 		termsCheckBox = new JCheckBox(
 			"<html><i>I hereby certify that all information stated above is true and correct.</i></html>"
 		);
-		termsCheckBox.setEnabled(false);
 		termsCheckBox.setBounds(303, 346, 287, 31);
 		container.add(termsCheckBox);
 		
-		submitButton = new JButton("SUBMIT");
-		submitButton.setFont(new Font("Tahoma", Font.BOLD, 11));
-		submitButton.setBounds(307, 384, 287, 23);
-		container.add(submitButton);
+		updateButton = new JButton("UPDATE EMPLOYEE DETAIL");
+		updateButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+		updateButton.setBounds(307, 384, 287, 23);
+		container.add(updateButton);
 		
+
+		idField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				try {
+					data = db.fetchEmployeeByID(Long.parseLong(idField.getText()));
+					if (data != null) {
+						populateFields();
+					} else {
+						closeFields();
+					}
+				} catch (NumberFormatException e1) {
+					closeFields();
+				}
+			}
+		});
 		positionComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				idField.setText(
-					Long.toString(
-							ut.generateEmployeeID(
-								db.fetchLastEmployee(), 
-								5 - positionComboBox.getSelectedIndex()))
-				);
 				grossField.setText(
 					String.format("Php %,.2f", defaultBasic[positionComboBox.getSelectedIndex()])
 				);
@@ -525,7 +523,7 @@ public class EmployeeUpdate extends JDialog {
 				updateSalaryFields();
 			}
 		});
-		submitButton.addActionListener(new ActionListener() {
+		updateButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (checkFields()) {
 					insertRecord();
@@ -544,7 +542,7 @@ public class EmployeeUpdate extends JDialog {
 			}
 		});
 		
-		updateSalaryFields();
+		closeFields();
 		adjustTheme(false);
 		setResizable(false);
 		setModal(true);
@@ -589,12 +587,20 @@ public class EmployeeUpdate extends JDialog {
 	
 	private void updateSalaryFields() {
 		double grossPay = (double) basicMonthlySpinner.getValue();
+		grossField.setText(
+			String.format("Php %,.2f", (double) basicMonthlySpinner.getValue())
+		);
+//		basicMonthlySpinner.setModel(new SpinnerNumberModel(
+//				defaultBasic[positionComboBox.getSelectedIndex()], 5000.0, 99999.0, 1.0));
+//		basicDailySpinner.setModel(new SpinnerNumberModel(
+//				((double) basicMonthlySpinner.getValue()) / 30, 150.0, 99999.0, 1.0));
 		sssField.setText(
 			String.format("Php %,.2f", ((double) basicMonthlySpinner.getValue()) * db.SSS_RATE)
 			);
 		philhealthField.setText(
 			String.format("Php %,.2f", ((double) basicMonthlySpinner.getValue()) * db.PHILHEALTH_RATE)
 		);
+		pagibigField.setText(String.format("Php %,.2f", db.PAGIBIG_RATE));
 		totalContributionField.setText(
 			String.format("Php %,.2f", grossPay * 
 				(db.SSS_RATE + db.PHILHEALTH_RATE) + db.PAGIBIG_RATE)
@@ -603,6 +609,18 @@ public class EmployeeUpdate extends JDialog {
 			String.format("Php %,.2f", grossPay - 
 				(grossPay * (db.SSS_RATE + db.PHILHEALTH_RATE) + db.PAGIBIG_RATE))
 		);
+	}
+	
+	private void clearSalaryFields() {
+		grossField.setText(String.format("Php %,.2f", 0.0));
+		basicMonthlySpinner.setModel(new SpinnerNumberModel(MONTHLY_MIN, MONTHLY_MIN, 99999.0, 1.0));
+		basicDailySpinner.setModel(new SpinnerNumberModel(DAILY_MIN, DAILY_MIN, 99999.0, 1.0));
+		sssField.setText(String.format("Php %,.2f", 0.0));
+		philhealthField.setText(String.format("Php %,.2f", 0.0));
+		pagibigField.setText(String.format("Php %,.2f", 0.0));
+		totalContributionField.setText(String.format("Php %,.2f", 0.0));
+		netField.setText(String.format("Php %,.2f", 0.0));
+		adjustTheme(false);
 	}
 	
 	private boolean checkFields() {
@@ -645,6 +663,110 @@ public class EmployeeUpdate extends JDialog {
 		} else {
 			return true;
 		}
+	}
+	
+	private void populateFields() {
+		address = collapseAddress(data[4].toString());
+		
+		positionComboBox.setEnabled(true);
+		positionComboBox.setSelectedItem(data[0]);
+		basicMonthlySpinner.setEnabled(true);
+		basicMonthlySpinner.setModel(new SpinnerNumberModel(
+			Double.parseDouble(data[5].toString()), MONTHLY_MIN, 99999.0, 1.0)
+		);
+		basicDailySpinner.setModel(new SpinnerNumberModel(
+			Double.parseDouble(data[5].toString()) / 30, DAILY_MIN, 99999.0, 1.0));
+		
+		fnameField.setEnabled(true);
+		fnameField.setText(data[1].toString());
+		mnameField.setEnabled(true);
+		mnameField.setText(data[2].toString());
+		lnameField.setEnabled(true);
+		lnameField.setText(data[3].toString());
+		
+		streetField.setEnabled(true);
+		streetField.setText(address[0]);
+		barangayField.setEnabled(true);
+		barangayField.setText(address[1]);
+		cityField.setEnabled(true);
+		cityField.setText(address[2]);
+		provinceField.setEnabled(true);
+		provinceField.setText(address[3]);
+		
+		passField.setEnabled(true);
+		verifyField.setEnabled(true);
+		
+		monthlyButton.setEnabled(true);
+		dailyButton.setEnabled(true);
+		grossField.setEnabled(true);
+		sssField.setEnabled(true);
+		philhealthField.setEnabled(true);
+		pagibigField.setEnabled(true);
+		totalContributionField.setEnabled(true);
+		netField.setEnabled(true);
+		
+		adjustTheme(false);
+	}
+	
+	private void closeFields() {
+		positionComboBox.setEnabled(false);
+		positionComboBox.setSelectedIndex(0);
+		
+		fnameField.setEnabled(false);
+		fnameField.setText("");
+		mnameField.setEnabled(false);
+		mnameField.setText("");
+		lnameField.setEnabled(false);
+		lnameField.setText("");
+		
+		streetField.setEnabled(false);
+		streetField.setText("");
+		verifyField.setEnabled(false);
+		verifyField.setText("");
+		barangayField.setEnabled(false);
+		barangayField.setText("");
+		cityField.setEnabled(false);
+		cityField.setText("");
+		provinceField.setEnabled(false);
+		provinceField.setText("");
+		
+		passField.setEnabled(false);
+		passField.setText("");
+		verifyField.setEnabled(false);
+		verifyField.setText("");
+		
+		basicMonthlySpinner.setEnabled(false);
+		monthlyButton.setEnabled(false);
+		dailyButton.setEnabled(false);
+		basicDailySpinner.setEnabled(false);
+		grossField.setEnabled(false);
+		sssField.setEnabled(false);
+		philhealthField.setEnabled(false);
+		pagibigField.setEnabled(false);
+		totalContributionField.setEnabled(false);
+		netField.setEnabled(false);
+		
+		termsCheckBox.setEnabled(false);
+		updateButton.setEnabled(false);
+		
+		clearSalaryFields();
+	}
+	
+	private String[] collapseAddress(String address) {
+		String[] collapse = new String[4];
+		String part = "";
+		int index = 0;
+		
+		for (char c : address.toCharArray()) {
+			if (c == ',') {
+				collapse[index] = part.replace(',', ' ').strip();
+				if (index < 3) part = "";
+				index++;
+			}
+			part += c;
+		}
+		collapse[index] = part.replace(',', ' ').strip();
+		return collapse;
 	}
 	
 	private void insertRecord() {

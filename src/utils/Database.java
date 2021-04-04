@@ -304,6 +304,37 @@ public class Database {
 		return -1;
 	}
 	
+	/**
+	 * Key-sensitive query used for automatic-search when typing in the <br>
+	 * update employee search bar. <p>
+	 * The SQL Exception is not handled here. 
+	 * @return null = if the query finds an error, Object[] = if the query fetches an ID
+	 */
+	public Object[] fetchEmployeeByID(long employee_id) {
+		try {
+			ps = con.prepareStatement(
+				  "SELECT * "
+				+ "FROM employee "
+				+ "WHERE employee_id = ?;"
+			);
+			ps.setLong(1, employee_id);
+			ResultSet details = ps.executeQuery();
+			details.next();
+			if (details.getLong(1) != 0) {
+				Object[] data = new Object[7];
+				data[0] = ut.decodeData(details.getString(2));
+				data[1] = ut.decodeData(details.getString(3));
+				data[2] = ut.decodeData(details.getString(4));
+				data[3] = ut.decodeData(details.getString(5));
+				data[4] = ut.decodeData(details.getString(6));
+				data[5] = details.getDouble(7);
+				data[6] = details.getString(11);
+				return data;
+			}
+		} catch (SQLException e) {}
+		return null;
+	}
+	
 	public long fetchLastIDByTable(String table, String idColumn) {
 		try {
 			ResultSet pid = stmt.executeQuery(

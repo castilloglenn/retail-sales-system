@@ -258,6 +258,21 @@ public class Database {
 		return false;
 	}
 	
+	public boolean deleteEntry(String table, String column, long id) {
+		try {
+			ps = con.prepareStatement(
+				  "DELETE FROM " + table + " "
+				+ "WHERE " + column + " = ? ;"
+			);
+			ps.setLong(1, id);
+			ps.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	public boolean checkLogin(String user, String pass) {
 		try {
 			ps = con.prepareStatement(

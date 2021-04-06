@@ -47,6 +47,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JSeparator;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.border.TitledBorder;
 
 
 /**
@@ -58,19 +59,21 @@ import java.awt.event.KeyEvent;
 public class EmployeeAdmin extends JFrame {
 
 	private JPanel container, contentPane, title, navigation, display, dashboard, manage,
-		payroll, schedule, log, attendance, notification;
+		payroll, schedule, log, attendance, notification, manageCrud;
 	private JToggleButton dashboardLabel, notificationLabel, attendanceLabel, logLabel, 
 		manageLabel, scheduleLabel, payrollLabel;
 	private JLabel photo, titleTitle, dashboardTitle, notificationTitle, attendanceTitle,
-		logTitle, scheduleTitle, payrollTitle, manageTitle;
-	private JButton manageSearchButton, manageAddButton, manageUpdateButton, manageDeleteButton;
-	private JTextField manageSearchField;
+		logTitle, scheduleTitle, payrollTitle, manageTitle, payrollInstruction;
+	private JButton manageSearchButton, manageAddButton, manageUpdateButton, manageDeleteButton,
+		payrollGenerate, payrollDelete;
+	private JScrollPane manageScrollPane, payrollScrollPane;
 	private JMenuItem themeSwitcher, themeSwitcher_1;
 	private JComboBox<String> manageSearchCategory;
+	private JTable manageTable, payrollTable;
+	private JTextField manageSearchField;
 	private SpringLayout sl_contentPane;
 	private JPopupMenu popupMenu_1;
 	private JSeparator separator;
-	private JTable manageTable;
 	private CardLayout cl;
 	
 	private String[] employeeColumns = {
@@ -95,10 +98,10 @@ public class EmployeeAdmin extends JFrame {
 	private Database db;
 	
 	private long id;
+	private JTable scheduleTable;
 
-	public EmployeeAdmin(Gallery gl, Utility ut, Database db) {
-		this.gl = gl; this.ut = ut; this.db = db;
-		id = db.fetchLastIDByTable("employee", "employee_id");
+	public EmployeeAdmin(Gallery gl, Utility ut, Database db, long id) {
+		this.gl = gl; this.ut = ut; this.db = db; this.id = id;
 		
 		setTitle("Employee Management | " + Main.SYSTEM_NAME);
 		setIconImage(gl.businessLogo);
@@ -186,10 +189,10 @@ public class EmployeeAdmin extends JFrame {
 		navigation.add(attendanceLabel);
 		
 		logLabel = new JToggleButton("LOGS");
+		sl_navigation.putConstraint(SpringLayout.SOUTH, logLabel, -6, SpringLayout.NORTH, attendanceLabel);
 		logLabel.setFocusable(false);
 		logLabel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		logLabel.setMargin(new Insets(10, 0, 10, 0));
-		sl_navigation.putConstraint(SpringLayout.SOUTH, attendanceLabel, -6, SpringLayout.NORTH, logLabel);
 		sl_navigation.putConstraint(SpringLayout.EAST, logLabel, 0, SpringLayout.EAST, attendanceLabel);
 		logLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
 		sl_navigation.putConstraint(SpringLayout.WEST, logLabel, 0, SpringLayout.WEST, dashboardLabel);
@@ -206,10 +209,10 @@ public class EmployeeAdmin extends JFrame {
 		navigation.add(manageLabel);
 		
 		scheduleLabel = new JToggleButton("SCHEDULE");
+		sl_navigation.putConstraint(SpringLayout.SOUTH, attendanceLabel, -6, SpringLayout.NORTH, scheduleLabel);
 		scheduleLabel.setFocusable(false);
 		scheduleLabel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		scheduleLabel.setMargin(new Insets(10, 0, 10, 0));
-		sl_navigation.putConstraint(SpringLayout.SOUTH, logLabel, -6, SpringLayout.NORTH, scheduleLabel);
 		scheduleLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
 		sl_navigation.putConstraint(SpringLayout.WEST, scheduleLabel, 0, SpringLayout.WEST, dashboardLabel);
 		sl_navigation.putConstraint(SpringLayout.EAST, scheduleLabel, 0, SpringLayout.EAST, manageLabel);
@@ -298,6 +301,45 @@ public class EmployeeAdmin extends JFrame {
 		sl_schedule.putConstraint(SpringLayout.WEST, scheduleTitle, 10, SpringLayout.WEST, schedule);
 		schedule.add(scheduleTitle);
 		
+		JScrollPane scheduleScrollPane = new JScrollPane();
+		sl_schedule.putConstraint(SpringLayout.NORTH, scheduleScrollPane, 6, SpringLayout.SOUTH, scheduleTitle);
+		sl_schedule.putConstraint(SpringLayout.WEST, scheduleScrollPane, 10, SpringLayout.WEST, schedule);
+		sl_schedule.putConstraint(SpringLayout.SOUTH, scheduleScrollPane, -10, SpringLayout.SOUTH, schedule);
+		schedule.add(scheduleScrollPane);
+		
+		JButton scheduleViewButton = new JButton("VIEW");
+		scheduleViewButton.setFont(new Font("Tahoma", Font.BOLD, 12));
+		sl_schedule.putConstraint(SpringLayout.EAST, scheduleScrollPane, -10, SpringLayout.WEST, scheduleViewButton);
+		sl_schedule.putConstraint(SpringLayout.NORTH, scheduleViewButton, 0, SpringLayout.NORTH, scheduleScrollPane);
+		sl_schedule.putConstraint(SpringLayout.WEST, scheduleViewButton, -150, SpringLayout.EAST, schedule);
+		sl_schedule.putConstraint(SpringLayout.SOUTH, scheduleViewButton, 50, SpringLayout.NORTH, scheduleScrollPane);
+		
+		scheduleTable = new JTable(1, 5);
+		scheduleScrollPane.setViewportView(scheduleTable);
+		sl_schedule.putConstraint(SpringLayout.EAST, scheduleViewButton, -10, SpringLayout.EAST, schedule);
+		schedule.add(scheduleViewButton);
+		
+		JButton scheduleCreateButton = new JButton("CREATE NEW");
+		sl_schedule.putConstraint(SpringLayout.NORTH, scheduleCreateButton, 6, SpringLayout.SOUTH, scheduleViewButton);
+		sl_schedule.putConstraint(SpringLayout.WEST, scheduleCreateButton, 0, SpringLayout.WEST, scheduleViewButton);
+		sl_schedule.putConstraint(SpringLayout.SOUTH, scheduleCreateButton, 56, SpringLayout.SOUTH, scheduleViewButton);
+		sl_schedule.putConstraint(SpringLayout.EAST, scheduleCreateButton, 0, SpringLayout.EAST, scheduleViewButton);
+		scheduleCreateButton.setFont(new Font("Tahoma", Font.BOLD, 12));
+		schedule.add(scheduleCreateButton);
+		
+		JButton scheduleDeleteButton = new JButton("DELETE");
+		sl_schedule.putConstraint(SpringLayout.NORTH, scheduleDeleteButton, 6, SpringLayout.SOUTH, scheduleCreateButton);
+		sl_schedule.putConstraint(SpringLayout.WEST, scheduleDeleteButton, 0, SpringLayout.WEST, scheduleCreateButton);
+		sl_schedule.putConstraint(SpringLayout.SOUTH, scheduleDeleteButton, 56, SpringLayout.SOUTH, scheduleCreateButton);
+		sl_schedule.putConstraint(SpringLayout.EAST, scheduleDeleteButton, 0, SpringLayout.EAST, scheduleCreateButton);
+		scheduleDeleteButton.setFont(new Font("Tahoma", Font.BOLD, 12));
+		schedule.add(scheduleDeleteButton);
+		
+		JLabel scheduleInstruction = new JLabel("New label");
+		sl_schedule.putConstraint(SpringLayout.NORTH, scheduleInstruction, 6, SpringLayout.SOUTH, scheduleDeleteButton);
+		sl_schedule.putConstraint(SpringLayout.EAST, scheduleInstruction, -10, SpringLayout.EAST, scheduleDeleteButton);
+		schedule.add(scheduleInstruction);
+		
 		payroll = new JPanel();
 		payroll.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		display.add(payroll, "payroll");
@@ -309,6 +351,45 @@ public class EmployeeAdmin extends JFrame {
 		sl_payroll.putConstraint(SpringLayout.NORTH, payrollTitle, 10, SpringLayout.NORTH, payroll);
 		sl_payroll.putConstraint(SpringLayout.WEST, payrollTitle, 10, SpringLayout.WEST, payroll);
 		payroll.add(payrollTitle);
+		
+		payrollScrollPane = new JScrollPane();
+		sl_payroll.putConstraint(SpringLayout.NORTH, payrollScrollPane, 10, SpringLayout.SOUTH, payrollTitle);
+		sl_payroll.putConstraint(SpringLayout.WEST, payrollScrollPane, 10, SpringLayout.WEST, payroll);
+		sl_payroll.putConstraint(SpringLayout.SOUTH, payrollScrollPane, -10, SpringLayout.SOUTH, payroll);
+		payroll.add(payrollScrollPane);
+		
+		payrollGenerate = new JButton("GENERATE");
+		sl_payroll.putConstraint(SpringLayout.WEST, payrollGenerate, -150, SpringLayout.EAST, payroll);
+		sl_payroll.putConstraint(SpringLayout.SOUTH, payrollGenerate, 50, SpringLayout.NORTH, payrollScrollPane);
+		sl_payroll.putConstraint(SpringLayout.EAST, payrollScrollPane, -10, SpringLayout.WEST, payrollGenerate);
+		payrollGenerate.setFont(new Font("Tahoma", Font.BOLD, 12));
+		sl_payroll.putConstraint(SpringLayout.NORTH, payrollGenerate, 0, SpringLayout.NORTH, payrollScrollPane);
+		sl_payroll.putConstraint(SpringLayout.EAST, payrollGenerate, -10, SpringLayout.EAST, payroll);
+		payroll.add(payrollGenerate);
+		
+		payrollDelete = new JButton("DELETE");
+		sl_payroll.putConstraint(SpringLayout.WEST, payrollDelete, 0, SpringLayout.WEST, payrollGenerate);
+		sl_payroll.putConstraint(SpringLayout.SOUTH, payrollDelete, 106, SpringLayout.NORTH, payrollScrollPane);
+		
+		payrollTable = new JTable(1, 5);
+		payrollScrollPane.setViewportView(payrollTable);
+		payrollDelete.setFont(new Font("Tahoma", Font.BOLD, 12));
+		sl_payroll.putConstraint(SpringLayout.NORTH, payrollDelete, 6, SpringLayout.SOUTH, payrollGenerate);
+		sl_payroll.putConstraint(SpringLayout.EAST, payrollDelete, 0, SpringLayout.EAST, payrollGenerate);
+		payroll.add(payrollDelete);
+		
+		payrollInstruction = new JLabel(
+			  "<html>"
+			+ "Press \"GENERATE\" to create new payroll from the previous payroll's end date."
+			+ " To delete a payroll, click one from the table and press the \"DELETE\" button."
+			+ "</html>");
+		payrollInstruction.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		payrollInstruction.setVerticalAlignment(SwingConstants.TOP);
+		sl_payroll.putConstraint(SpringLayout.NORTH, payrollInstruction, 6, SpringLayout.SOUTH, payrollDelete);
+		sl_payroll.putConstraint(SpringLayout.WEST, payrollInstruction, 0, SpringLayout.WEST, payrollGenerate);
+		sl_payroll.putConstraint(SpringLayout.SOUTH, payrollInstruction, -10, SpringLayout.SOUTH, payroll);
+		sl_payroll.putConstraint(SpringLayout.EAST, payrollInstruction, 0, SpringLayout.EAST, payrollGenerate);
+		payroll.add(payrollInstruction);
 		
 		manage = new JPanel();
 		manage.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
@@ -348,14 +429,14 @@ public class EmployeeAdmin extends JFrame {
 		sl_manage.putConstraint(SpringLayout.EAST, manageSearchButton, -10, SpringLayout.EAST, manage);
 		manage.add(manageSearchButton);
 		
-		JScrollPane manageScrollPane = new JScrollPane();
+		manageScrollPane = new JScrollPane();
 		sl_manage.putConstraint(SpringLayout.NORTH, manageScrollPane, 10, SpringLayout.SOUTH, manageSearchCategory);
 		sl_manage.putConstraint(SpringLayout.WEST, manageScrollPane, 10, SpringLayout.WEST, manage);
 		sl_manage.putConstraint(SpringLayout.EAST, manageScrollPane, -10, SpringLayout.EAST, manage);
 		manage.add(manageScrollPane);
 		addPopup(manageScrollPane, popupMenu);
 		
-		JPanel manageCrud = new JPanel();
+		manageCrud = new JPanel();
 		sl_manage.putConstraint(SpringLayout.NORTH, manageCrud, -35, SpringLayout.SOUTH, manage);
 		sl_manage.putConstraint(SpringLayout.SOUTH, manageScrollPane, -10, SpringLayout.NORTH, manageCrud);
 		
@@ -366,14 +447,31 @@ public class EmployeeAdmin extends JFrame {
 		popupMenu_1 = new JPopupMenu();
 		addPopup(manageTable, popupMenu_1);
 		
-		themeSwitcher_1 = new JMenuItem("Switch to Dark Theme");
-		popupMenu_1.add(themeSwitcher_1);
+		JMenuItem copyMenu = new JMenuItem("Copy");
+		popupMenu_1.add(copyMenu);
+		copyMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ut.copyToClipboard(
+						manageTable.getValueAt(
+							manageTable.getSelectedRow(), 
+							manageTable.getSelectedColumn()
+						).toString()
+					);
+				} catch (ArrayIndexOutOfBoundsException e1) {}
+			}
+		});
 		
 		separator = new JSeparator();
 		popupMenu_1.add(separator);
 		
-		JMenuItem copyMenu = new JMenuItem("Copy");
-		popupMenu_1.add(copyMenu);
+		themeSwitcher_1 = new JMenuItem("Switch to Dark Theme");
+		popupMenu_1.add(themeSwitcher_1);
+		themeSwitcher_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				adjustTheme(true);
+			}
+		});
 		sl_manage.putConstraint(SpringLayout.WEST, manageCrud, 10, SpringLayout.WEST, manage);
 		sl_manage.putConstraint(SpringLayout.SOUTH, manageCrud, -10, SpringLayout.SOUTH, manage);
 		sl_manage.putConstraint(SpringLayout.EAST, manageCrud, -10, SpringLayout.EAST, manage);
@@ -469,16 +567,6 @@ public class EmployeeAdmin extends JFrame {
 				new EmployeeDelete(gl, ut, db);
 			}
 		});
-		copyMenu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ut.copyToClipboard(
-					manageTable.getValueAt(
-						manageTable.getSelectedRow(), 
-						manageTable.getSelectedColumn()
-					).toString()
-				);
-			}
-		});
 		addWindowStateListener(new WindowStateListener() {
 			public void windowStateChanged(WindowEvent e) {
 				if (e.getNewState() == 0) {
@@ -492,11 +580,6 @@ public class EmployeeAdmin extends JFrame {
 			public void componentResized(ComponentEvent e) {
 				adjustContainer();
 				adjustFonts();
-			}
-		});
-		themeSwitcher_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				adjustTheme(true);
 			}
 		});
 		themeSwitcher.addActionListener(new ActionListener() {
@@ -581,6 +664,8 @@ public class EmployeeAdmin extends JFrame {
 		ut.adjustFont(manageAddButton, manage, minDisplay, 11);
 		ut.adjustFont(manageUpdateButton, manage, minDisplay, 11);
 		ut.adjustFont(manageDeleteButton, manage, minDisplay, 11);
+		ut.adjustFont(payrollGenerate, payroll, minDisplay, 12);
+		ut.adjustFont(payrollDelete, payroll, minDisplay, 12);
 	}
 	
 	private void adjustContainer() {
@@ -605,6 +690,10 @@ public class EmployeeAdmin extends JFrame {
 		gl.designOptionPanes();
 		gl.getAllComponentsChangeTheme(this, 9);
 		themeSwitcher.setText((gl.isDark) ? "Switch to Light Theme" : "Switch to Dark Theme");
+		payrollInstruction.setBorder(
+			new TitledBorder(
+				null, "Instructions", TitledBorder.LEADING, TitledBorder.TOP, 
+				null, (gl.isDark) ? gl.DFONT : gl.LFONT));
 		
 		if (gl.isDark) {
 			photo.setIcon(gl.darkEmployee);

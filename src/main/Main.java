@@ -78,7 +78,7 @@ public class Main {
 //		======Tests========
 //		initialize();
 //		new SetupSystem(gl, ut, db);
-		new EmployeeAdmin(gl, ut, db);
+		new EmployeeAdmin(gl, ut, db, 55210405001L);
 	}
 
 	/**
@@ -209,7 +209,7 @@ public class Main {
 					// For attendance log, do the attendace checking algorithm.
 					// Open Portal Here
 					mainFrame.setVisible(false);
-					new EmployeeAdmin(gl, ut, db);
+					new EmployeeAdmin(gl, ut, db, Long.parseLong(new String(idField.getPassword())));
 				}
 			}
 		});

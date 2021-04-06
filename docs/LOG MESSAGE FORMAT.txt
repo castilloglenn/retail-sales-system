@@ -1,5 +1,6 @@
 DB STRUCTURE:
 logs
+
 log_id bigint primary key
 employee_id bigint foreign key
 type varchar 255
@@ -7,21 +8,23 @@ description varchar 512
 date datetime
 
 LOG ID FORMAT: MAX: 9223372036854775807
-ex: 141000000010
-    1-4-1-00000001-0
- 1 = Log Code
+ex: 341000000010 ====== len(12)
+    3-4-1-00000001-0
+ 3 = Log Code
  4 = Log Type
  1 = Log Status
  00000001 = auto incremenet
- 0 = Message Part
+ 01 = Message Part
 
 TYPES OF LOG:
+0-PAYROLL
+	- This contains the payroll generated
 1-PRODUCT INQUIRY
 	- contains all the searches of employees of a 	certain product.
 2-ATTENDANCE
 	- contains all the login/logout of employees
 3-LATE/ABSENT
-	- auto generates if an employee did not meet 	his/her schedule on time (late) or after 30 	minutes (absent)
+	- auto generates if an employee did not meet 	his/her schedule on time (late) or after 60 	minutes (absent)
 4-LOST PASSWORD
 	- when an employeee requests a forgot password
 	notification
@@ -35,7 +38,7 @@ TYPES OF LOG:
 8-PULL-OUT
 	- records all the damaged products and expired 	goods
 9-SYSTEM LOG
-	- records all actions done by the 	manager/employees in the system, system 	interactions
+	- records all important actions done by the 	manager/employees in the system, system 	interactions
 
 LOG STATUS:
 1 = submitted/unread/new/unapproved

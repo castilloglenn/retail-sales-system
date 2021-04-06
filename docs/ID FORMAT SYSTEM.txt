@@ -1,12 +1,12 @@
 TRANSACTION BIGINT(20) MAX: 9223372036854775807
-ex: 1011616644307939
+ex: 1011616644307939 ===== len(16)
     1-01-1616644307939
  1 = Transaction Code (can range from 1-4)
  01 = Machine Code (can range from 01-99)
  1616644307939 = Timestamp (In millis)
 ====================================================
 SUPPLIER BIGINT(20) MAX: 9223372036854775807
-ex: 9210325001
+ex: 9210325001 ===== len(10)
     9-21-03-25-001
  9 = Supplier Code
  21 = Year
@@ -15,7 +15,7 @@ ex: 9210325001
  001 = autoincrement 1 is first, 2 is second etc..
 ====================================================
 PRODUCT BIGINT(20) MAX: 9223372036854775807
-ex: 8001210325001
+ex: 8001210325001 ==== len(13)
     8-001-21-03-25-001
  8 = Product Code
  001 = Supplier's autoincrement code
@@ -25,7 +25,7 @@ ex: 8001210325001
  001 = autoincrement unique for every supplier
 ====================================================
 PROMO BIGINT(20) MAX: 9223372036854775807
-ex: 7001001
+ex: 7001001 ==== len(7)
     7-001-001-01
  7 = Promo Code
  001 = Supplier's autoincrement code
@@ -33,14 +33,14 @@ ex: 7001001
  01 = autoincrement unique for every product
 ====================================================
 CUSTOMER BIGINT(20) MAX: 9223372036854775807
-ex: 6011616644307939
+ex: 6011616644307939 ==== len(16)
     6-01-1616644307939
  6 = Customer Code
  01 = Machine Code
  1616644307939 = Timestamp (in millis)
 ====================================================
 EMPLOYEE BIGINT(20) MAX: 9223372036854775807
-ex: 51210325001
+ex: 51210325001 ==== len(11)
     5-1-21-03-25-001
  5 = Employee Code
  1 = Level of Access

@@ -760,7 +760,7 @@ public class EmployeeUpdate extends JDialog {
 		fnameField.setEnabled(true);
 		fnameField.setText(data[1].toString());
 		mnameField.setEnabled(true);
-		mnameField.setText(data[2].toString());
+		mnameField.setText((data[2] == null) ? "" : data[2].toString());
 		lnameField.setEnabled(true);
 		lnameField.setText(data[3].toString());
 		

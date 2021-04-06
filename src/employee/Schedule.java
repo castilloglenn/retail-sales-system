@@ -45,7 +45,7 @@ public class Schedule {
 		this.date = date;
 	}
 
-	public void log(long manager_id) {
+	public boolean log(long manager_id) {
 		logEach(managers, timeManagers);
 		logEach(seniorSupers, timeSeniorSupers);
 		logEach(juniorSupers, timeJuniorSupers);
@@ -54,13 +54,16 @@ public class Schedule {
 		logEach(storeAssistants, timeStoreAssistants);
 		
 		log.newLog(manager_id, LogConstants.SCHEDULE, LogConstants.MAIN, format);
+		return true;
 	}
 	
 	private void logEach(ArrayList<Long> ids, HashMap<Long, String[]> scheds) {
-		for (long id : ids) {
-			String[] sched = scheds.get(id);
-			String message = sched[0] + "," + sched[1];
-			log.newLog(id, LogConstants.SCHEDULE, LogConstants.SUB, message);
+		if (!ids.isEmpty()) {
+			for (long id : ids) {
+				String[] sched = scheds.get(id);
+				String message = sched[0] + "," + sched[1];
+				log.newLog(id, LogConstants.SCHEDULE, LogConstants.SUB, message);
+			}
 		}
 	}
 	
@@ -91,6 +94,27 @@ public class Schedule {
 		}
 		
 		return sb.toString();
+	}
+	
+	public String check() {
+		String[] errors = new String[5];
+		String error = "Please review the following:" + BR;
+		boolean flagged = false;
+		
+		if (date == null) errors[1] = "• Date cannot be empty." + BR;
+		if (managers.isEmpty() && seniorSupers.isEmpty()) 
+			errors[2] = "• No Manager/Senior Supervisor found in this schedule." + BR;
+		if (cashiers.isEmpty()) errors[3] = "• There must be at least 1 cashier." + BR;
+		if (inventoryClerks.isEmpty()) errors[4] = "• There must be at least 1 inventory clerk." + BR;
+		
+		for (String s : errors) {
+			if (s != null) {
+				flagged = true;
+				error += s;
+			}
+		}
+
+		return (flagged) ? error : null;
 	}
 	
 	public boolean add(long id, String in, String out) {
@@ -131,7 +155,7 @@ public class Schedule {
 	}
 	
 	public boolean remove(long id) {
-		String level = Long.toString(id).substring(1, 1);
+		String level = Long.toString(id).substring(1, 2);
 		switch (Integer.parseInt(level)) {
 			case 5:
 				if (!managers.contains(id)) return false;

@@ -251,12 +251,8 @@ public class Utility {
 			markup.append("00000001");
 		} else {
 			String lastNum = Long.toString(lastID).substring(3, 11);
-			if (part == 0) {
-				int value = Integer.parseInt(lastNum) + 1;
-				markup.append(String.format("%08d", value));
-			} else {
-				markup.append(lastNum);
-			}
+			int value = Integer.parseInt(lastNum) + 1;
+			markup.append(String.format("%08d", value));
 		}
 		
 		// message part

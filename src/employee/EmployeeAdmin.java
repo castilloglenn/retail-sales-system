@@ -95,6 +95,9 @@ public class EmployeeAdmin extends JFrame {
 		employeeColumns[0], employeeColumns[1], employeeColumns[2], 
 		employeeColumns[3], employeeColumns[4], employeeColumns[5]
 	};
+	private String[] scheduleColumns = {
+		"DATE", "SCHEDULE", "CREATED BY"
+	};
 	
 	private Gallery gl;
 	private Utility ut;
@@ -296,7 +299,8 @@ public class EmployeeAdmin extends JFrame {
 		sl_schedule.putConstraint(SpringLayout.WEST, scheduleViewButton, -150, SpringLayout.EAST, schedule);
 		sl_schedule.putConstraint(SpringLayout.SOUTH, scheduleViewButton, 50, SpringLayout.NORTH, scheduleScrollPane);
 		
-		scheduleTable = new JTable(1, 5);
+		scheduleTable = new JTable(1, 3);
+		scheduleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scheduleScrollPane.setViewportView(scheduleTable);
 		sl_schedule.putConstraint(SpringLayout.EAST, scheduleViewButton, -10, SpringLayout.EAST, schedule);
 		schedule.add(scheduleViewButton);
@@ -497,7 +501,7 @@ public class EmployeeAdmin extends JFrame {
 		});
 		scheduleCreateButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new EmployeeSchedule(gl, ut, db, log);
+				new EmployeeSchedule(gl, ut, db, log, id);
 			}
 		});
 		payrollLabel.addActionListener(new ActionListener() {
@@ -573,10 +577,20 @@ public class EmployeeAdmin extends JFrame {
 			@Override
 			public void windowActivated(WindowEvent e) {
 				manageTable.setModel(queryDatabase("employee_id", ""));
+				scheduleTable.setModel(ut.generateTable(log.fetchSchedules(), scheduleColumns));
+				
 				DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 				centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 				for(int col=0; col < 10; col++){
 					manageTable.getColumnModel().getColumn(col).setCellRenderer(centerRenderer);
+					if (col < 3) {
+						scheduleTable.getColumnModel().getColumn(col).setCellRenderer(centerRenderer);
+						if (col % 2 == 1) {
+							scheduleTable.getColumnModel().getColumn(col).setMinWidth(200);
+						} else {
+							scheduleTable.getColumnModel().getColumn(col).setMinWidth(50);
+						}
+					}
 			    };
 				adjustTheme(false);
 			}

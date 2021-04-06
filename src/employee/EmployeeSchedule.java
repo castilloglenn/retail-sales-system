@@ -4,15 +4,10 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import javax.swing.JDialog;
@@ -21,7 +16,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SpringLayout;
-import javax.swing.text.DateFormatter;
 
 import main.Main;
 import utils.Database;
@@ -37,15 +31,11 @@ import javax.swing.JComponent;
 import java.awt.Font;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
-import java.util.Date;
-import java.util.Calendar;
 import javax.swing.JLabel;
 import java.awt.Insets;
 import javax.swing.JSeparator;
-import javax.swing.SpinnerModel;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
@@ -85,9 +75,10 @@ public class EmployeeSchedule extends JDialog {
 	private Database db;
 	private Schedule sc;
 	private Logger log;
+	private long id;
 	
-	public EmployeeSchedule(Gallery gl, Utility ut, Database db, Logger log) {
-		this.gl = gl; this.ut = ut; this.db = db; this.log = log;
+	public EmployeeSchedule(Gallery gl, Utility ut, Database db, Logger log, long id) {
+		this.gl = gl; this.ut = ut; this.db = db; this.log = log; this.id = id;
 		sc = new Schedule(db, log);
 		
 		setTitle("New Schedule | " + Main.SYSTEM_NAME);
@@ -163,7 +154,7 @@ public class EmployeeSchedule extends JDialog {
 		
 		dateSpinner = new JSpinner(new SpinnerDateModel());
 		dateSpinner.setBounds(105, 257, 219, 27);
-		SimpleDateFormat model = new SimpleDateFormat("yyyy/MM/dd");
+		SimpleDateFormat model = new SimpleDateFormat("MM/dd/yyyy");
 		dateSpinner.setEditor(new JSpinner.DateEditor(dateSpinner, model.toPattern()));
 		JComponent de_dateSpinner = dateSpinner.getEditor();
 		JSpinner.DefaultEditor spinnerEditor = (JSpinner.DefaultEditor)de_dateSpinner;
@@ -234,7 +225,7 @@ public class EmployeeSchedule extends JDialog {
 		});
 		dateSpinner.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy/MM/dd");
+				SimpleDateFormat dateFormater = new SimpleDateFormat("MM/dd/yyyy");
 				String dateValue = dateFormater.format(dateSpinner.getValue());
 				
 				sc.setDate(dateValue);
@@ -272,6 +263,58 @@ public class EmployeeSchedule extends JDialog {
 						JOptionPane.WARNING_MESSAGE);
 				}
 				
+			}
+		});
+		removeButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					long id = Long.parseLong(table.getValueAt(table.getSelectedRow(), 0).toString());
+					
+					if (!sc.remove(id)) {
+						JOptionPane.showMessageDialog(null, 
+							"The employee has no schedule.",
+							"No Schedule | " + Main.SYSTEM_NAME, 
+							JOptionPane.WARNING_MESSAGE);
+					} else {
+						textArea.setText(sc.format());
+						textArea.setCaretPosition(0);
+					}
+				} catch (ArrayIndexOutOfBoundsException e1) {
+					JOptionPane.showMessageDialog(null, 
+						"Please select an employee row from the table provided.",
+						"Unknown Selection | " + Main.SYSTEM_NAME, 
+						JOptionPane.WARNING_MESSAGE);
+				} catch (NumberFormatException e2) {
+					e2.printStackTrace();
+					JOptionPane.showMessageDialog(null, 
+						"Please place back the employee id as the first column in the table.",
+						"Invalid Column | " + Main.SYSTEM_NAME, 
+						JOptionPane.WARNING_MESSAGE);
+				}
+			}
+		});
+		createButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String check = sc.check();
+				if (check == null) {
+					if (sc.log(id)) {
+						JOptionPane.showMessageDialog(null, 
+							"Successfully created and distributed the schedule.",
+							"Success | " + Main.SYSTEM_NAME, 
+							JOptionPane.INFORMATION_MESSAGE);
+						dispose();
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, 
+						check,
+						"Invalid schedule | " + Main.SYSTEM_NAME, 
+						JOptionPane.WARNING_MESSAGE);
+				}
+			}
+		});
+		exitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
 			}
 		});
 		themeSwitcher.addActionListener(new ActionListener() {

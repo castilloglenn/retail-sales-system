@@ -84,7 +84,7 @@ public class EmployeeSchedule extends JDialog {
 		setTitle("New Schedule | " + Main.SYSTEM_NAME);
 		setIconImage(gl.businessLogo);
 		setMinimumSize(new Dimension(640, 485));
-		setSize(650, 485);
+		setSize(700, 485);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
 
@@ -110,7 +110,7 @@ public class EmployeeSchedule extends JDialog {
 		container.add(addButton);
 
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(334, 8, 268, 406);
+		scrollPane.setBounds(334, 8, 319, 406);
 		container.add(scrollPane);
 		
 		table = new JTable(1, 10);
@@ -180,7 +180,7 @@ public class EmployeeSchedule extends JDialog {
 		container.add(inLabel);
 		
 		inSpinner = new JSpinner(new SpinnerDateModel());
-		SimpleDateFormat model2 = new SimpleDateFormat("HH:mm aa");
+		SimpleDateFormat model2 = new SimpleDateFormat("hh:mm aa");
 		inSpinner.setEditor(new JSpinner.DateEditor(inSpinner, model2.toPattern()));
 		JComponent de_inSpinner = inSpinner.getEditor();
 		JSpinner.DefaultEditor spinnerEditor2 = (JSpinner.DefaultEditor)de_inSpinner;
@@ -194,7 +194,7 @@ public class EmployeeSchedule extends JDialog {
 		container.add(outLabel);
 		
 		outSpinner = new JSpinner(new SpinnerDateModel());
-		SimpleDateFormat model3 = new SimpleDateFormat("HH:mm aa");
+		SimpleDateFormat model3 = new SimpleDateFormat("hh:mm aa");
 		outSpinner.setEditor(new JSpinner.DateEditor(outSpinner, model3.toPattern()));
 		JComponent de_outSpinner = outSpinner.getEditor();
 		JSpinner.DefaultEditor spinnerEditor3 = (JSpinner.DefaultEditor)de_outSpinner;
@@ -256,7 +256,6 @@ public class EmployeeSchedule extends JDialog {
 						"Unknown Selection | " + Main.SYSTEM_NAME, 
 						JOptionPane.WARNING_MESSAGE);
 				} catch (NumberFormatException e2) {
-					e2.printStackTrace();
 					JOptionPane.showMessageDialog(null, 
 						"Please place back the employee id as the first column in the table.",
 						"Invalid Column | " + Main.SYSTEM_NAME, 
@@ -285,7 +284,6 @@ public class EmployeeSchedule extends JDialog {
 						"Unknown Selection | " + Main.SYSTEM_NAME, 
 						JOptionPane.WARNING_MESSAGE);
 				} catch (NumberFormatException e2) {
-					e2.printStackTrace();
 					JOptionPane.showMessageDialog(null, 
 						"Please place back the employee id as the first column in the table.",
 						"Invalid Column | " + Main.SYSTEM_NAME, 

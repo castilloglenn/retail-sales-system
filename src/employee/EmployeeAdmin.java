@@ -10,16 +10,21 @@ import java.awt.event.ComponentEvent;
 
 import utils.Database;
 import utils.Gallery;
+import utils.LogConstants;
 import utils.Logger;
 import utils.Utility;
 
 import java.awt.event.WindowStateListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.awt.event.WindowEvent;
 import javax.swing.JPopupMenu;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -68,7 +73,7 @@ public class EmployeeAdmin extends JFrame {
 		logTitle, scheduleTitle, payrollTitle, manageTitle, payrollInstruction,
 		scheduleInstruction;
 	private JButton manageSearchButton, manageAddButton, manageUpdateButton, manageDeleteButton,
-		payrollGenerate, payrollDelete;
+		payrollGenerate, payrollDelete, scheduleViewButton;
 	private JScrollPane manageScrollPane, payrollScrollPane;
 	private JMenuItem themeSwitcher, themeSwitcher_1;
 	private JComboBox<String> manageSearchCategory;
@@ -96,7 +101,7 @@ public class EmployeeAdmin extends JFrame {
 		employeeColumns[3], employeeColumns[4], employeeColumns[5]
 	};
 	private String[] scheduleColumns = {
-		"DATE", "SCHEDULE", "CREATED BY"
+		"ID", "DATE", "SCHEDULE", "CREATED BY"
 	};
 	
 	private Gallery gl;
@@ -107,6 +112,8 @@ public class EmployeeAdmin extends JFrame {
 	private long id;
 	
 	private JTable scheduleTable;
+	private JPopupMenu popupMenu_2;
+	private JMenuItem themeSwitcher_2;
 
 	public EmployeeAdmin(Gallery gl, Utility ut, Database db, Logger log, long id) {
 		this.gl = gl; this.ut = ut; this.db = db; this.log = log; this.id = id;
@@ -292,14 +299,20 @@ public class EmployeeAdmin extends JFrame {
 		sl_schedule.putConstraint(SpringLayout.SOUTH, scheduleScrollPane, -10, SpringLayout.SOUTH, schedule);
 		schedule.add(scheduleScrollPane);
 		
-		JButton scheduleViewButton = new JButton("VIEW");
+		scheduleViewButton = new JButton("VIEW");
 		scheduleViewButton.setFont(new Font("Tahoma", Font.BOLD, 12));
 		sl_schedule.putConstraint(SpringLayout.EAST, scheduleScrollPane, -10, SpringLayout.WEST, scheduleViewButton);
 		sl_schedule.putConstraint(SpringLayout.NORTH, scheduleViewButton, 0, SpringLayout.NORTH, scheduleScrollPane);
 		sl_schedule.putConstraint(SpringLayout.WEST, scheduleViewButton, -150, SpringLayout.EAST, schedule);
 		sl_schedule.putConstraint(SpringLayout.SOUTH, scheduleViewButton, 50, SpringLayout.NORTH, scheduleScrollPane);
 		
-		scheduleTable = new JTable(1, 3);
+		popupMenu_2 = new JPopupMenu();
+		addPopup(scheduleScrollPane, popupMenu_2);
+		
+		themeSwitcher_2 = new JMenuItem("Switch to Dark Theme");
+		popupMenu_2.add(themeSwitcher_2);
+		
+		scheduleTable = new JTable(1, 4);
 		scheduleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scheduleScrollPane.setViewportView(scheduleTable);
 		sl_schedule.putConstraint(SpringLayout.EAST, scheduleViewButton, -10, SpringLayout.EAST, schedule);
@@ -460,11 +473,6 @@ public class EmployeeAdmin extends JFrame {
 		
 		themeSwitcher_1 = new JMenuItem("Switch to Dark Theme");
 		popupMenu_1.add(themeSwitcher_1);
-		themeSwitcher_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				adjustTheme(true);
-			}
-		});
 		sl_manage.putConstraint(SpringLayout.WEST, manageCrud, 10, SpringLayout.WEST, manage);
 		sl_manage.putConstraint(SpringLayout.SOUTH, manageCrud, -10, SpringLayout.SOUTH, manage);
 		sl_manage.putConstraint(SpringLayout.EAST, manageCrud, -10, SpringLayout.EAST, manage);
@@ -499,9 +507,51 @@ public class EmployeeAdmin extends JFrame {
 				cl.show(display, "schedule");
 			}
 		});
+		scheduleViewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					String desc = scheduleTable.getValueAt(scheduleTable.getSelectedRow(), 2).toString();
+					JOptionPane.showMessageDialog(null, 
+						desc,
+						"View Schedule | " + Main.SYSTEM_NAME, 
+						JOptionPane.INFORMATION_MESSAGE);
+				} catch (ArrayIndexOutOfBoundsException e1) {
+					JOptionPane.showMessageDialog(null, 
+						"Please select a schedule row from the table provided.",
+						"Unknown Selection | " + Main.SYSTEM_NAME, 
+						JOptionPane.WARNING_MESSAGE);
+				}
+			}
+		});
 		scheduleCreateButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new EmployeeSchedule(gl, ut, db, log, id);
+			}
+		});
+		scheduleDeleteButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					long id = Long.parseLong(scheduleTable.getValueAt(scheduleTable.getSelectedRow(), 0).toString());
+					String date = scheduleTable.getValueAt(scheduleTable.getSelectedRow(), 1).toString();
+					String desc = scheduleTable.getValueAt(scheduleTable.getSelectedRow(), 2).toString();
+					int res = JOptionPane.showConfirmDialog(null, 
+						desc, 
+						"Delete Schedule? | " + Main.SYSTEM_NAME, 
+						JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+					if (res == 0) {
+						if (log.removeLog(id, date)) {
+							JOptionPane.showMessageDialog(null, 
+								"Schedule deleted successfully.",
+								"Schedule Deleted | " + Main.SYSTEM_NAME, 
+								JOptionPane.INFORMATION_MESSAGE);
+						}
+					}
+				} catch (ArrayIndexOutOfBoundsException e1) {
+					JOptionPane.showMessageDialog(null, 
+						"Please select a schedule row from the table provided.",
+						"Unknown Selection | " + Main.SYSTEM_NAME, 
+						JOptionPane.WARNING_MESSAGE);
+				}
 			}
 		});
 		payrollLabel.addActionListener(new ActionListener() {
@@ -573,6 +623,16 @@ public class EmployeeAdmin extends JFrame {
 				adjustTheme(true);
 			}
 		});
+		themeSwitcher_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				adjustTheme(true);
+			}
+		});
+		themeSwitcher_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				adjustTheme(true);
+			}
+		});
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowActivated(WindowEvent e) {
@@ -583,18 +643,21 @@ public class EmployeeAdmin extends JFrame {
 				centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 				for(int col=0; col < 10; col++){
 					manageTable.getColumnModel().getColumn(col).setCellRenderer(centerRenderer);
-					if (col < 3) {
+					if (col < 4) {
 						scheduleTable.getColumnModel().getColumn(col).setCellRenderer(centerRenderer);
-						if (col % 2 == 1) {
-							scheduleTable.getColumnModel().getColumn(col).setMinWidth(200);
-						} else {
-							scheduleTable.getColumnModel().getColumn(col).setMinWidth(50);
-						}
 					}
 			    };
 				adjustTheme(false);
 			}
-		});
+			@Override
+			public void windowClosing(WindowEvent e) {
+					DateFormat sdf = new SimpleDateFormat("HH:mm");
+					Date date = new Date();
+					String dt = "OUT: " + sdf.format(date);
+					
+					log.newLog(id, LogConstants.ATTENDANCE, LogConstants.MAIN, dt);
+				}
+			});
 		
 		adjustTheme(false);
 		setVisible(true);

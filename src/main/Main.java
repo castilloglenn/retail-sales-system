@@ -2,6 +2,7 @@ package main;
 
 import utils.Database;
 import utils.Gallery;
+import utils.LogConstants;
 import utils.Logger;
 import utils.Utility;
 
@@ -26,6 +27,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
@@ -69,16 +75,16 @@ public class Main {
 		db = new Database(ut);
 		log = new Logger(db, ut);
 
-//		if (db.fetchManagers() == 0) {
-//			new SetupSystem(gl, ut, db);
-//		} else {
-//			initialize();
-//		}
+		if (db.fetchManagers() == 0) {
+			new SetupSystem(gl, ut, db);
+		} else {
+			initialize();
+		}
 		
 //		======Tests========
 //		initialize();
 //		new SetupSystem(gl, ut, db);
-		new EmployeeAdmin(gl, ut, db, log, 55210406001L);
+//		new EmployeeAdmin(gl, ut, db, log, 55210406001L);
 	}
 
 	/**
@@ -206,8 +212,16 @@ public class Main {
 		submitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (checkFields()) {
-					// For attendance log, do the attendace checking algorithm.
+					DateFormat sdf = new SimpleDateFormat("HH:mm");
+					Date date = new Date();
+					String dt = "IN: " + sdf.format(date);
+					
+					log.newLog(Long.parseLong(new String(idField.getPassword())), LogConstants.ATTENDANCE, LogConstants.SUB, dt);
 					// Open Portal Here
+					
+					
+					
+					
 					mainFrame.setVisible(false);
 					new EmployeeAdmin(gl, ut, db, log, Long.parseLong(new String(idField.getPassword())));
 				}

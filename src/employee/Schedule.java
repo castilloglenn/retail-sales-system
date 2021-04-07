@@ -68,7 +68,7 @@ public class Schedule {
 	}
 	
 	public String format() {
-		StringBuilder sb = new StringBuilder("Schedule for the day:" + BR);
+		StringBuilder sb = new StringBuilder();
 		sb.append(((date == null) ? "" : date) + BR + BR);
 		
 		sb.append(elaborate("Managers", managers, timeManagers));

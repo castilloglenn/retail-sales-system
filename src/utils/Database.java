@@ -2,6 +2,7 @@ package utils;
 
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
@@ -360,6 +361,27 @@ public class Database {
 			e.printStackTrace();
 		}
 		return -1;
+	}
+	
+	public long[] fetchAllEmployeeID() {
+		try {
+			ps = con.prepareStatement(
+				  "SELECT employee_id "
+				+ "FROM employee;"
+			);
+			ResultSet rs = ps.executeQuery();
+			ArrayList<Long> ids = new ArrayList<>();
+			while (rs.next()) {
+				ids.add(rs.getLong(1));
+			}
+			long[] longlist = new long[ids.size()];
+			ids.forEach((id) -> longlist[ids.indexOf(id)] = id);
+			
+			return longlist;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	/**

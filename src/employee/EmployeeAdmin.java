@@ -10,6 +10,7 @@ import java.awt.event.ComponentEvent;
 
 import utils.Database;
 import utils.Gallery;
+import utils.LogConstants;
 import utils.Logger;
 import utils.Utility;
 
@@ -653,9 +654,9 @@ public class EmployeeAdmin extends JFrame {
 			public void windowClosing(WindowEvent e) {
 					DateFormat sdf = new SimpleDateFormat("HH:mm");
 					Date date = new Date();
-					sdf.format(date);
+					String dt = "OUT: " + sdf.format(date);
 					
-//					log.newLog(id, LogConstants.ATTENDANCE, LogConstants.MAIN, dt);
+					log.newLog(id, LogConstants.ATTENDANCE, LogConstants.MAIN, dt);
 			}
 		});
 		

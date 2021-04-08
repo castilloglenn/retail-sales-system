@@ -66,11 +66,10 @@ import javax.swing.JTextArea;
 public class EmployeeAdmin extends JFrame {
 
 	private JPanel container, contentPane, title, navigation, display, dashboard, manage,
-		payroll, schedule, notification, manageCrud;
-	private JToggleButton dashboardLabel, notificationLabel, 
+		payroll, schedule, manageCrud;
+	private JToggleButton dashboardLabel, 
 		manageLabel, scheduleLabel, payrollLabel;
-	private JLabel photo, titleTitle, dashboardTitle,
-		logTitle, scheduleTitle, payrollTitle, manageTitle, payrollInstruction,
+	private JLabel photo, titleTitle, dashboardTitle, scheduleTitle, payrollTitle, manageTitle, payrollInstruction,
 		scheduleInstruction;
 	private JButton manageSearchButton, manageAddButton, manageUpdateButton, manageDeleteButton,
 		payrollGenerate, payrollDelete, scheduleViewButton;
@@ -103,6 +102,9 @@ public class EmployeeAdmin extends JFrame {
 	private String[] scheduleColumns = {
 		"ID", "DATE", "SCHEDULE", "CREATED BY"
 	};
+	private String[] payrollColumns = {
+			"ID", "DATE", "PAYROLL", "CREATED BY"
+		};
 	
 	private Gallery gl;
 	private Utility ut;
@@ -184,24 +186,14 @@ public class EmployeeAdmin extends JFrame {
 		sl_navigation.putConstraint(SpringLayout.EAST, dashboardLabel, -10, SpringLayout.EAST, navigation);
 		navigation.add(dashboardLabel);
 		
-		notificationLabel = new JToggleButton("NOTIFICATIONS");
-		sl_navigation.putConstraint(SpringLayout.NORTH, notificationLabel, 6, SpringLayout.SOUTH, dashboardLabel);
-		sl_navigation.putConstraint(SpringLayout.WEST, notificationLabel, 10, SpringLayout.WEST, navigation);
-		sl_navigation.putConstraint(SpringLayout.EAST, notificationLabel, -10, SpringLayout.EAST, navigation);
-		notificationLabel.setFocusable(false);
-		notificationLabel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-		notificationLabel.setMargin(new Insets(10, 0, 10, 0));
-		notificationLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
-		navigation.add(notificationLabel);
-		
 		manageLabel = new JToggleButton("MANAGE");
+		sl_navigation.putConstraint(SpringLayout.WEST, manageLabel, 10, SpringLayout.WEST, navigation);
+		sl_navigation.putConstraint(SpringLayout.EAST, manageLabel, -10, SpringLayout.EAST, navigation);
 		manageLabel.setFocusable(false);
 		manageLabel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		manageLabel.setMargin(new Insets(10, 0, 10, 0));
 		sl_navigation.putConstraint(SpringLayout.SOUTH, manageLabel, -10, SpringLayout.SOUTH, navigation);
-		sl_navigation.putConstraint(SpringLayout.EAST, manageLabel, 0, SpringLayout.EAST, notificationLabel);
 		manageLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
-		sl_navigation.putConstraint(SpringLayout.WEST, manageLabel, 0, SpringLayout.WEST, dashboardLabel);
 		navigation.add(manageLabel);
 		
 		scheduleLabel = new JToggleButton("SCHEDULE");
@@ -256,30 +248,6 @@ public class EmployeeAdmin extends JFrame {
 		dashboardArea.setMargin(new Insets(10, 10, 10, 10));
 		sl_dashboard.putConstraint(SpringLayout.WEST, dashboardArea, 0, SpringLayout.WEST, dashboardTitle);
 		dashboard.add(dashboardArea);
-		
-		notification = new JPanel();
-		notification.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-		display.add(notification, "log");
-		SpringLayout sl_notification = new SpringLayout();
-		notification.setLayout(sl_notification);
-		
-		logTitle = new JLabel("NOTIFICATIONS");
-		logTitle.setFont(new Font("Tahoma", Font.BOLD, 16));
-		sl_notification.putConstraint(SpringLayout.NORTH, logTitle, 10, SpringLayout.NORTH, notification);
-		sl_notification.putConstraint(SpringLayout.WEST, logTitle, 10, SpringLayout.WEST, notification);
-		notification.add(logTitle);
-		
-		JTextArea logArea = new JTextArea();
-		sl_notification.putConstraint(SpringLayout.NORTH, logArea, 10, SpringLayout.SOUTH, logTitle);
-		sl_notification.putConstraint(SpringLayout.SOUTH, logArea, -10, SpringLayout.SOUTH, notification);
-		sl_notification.putConstraint(SpringLayout.EAST, logArea, -10, SpringLayout.EAST, notification);
-		logArea.setLineWrap(true);
-		logArea.setFocusable(false);
-		logArea.setEditable(false);
-		logArea.setMargin(new Insets(10, 10, 10, 10));
-		logArea.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		sl_notification.putConstraint(SpringLayout.WEST, logArea, 10, SpringLayout.WEST, notification);
-		notification.add(logArea);
 		
 		schedule = new JPanel();
 		schedule.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
@@ -377,7 +345,7 @@ public class EmployeeAdmin extends JFrame {
 		sl_payroll.putConstraint(SpringLayout.WEST, payrollDelete, 0, SpringLayout.WEST, payrollGenerate);
 		sl_payroll.putConstraint(SpringLayout.SOUTH, payrollDelete, 106, SpringLayout.NORTH, payrollScrollPane);
 		
-		payrollTable = new JTable(1, 5);
+		payrollTable = new JTable(1, 4);
 		payrollScrollPane.setViewportView(payrollTable);
 		payrollDelete.setFont(new Font("Tahoma", Font.BOLD, 12));
 		sl_payroll.putConstraint(SpringLayout.NORTH, payrollDelete, 6, SpringLayout.SOUTH, payrollGenerate);
@@ -495,12 +463,6 @@ public class EmployeeAdmin extends JFrame {
 				cl.show(display, "dashboard");
 			}
 		});
-		notificationLabel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				toggleOne(notificationLabel);
-				cl.show(display, "log");
-			}
-		});
 		scheduleLabel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				toggleOne(scheduleLabel);
@@ -562,7 +524,33 @@ public class EmployeeAdmin extends JFrame {
 		});
 		payrollGenerate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new Payroll(db, log, ut);
+				new Payroll(db, log, ut, id);
+			}
+		});
+		payrollDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					long id = Long.parseLong(payrollTable.getValueAt(payrollTable.getSelectedRow(), 0).toString());
+					String date = payrollTable.getValueAt(payrollTable.getSelectedRow(), 1).toString();
+					String desc = payrollTable.getValueAt(payrollTable.getSelectedRow(), 2).toString();
+					int res = JOptionPane.showConfirmDialog(null, 
+						desc, 
+						"Delete Payroll? | " + Main.SYSTEM_NAME, 
+						JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+					if (res == 0) {
+						if (log.removeLog(id, date)) {
+							JOptionPane.showMessageDialog(null, 
+								"Payroll deleted successfully.",
+								"Payroll Deleted | " + Main.SYSTEM_NAME, 
+								JOptionPane.INFORMATION_MESSAGE);
+						}
+					}
+				} catch (ArrayIndexOutOfBoundsException e1) {
+					JOptionPane.showMessageDialog(null, 
+						"Please select a payroll row from the table provided.",
+						"Unknown Selection | " + Main.SYSTEM_NAME, 
+						JOptionPane.WARNING_MESSAGE);
+				}
 			}
 		});
 		manageLabel.addActionListener(new ActionListener() {
@@ -643,6 +631,7 @@ public class EmployeeAdmin extends JFrame {
 			public void windowActivated(WindowEvent e) {
 				manageTable.setModel(queryDatabase("employee_id", ""));
 				scheduleTable.setModel(ut.generateTable(log.fetchSchedules(), scheduleColumns));
+				payrollTable.setModel(ut.generateTable(log.fetchPayrolls(), payrollColumns));
 				
 				DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 				centerRenderer.setHorizontalAlignment(JLabel.CENTER);
@@ -650,6 +639,7 @@ public class EmployeeAdmin extends JFrame {
 					manageTable.getColumnModel().getColumn(col).setCellRenderer(centerRenderer);
 					if (col < 4) {
 						scheduleTable.getColumnModel().getColumn(col).setCellRenderer(centerRenderer);
+						payrollTable.getColumnModel().getColumn(col).setCellRenderer(centerRenderer);
 					}
 			    };
 				adjustTheme(false);
@@ -716,7 +706,6 @@ public class EmployeeAdmin extends JFrame {
 		
 		ut.adjustFont(titleTitle, title, minTitle, 18);
 		ut.adjustFont(dashboardTitle, dashboard, minDisplay, 16);
-		ut.adjustFont(logTitle, notification, minDisplay, 16);
 		ut.adjustFont(scheduleTitle, schedule, minDisplay, 16);
 		ut.adjustFont(payrollTitle, payroll, minDisplay, 16);
 		ut.adjustFont(manageTitle, manage, minDisplay, 16);
@@ -769,8 +758,7 @@ public class EmployeeAdmin extends JFrame {
 	}
 	
 	private void toggleOne(JToggleButton enabled) {
-		JToggleButton[] list = {dashboardLabel, notificationLabel, 
-				manageLabel, scheduleLabel, payrollLabel};
+		JToggleButton[] list = {dashboardLabel, manageLabel, scheduleLabel, payrollLabel};
 		for (JToggleButton b : list) {
 			if (b != enabled) {
 				b.setSelected(false);

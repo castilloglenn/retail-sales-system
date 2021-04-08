@@ -26,8 +26,9 @@ public class Logger {
 	private PreparedStatement ps;
 	
 	private String[] logTypes = {
+			"PAYROLL",
 			"PRODUCT INQUIRY",
-			"ATTENDACE",
+			"ATTENDANCE",
 			"LATE/ABSENT",
 			"LOST PASSWORD",
 			"SCHEDULE",
@@ -53,7 +54,7 @@ public class Logger {
 				db.fetchLastLog(), type, messagePart)
 			);
 			ps.setLong(2, employee);
-			ps.setString(3, logTypes[type - 1]);
+			ps.setString(3, logTypes[type]);
 			ps.setString(4, description);
 			ps.executeUpdate();
 			return true;
@@ -108,11 +109,56 @@ public class Logger {
 		return empty;
 	}
 	
+	public Object[][] fetchPayrolls() {
+		Object[][] empty = new Object[][] {{}};
+		try {
+			ps = con.prepareStatement(
+				  "SELECT COUNT(*) "
+				+ "FROM logs "
+				+ "WHERE log_id "
+				+ "BETWEEN 101000000010 "
+				+ "AND 111000000010 "
+				+ "AND log_id % 10 = 0;"
+			);
+			ResultSet count = ps.executeQuery();
+			count.next();
+			
+			if (count.getInt(1) == 0) return empty;
+			
+			ps = con.prepareStatement(
+				  "SELECT `log_id`, `date`, `description`, `employee_id`"
+				+ "FROM logs "
+				+ "WHERE log_id "
+				+ "BETWEEN 101000000010 "
+				+ "AND 111000000010 "
+				+ "AND log_id % 10 = 0;"
+			);
+			ResultSet data = ps.executeQuery();
+			Object[][] fetched = new Object[count.getInt(1)][4];
+			
+			int index = 0;
+			while (data.next()) {
+				Object[] row = new Object[4];
+				row[0] = data.getLong(1);
+				row[1] = data.getString(2);
+				row[2] = data.getString(3);
+				row[3] = db.fetchEmployeeByID(data.getLong(4))[3];
+				fetched[index] = row;
+				index++;
+			}
+			
+			return fetched;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return empty;
+	}
+	
 	public boolean removeLog(long id, String date) {
 		try {
 			ps = con.prepareStatement(
 				  "DELETE FROM logs "
-				+ "WHERE log_id <= ? "
+				+ "WHERE log_id = ? "
 				+ "AND date = ?;"
 			);
 			ps.setLong(1, id);
@@ -213,6 +259,7 @@ public class Logger {
 				  "SELECT date "
 				+ "FROM logs "
 				+ "WHERE employee_id = ? "
+				+ "AND type = \"ATTENDANCE\" "
 				+ "AND date "
 				+ "BETWEEN ?"
 				+ "AND ? "

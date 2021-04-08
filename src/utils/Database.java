@@ -16,6 +16,7 @@ public class Database {
 	public final double SSS_RATE = 0.045;
 	public final double PHILHEALTH_RATE = 0.035;
 	public final double PAGIBIG_RATE = 100;
+	public final double LATE_FEE = 50;
 
 	private String db_url;
 	private String db_name;
@@ -93,7 +94,7 @@ public class Database {
 					+ "log_id BIGINT PRIMARY KEY,"
 					+ "employee_id BIGINT NOT NULL,"
 					+ "type VARCHAR(255) NOT NULL,"
-					+ "description VARCHAR(1024) NOT NULL,"
+					+ "description VARCHAR(4096) NOT NULL,"
 					+ "date DATETIME NOT NULL,"
 					+ "FOREIGN KEY (employee_id)"
 					+ "REFERENCES employee(employee_id)"
@@ -401,7 +402,7 @@ public class Database {
 			ResultSet details = ps.executeQuery();
 			details.next();
 			if (details.getLong(1) != 0) {
-				Object[] data = new Object[7];
+				Object[] data = new Object[10];
 				data[0] = details.getString(2);
 				data[1] = details.getString(3);
 				data[2] = details.getString(4);
@@ -409,6 +410,9 @@ public class Database {
 				data[4] = details.getString(6);
 				data[5] = details.getDouble(7);
 				data[6] = details.getString(11);
+				data[7] = details.getDouble(8);
+				data[8] = details.getDouble(9);
+				data[9] = details.getDouble(10);
 				return data;
 			}
 		} catch (SQLException e) {}
@@ -437,7 +441,7 @@ public class Database {
 	public long fetchLastLog() {
 		try {
 			long max = 0;
-			for (int type = 1; type <= 9; type++) {
+			for (int type = 0; type <= 9; type++) {
 				ps = con.prepareStatement(
 					  "SELECT MAX(log_id) "
 					+ "FROM logs "

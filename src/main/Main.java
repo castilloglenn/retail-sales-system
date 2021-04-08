@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
 import employee.EmployeeAdmin;
+import inventory.InventoryDashboard;
 
 import javax.swing.JPasswordField;
 import java.awt.Cursor;
@@ -84,7 +85,8 @@ public class Main {
 //		======Tests========
 //		initialize();
 //		new SetupSystem(gl, ut, db);
-		new EmployeeAdmin(gl, ut, db, log, 55210406001L);
+//		new EmployeeAdmin(gl, ut, db, log, 55210406001L);
+		new InventoryDashboard(gl, ut, db, log, 55210406001L);
 	}
 
 	/**

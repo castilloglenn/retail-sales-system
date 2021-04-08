@@ -4,6 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -132,7 +137,9 @@ public class Logger {
 				ps = con.prepareStatement(
 					  "SELECT log_id "
 					+ "FROM logs "
-					+ "WHERE employee_id = ?"
+					+ "WHERE employee_id = ? "
+					+ "AND type = \"SCHEDULE\" "
+					+ "AND log_id % 10 = 1;"
 				);
 				ps.setLong(1, id);
 				ResultSet log_ids = ps.executeQuery();
@@ -200,28 +207,51 @@ public class Logger {
 		return null;
 	}
 	
-	public String[] parseAttendanceDateTime(long log_id) {
-		if (log_id % 10 == 0) return null;
+	public String[] parseAttendanceDateTime(long emp_id, String date) {
 		try {
 			ps = con.prepareStatement(
-				  "SELECT description "
+				  "SELECT date "
 				+ "FROM logs "
-				+ "WHERE log_id = ("
-					+ "SELECT log_id "
-					+ "FROM logs "
-					+ "WHERE log_id >= ? "
-					+ "AND log_id % 10 = 0 "
-					+ "LIMIT 1"
-				+ ");"
+				+ "WHERE employee_id = ? "
+				+ "AND date "
+				+ "BETWEEN ?"
+				+ "AND ? "
+				+ "LIMIT 2;"
 			);
-			ps.setLong(1, log_id);
-			ResultSet dates = ps.executeQuery();
-			dates.next();
-			String in = 
-		} catch (SQLException e) {
-			e.printStackTrace();
+			
+			date = date.substring(6) + "/" + date.substring(0, 5);
+			date += " 00:00:00";
+			DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			Date from = sdf.parse(date);
+			Calendar c = Calendar.getInstance();
+			c.setTime(from);
+			c.add(Calendar.DAY_OF_MONTH, 1);
+			Date to = c.getTime();
+			String fromString = sdf.format(from);
+			String toString = sdf.format(to);
+			
+			ps.setLong(1, emp_id);
+			ps.setString(2, fromString);
+			ps.setString(3, toString);
+			
+			ResultSet rs = ps.executeQuery();
+			String[] attendance = new String[2];
+			String[] entry = new String[3];
+			int index = 0;
+			while (rs.next()) {
+				if (rs.getString(1) == null) break;
+				attendance[index] = rs.getString(1);
+				index++;
+			}
+			
+			entry[0] = attendance[0].substring(0, 10);
+			entry[1] = attendance[0].substring(11, 16);
+			entry[2] = attendance[1].substring(11, 16);
+			
+			return entry;
+		} catch (SQLException | ParseException | NullPointerException e) {
+			return null;
 		}
-		return null;
 	}
 	
 }

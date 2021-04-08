@@ -93,7 +93,7 @@ public class Database {
 					+ "log_id BIGINT PRIMARY KEY,"
 					+ "employee_id BIGINT NOT NULL,"
 					+ "type VARCHAR(255) NOT NULL,"
-					+ "description VARCHAR(512) NOT NULL,"
+					+ "description VARCHAR(1024) NOT NULL,"
 					+ "date DATETIME NOT NULL,"
 					+ "FOREIGN KEY (employee_id)"
 					+ "REFERENCES employee(employee_id)"

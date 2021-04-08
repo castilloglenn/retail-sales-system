@@ -79,7 +79,7 @@ public class EmployeeSchedule extends JDialog {
 	
 	public EmployeeSchedule(Gallery gl, Utility ut, Database db, Logger log, long id) {
 		this.gl = gl; this.ut = ut; this.db = db; this.log = log; this.id = id;
-		sc = new Schedule(db, log);
+		sc = new Schedule(db, log, ut);
 		
 		setTitle("New Schedule | " + Main.SYSTEM_NAME);
 		setIconImage(gl.businessLogo);

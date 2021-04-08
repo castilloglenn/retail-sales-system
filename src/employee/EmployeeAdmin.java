@@ -560,6 +560,11 @@ public class EmployeeAdmin extends JFrame {
 				cl.show(display, "payroll");
 			}
 		});
+		payrollGenerate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new Payroll(db, log, ut);
+			}
+		});
 		manageLabel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				toggleOne(manageLabel);
@@ -655,7 +660,7 @@ public class EmployeeAdmin extends JFrame {
 					Date date = new Date();
 					String dt = "OUT: " + sdf.format(date);
 					
-					log.newLog(id, LogConstants.ATTENDANCE, LogConstants.MAIN, dt);
+//					log.newLog(id, LogConstants.ATTENDANCE, LogConstants.MAIN, dt);
 				}
 			});
 		

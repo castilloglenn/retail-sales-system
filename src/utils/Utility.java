@@ -140,6 +140,35 @@ public class Utility {
 		return null;
 	}
 	
+	public String readFile(String title) {
+		try {
+			File myObj = new File("./public/" + title + ".txt");
+			Scanner myReader = new Scanner(myObj);
+			
+			StringBuilder sb = new StringBuilder();
+			while (myReader.hasNextLine()) {
+				sb.append(myReader.nextLine());
+				sb.append("\n");
+			}
+			myReader.close();
+			return sb.toString();
+	    } catch (FileNotFoundException e) {
+	      e.printStackTrace();
+	    }
+		return null;
+	}
+	
+	public void writeFile(String title, String message) {
+		File f = new File("./public/" + title + ".txt");
+        try {
+            FileOutputStream fos = new FileOutputStream(f);
+            fos.write(message.getBytes());
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+	}
+	
 	public void copyToClipboard(String text) {
 		StringSelection ss = new StringSelection(text);
 		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();

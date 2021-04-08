@@ -75,16 +75,16 @@ public class Main {
 		db = new Database(ut);
 		log = new Logger(db, ut);
 
-		if (db.fetchManagers() == 0) {
-			new SetupSystem(gl, ut, db);
-		} else {
-			initialize();
-		}
+//		if (db.fetchManagers() == 0) {
+//			new SetupSystem(gl, ut, db);
+//		} else {
+//			initialize();
+//		}
 		
 //		======Tests========
 //		initialize();
 //		new SetupSystem(gl, ut, db);
-//		new EmployeeAdmin(gl, ut, db, log, 55210406001L);
+		new EmployeeAdmin(gl, ut, db, log, 55210406001L);
 	}
 
 	/**

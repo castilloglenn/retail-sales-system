@@ -6,6 +6,7 @@ import java.util.HashMap;
 import utils.Database;
 import utils.LogConstants;
 import utils.Logger;
+import utils.Utility;
 
 public class Schedule {
 	
@@ -21,9 +22,10 @@ public class Schedule {
 	
 	private Database db;
 	private Logger log;
+	private Utility ut;
 	
-	public Schedule(Database db, Logger log) {
-		this.db = db; this.log = log;
+	public Schedule(Database db, Logger log, Utility ut) {
+		this.db = db; this.log = log; this.ut = ut;
 		managers = new ArrayList<>();
 		seniorSupers = new ArrayList<>();
 		juniorSupers = new ArrayList<>();
@@ -54,6 +56,9 @@ public class Schedule {
 		logEach(storeAssistants, timeStoreAssistants);
 		
 		log.newLog(manager_id, LogConstants.SCHEDULE, LogConstants.MAIN, format);
+		ut.writeFile(
+			"Schedule for " + date.substring(0, 2) + "-" + date.substring(3, 5) + "-"
+				+ date.substring(6), format);
 		return true;
 	}
 	

@@ -10,7 +10,6 @@ import java.awt.event.ComponentEvent;
 
 import utils.Database;
 import utils.Gallery;
-import utils.LogConstants;
 import utils.Logger;
 import utils.Utility;
 
@@ -33,6 +32,7 @@ import java.awt.CardLayout;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
 
@@ -55,6 +55,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.border.TitledBorder;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 
 
 /**
@@ -76,10 +77,13 @@ public class EmployeeAdmin extends JFrame {
 	private JScrollPane manageScrollPane, payrollScrollPane;
 	private JMenuItem themeSwitcher, themeSwitcher_1;
 	private JComboBox<String> manageSearchCategory;
+	private JPopupMenu popupMenu_1, popupMenu_2;
 	private JTable manageTable, payrollTable;
 	private JTextField manageSearchField;
 	private SpringLayout sl_contentPane;
-	private JPopupMenu popupMenu_1;
+	private JMenuItem themeSwitcher_2;
+	private JTextArea dashboardArea;
+	private JTable scheduleTable;
 	private JSeparator separator;
 	private CardLayout cl;
 	
@@ -109,21 +113,14 @@ public class EmployeeAdmin extends JFrame {
 	private Gallery gl;
 	private Utility ut;
 	private Database db;
-	private Logger log;
 	
-	private long id;
-	
-	private JTable scheduleTable;
-	private JPopupMenu popupMenu_2;
-	private JMenuItem themeSwitcher_2;
-
 	public EmployeeAdmin(Gallery gl, Utility ut, Database db, Logger log, long id) {
-		this.gl = gl; this.ut = ut; this.db = db; this.log = log; this.id = id;
+		this.gl = gl; this.ut = ut; this.db = db;  
 		
 		setTitle("Employee Management | " + Main.SYSTEM_NAME);
 		setIconImage(gl.businessLogo);
 		setMinimumSize(new Dimension(640, 480));
-		setSize(640, 480);
+		setSize(900, 550);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		
@@ -240,14 +237,20 @@ public class EmployeeAdmin extends JFrame {
 		sl_dashboard.putConstraint(SpringLayout.WEST, dashboardTitle, 10, SpringLayout.WEST, dashboard);
 		dashboard.add(dashboardTitle);
 		
-		JTextArea dashboardArea = new JTextArea();
-		sl_dashboard.putConstraint(SpringLayout.NORTH, dashboardArea, 10, SpringLayout.SOUTH, dashboardTitle);
-		sl_dashboard.putConstraint(SpringLayout.SOUTH, dashboardArea, -10, SpringLayout.SOUTH, dashboard);
-		sl_dashboard.putConstraint(SpringLayout.EAST, dashboardArea, -10, SpringLayout.EAST, dashboard);
-		dashboardArea.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		sl_dashboard.putConstraint(SpringLayout.NORTH, scrollPane, 10, SpringLayout.SOUTH, dashboardTitle);
+		sl_dashboard.putConstraint(SpringLayout.WEST, scrollPane, 10, SpringLayout.WEST, dashboard);
+		sl_dashboard.putConstraint(SpringLayout.SOUTH, scrollPane, -10, SpringLayout.SOUTH, dashboard);
+		sl_dashboard.putConstraint(SpringLayout.EAST, scrollPane, -10, SpringLayout.EAST, dashboard);
+		dashboard.add(scrollPane);
+		
+		dashboardArea = new JTextArea();
+		dashboardArea.setWrapStyleWord(true);
+		dashboardArea.setFocusable(false);
 		dashboardArea.setMargin(new Insets(10, 10, 10, 10));
-		sl_dashboard.putConstraint(SpringLayout.WEST, dashboardArea, 0, SpringLayout.WEST, dashboardTitle);
-		dashboard.add(dashboardArea);
+		dashboardArea.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		scrollPane.setViewportView(dashboardArea);
 		
 		schedule = new JPanel();
 		schedule.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
@@ -629,6 +632,8 @@ public class EmployeeAdmin extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowActivated(WindowEvent e) {
+				dashboardArea.setText(log.getDashboard());
+				dashboardArea.setCaretPosition(0);
 				manageTable.setModel(queryDatabase("employee_id", ""));
 				scheduleTable.setModel(ut.generateTable(log.fetchSchedules(), scheduleColumns));
 				payrollTable.setModel(ut.generateTable(log.fetchPayrolls(), payrollColumns));
@@ -648,11 +653,19 @@ public class EmployeeAdmin extends JFrame {
 			public void windowClosing(WindowEvent e) {
 					DateFormat sdf = new SimpleDateFormat("HH:mm");
 					Date date = new Date();
-					String dt = "OUT: " + sdf.format(date);
+					sdf.format(date);
 					
 //					log.newLog(id, LogConstants.ATTENDANCE, LogConstants.MAIN, dt);
-				}
-			});
+			}
+		});
+		
+		Timer timer = new Timer(1000, new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dashboardArea.setText(log.getDashboard());
+				dashboardArea.setCaretPosition(0);
+			}
+		});
+		timer.start();
 		
 		adjustTheme(false);
 		setVisible(true);

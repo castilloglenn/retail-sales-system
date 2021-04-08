@@ -12,7 +12,6 @@ import org.w3c.dom.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.math.BigInteger;
-import java.util.Base64;
 import java.util.Calendar;
 import java.io.FileOutputStream;
 import java.awt.Font;

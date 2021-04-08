@@ -25,10 +25,9 @@ public class Payroll {
 
 	private Database db;
 	private Logger log;
-	private Utility ut;
 	
 	public Payroll(Database db, Logger log, Utility ut, long manager_id) {
-		this.db = db; this.log = log; this.ut = ut;
+		this.db = db; this.log = log; 
 		schedules = log.getEmployeeScheduleMap(db.fetchAllEmployeeID());
 		setCutoffs();
 		generatePayroll();
@@ -102,8 +101,7 @@ public class Payroll {
 				double deductions = Double.parseDouble(emp[9].toString());
 				
 				for (String date : daySched.keySet()) {
-					String[] inAndOuts = daySched.get(date);
-					// for more accurate calculations here
+					daySched.get(date);
 					
 					String[] result = log.parseAttendanceDateTime(employee_id, date);
 					if (result != null) {

@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
+
 
 /**
  * 
@@ -171,10 +171,6 @@ public class Logger {
 		return false;
 	}
 	
-	public boolean checkScheduleLog(String date) {
-		return false;
-	}
-	
 	public HashMap<Long, HashMap<String, String[]>> getEmployeeScheduleMap(long[] ids) {
 		HashMap<Long, HashMap<String, String[]>> schedules = new HashMap<>();
 		for (long id : ids) {
@@ -299,6 +295,35 @@ public class Logger {
 		} catch (SQLException | ParseException | NullPointerException e) {
 			return null;
 		}
+	}
+	
+	public String getDashboard() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT * FROM logs ORDER BY date DESC;"
+			);
+			ResultSet logs = ps.executeQuery();
+			logs.next();
+			if (logs.getString(2) == null) return "No logs... yet.";
+			StringBuilder sb = new StringBuilder();
+			do {
+				Object[] author = db.fetchEmployeeByID(logs.getLong(2));
+				String message = logs.getString(4).replace("\n", "");
+				sb.append(
+					String.format("[%s] %s: %s by %s\n", 
+						logs.getString(5), logs.getString(3), 
+						(message.length() > 15) ? 
+						message.substring(0, 15) : message,
+						author[1] + " " + author[2] + " " + author[3]
+					)
+				);
+			} while (logs.next());
+			
+			return sb.toString();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "System error";
 	}
 	
 }

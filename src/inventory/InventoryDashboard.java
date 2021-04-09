@@ -84,7 +84,7 @@ public class InventoryDashboard extends JFrame {
 		setTitle("Inventory Management | " + Main.SYSTEM_NAME);
 		setIconImage(gl.businessLogo);
 		setMinimumSize(new Dimension(600, 400));
-		setSize(600, 500);
+		setSize(900, 550);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
 
@@ -105,7 +105,7 @@ public class InventoryDashboard extends JFrame {
 		sl_container = new SpringLayout();
 		container.setLayout(sl_container);
 		
-		title = new JLabel("MANAGE PRODUCT INVENTORY");
+		title = new JLabel("PRODUCT INVENTORY");
 		sl_container.putConstraint(SpringLayout.NORTH, title, 10, SpringLayout.NORTH, container);
 		sl_container.putConstraint(SpringLayout.WEST, title, 10, SpringLayout.WEST, container);
 		title.setFont(new Font("Tahoma", Font.BOLD, 20));
@@ -191,11 +191,12 @@ public class InventoryDashboard extends JFrame {
 		sl_container.putConstraint(SpringLayout.SOUTH, scrollPane, -10, SpringLayout.SOUTH, container);
 		scrollPane.setViewportBorder(null);
 		container.add(scrollPane);
+		addPopup(scrollPane, popupMenu);
 		
 		buttonsPanel = new JPanel();
+		sl_container.putConstraint(SpringLayout.WEST, buttonsPanel, -100, SpringLayout.EAST, container);
 		sl_container.putConstraint(SpringLayout.EAST, scrollPane, -10, SpringLayout.WEST, buttonsPanel);
 		sl_container.putConstraint(SpringLayout.NORTH, buttonsPanel, 0, SpringLayout.NORTH, scrollPane);
-		sl_container.putConstraint(SpringLayout.WEST, buttonsPanel, -130, SpringLayout.EAST, container);
 		
 		table = new JTable(1, 7);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -208,17 +209,17 @@ public class InventoryDashboard extends JFrame {
 		container.add(buttonsPanel);
 		buttonsPanel.setLayout(new GridLayout(0, 1, 0, 0));
 		
-		insertButton = new JButton("NEW PRODUCT");
+		insertButton = new JButton("NEW");
 		insertButton.setMargin(new Insets(2, 2, 2, 2));
 		insertButton.setFont(new Font("Tahoma", Font.BOLD, 10));
 		buttonsPanel.add(insertButton);
 		
-		manageButton = new JButton("MANAGE PRODUCT");
+		manageButton = new JButton("MANAGE");
 		manageButton.setMargin(new Insets(2, 2, 2, 2));
 		manageButton.setFont(new Font("Tahoma", Font.BOLD, 10));
 		buttonsPanel.add(manageButton);
 		
-		statisticsButton = new JButton("SHOW STATISTICS");
+		statisticsButton = new JButton("STATISTICS");
 		statisticsButton.setMargin(new Insets(2, 2, 2, 2));
 		statisticsButton.setFont(new Font("Tahoma", Font.BOLD, 10));
 		buttonsPanel.add(statisticsButton);
@@ -254,6 +255,16 @@ public class InventoryDashboard extends JFrame {
 		insertButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new InventoryNew(gl, ut, db);
+			}
+		});
+		manageButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new InventoryManage(gl, ut, db);
+			}
+		});
+		statisticsButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new InventoryStatistics(gl, db);
 			}
 		});
 		addWindowStateListener(new WindowStateListener() {

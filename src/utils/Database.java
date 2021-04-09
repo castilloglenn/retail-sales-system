@@ -279,6 +279,40 @@ public class Database {
 		return false;
 	}
 	
+	public boolean updateProduct(long product_id, String[] columns, Object[] datas) {
+		if (columns.length != datas.length) return false;
+		
+		int totalUpdated = 0;
+		for (int index = 0; index < columns.length; index++) {
+			try {
+				ps = con.prepareStatement(
+					String.format(
+						"UPDATE product"
+						+ " SET %s = ?"
+						+ " WHERE product_id = ?;"
+					, columns[index]));
+				
+				switch (columns[index]) {
+					case "category": case "uom": case "name":
+						ps.setString(1, datas[index].toString());
+						break;
+					case "quantity": case "purchase_value": case "sell_value":
+						ps.setDouble(1, Double.parseDouble(datas[index].toString()));
+						break;
+				}
+				
+				ps.setLong(2, product_id);
+				ps.executeUpdate();
+				totalUpdated++;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		
+		return (totalUpdated == columns.length);
+	}
+	
 	public boolean deleteEntry(String table, String column, long id) {
 		try {
 			ps = con.prepareStatement(
@@ -439,6 +473,31 @@ public class Database {
 		return null;
 	}
 	
+	public Object[] fetchProductByID(long product_id) {
+		try {
+			ps = con.prepareStatement(
+				  "SELECT * "
+				+ "FROM product "
+				+ "WHERE product_id = ?;"
+			);
+			ps.setLong(1, product_id);
+			ResultSet details = ps.executeQuery();
+			details.next();
+			if (details.getLong(1) != 0) {
+				Object[] data = new Object[7];
+				data[0] = details.getLong(1);
+				data[1] = details.getString(2);
+				data[2] = details.getDouble(3);
+				data[3] = details.getString(4);
+				data[4] = details.getString(5);
+				data[5] = details.getDouble(6);
+				data[6] = details.getDouble(7);
+				return data;
+			}
+		} catch (SQLException e) {}
+		return null;
+	}
+	
 	public long fetchLastIDByTable(String table, String idColumn) {
 		try {
 			ResultSet pid = stmt.executeQuery(
@@ -588,6 +647,279 @@ public class Database {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public int fetchTotalCount() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT COUNT(product_id) FROM product;"
+			);
+			ResultSet count = ps.executeQuery();
+			count.next();
+			return count.getInt(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public double fetchPurchaseValueByName(String name) {
+		if (name == null) return -1;
+		try {
+			ps = con.prepareStatement(
+				"SELECT purchase_value FROM product"
+				+ " WHERE name=?;"
+			);
+			ps.setString(1, name);
+			ResultSet value = ps.executeQuery();
+			if (value.next()) return value.getDouble(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public double fetchSellValueByName(String name) {
+		if (name == null) return -1;
+		try {
+			ps = con.prepareStatement(
+				"SELECT sell_value FROM product"
+				+ " WHERE name=?;"
+			);
+			ps.setString(1, name);
+			ResultSet value = ps.executeQuery();
+			if (value.next()) return value.getDouble(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public String fetchMaxPurchaseValue() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT name FROM product"
+				+ " WHERE purchase_value = ("
+					+ "SELECT MAX(purchase_value) "
+					+ "FROM product"
+					+ ");"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getString(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String fetchMinPurchaseValue() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT name FROM product"
+				+ " WHERE purchase_value = ("
+					+ "SELECT MIN(purchase_value) "
+					+ "FROM product"
+					+ ");"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getString(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String fetchMaxSellValue() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT name FROM product"
+				+ " WHERE sell_value = ("
+					+ "SELECT MAX(sell_value) "
+					+ "FROM product"
+					+ ");"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getString(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String fetchMinSellValue() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT name FROM product"
+				+ " WHERE sell_value = ("
+					+ "SELECT MIN(sell_value) "
+					+ "FROM product"
+					+ ");"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getString(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String fetchProductMaxStock() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT name FROM product"
+				+ " WHERE quantity = ("
+					+ "SELECT MAX(quantity) "
+					+ "FROM product"
+					+ ");"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getString(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String fetchProductMinStock() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT name FROM product"
+				+ " WHERE quantity = ("
+					+ "SELECT MIN(quantity) "
+					+ "FROM product"
+					+ ");"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getString(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public double fetchSumQuantity() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT SUM(quantity) FROM product;"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getDouble(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public String fetchCategoryMostProduct() {
+		String[] categories = fetchProductCategories();
+		if (categories == null) return null;
+		
+		String category = "";
+		int max = 0;
+		
+		for (String c : categories) {
+			try {
+				ps = con.prepareStatement(
+					"SELECT COUNT(product_id) "
+					+ " FROM product"
+					+ " WHERE category=?"
+				);
+				ps.setString(1, c);
+				ResultSet candidate = ps.executeQuery();
+				if (candidate.next()) {
+					if (max == 0 || candidate.getInt(1) >= max) {
+						category = c;
+						max = candidate.getInt(1);
+					} 
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return (category == "") ? null : category;
+	}
+	
+	public String fetchCategoryLeastProduct() {
+		String[] categories = fetchProductCategories();
+		if (categories == null) return null;
+		
+		String category = "";
+		int min = 0;
+		
+		for (String c : categories) {
+			try {
+				ps = con.prepareStatement(
+					"SELECT COUNT(product_id) "
+					+ " FROM product"
+					+ " WHERE category=?"
+				);
+				ps.setString(1, c);
+				ResultSet candidate = ps.executeQuery();
+				if (candidate.next()) {
+					if (min == 0 || candidate.getInt(1) <= min) {
+						category = c;
+						min = candidate.getInt(1);
+					} 
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return (category == "") ? null : category;
+	}
+	
+	public double fetchAveragePurchasePrice() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT AVG(purchase_value) FROM product;"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getDouble(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public double fetchAverageSellingPrice() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT AVG(sell_value) FROM product;"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getDouble(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public double fetchSumProductPurchase() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT SUM(purchase_value * quantity) FROM product;"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getDouble(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public double fetchSumProductSell() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT SUM(sell_value * quantity) FROM product;"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getDouble(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
 	}
 	
 }

@@ -112,7 +112,7 @@ public class EmployeeSchedule extends JDialog {
 		table = new JTable(1, 10);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		table.setModel(ut.generateTable(db.fetchDataQuery("employee", "employee_id", ""), employeeColumns));
+		table.setModel(ut.generateTable(db.fetchDataQuery("employee", "employee_id", "", "employee_id", "ASC"), employeeColumns));
 		
 		for (int col = 0; col < employeeColumns.length; col++) {
 			table.getColumnModel().getColumn(col).setMinWidth(100);

@@ -691,7 +691,7 @@ public class EmployeeAdmin extends JFrame {
 	}
 	
 	private DefaultTableModel queryDatabase(String column, String query) {
-		Object[][] rows = db.fetchDataQuery("employee", column, query);
+		Object[][] rows = db.fetchDataQuery("employee", column, query, column, "ASC");
 		if (rows == null) return ut.generateTable(new Object[][] {{}}, employeeColumns);
 		
 		Object[][] data = new Object[rows.length][10];

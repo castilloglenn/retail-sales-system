@@ -15,10 +15,9 @@ ex: 9210325001 ===== len(10)
  001 = autoincrement 1 is first, 2 is second etc..
 ====================================================
 PRODUCT BIGINT(20) MAX: 9223372036854775807
-ex: 8001210325001 ==== len(13)
-    8-001-21-03-25-001
+ex: 8210325001 ==== len(10)
+    8-21-03-25-001
  8 = Product Code
- 001 = Supplier's autoincrement code
  21 = Year
  03 = Month
  25 = Day

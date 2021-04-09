@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
@@ -188,6 +189,14 @@ public class Gallery {
 			}
 		} else if (component instanceof JCheckBox ||
 				component instanceof JComboBox) {
+			if (isDark) {
+				component.setBackground(DPANEL_BACKGROUND);
+				component.setForeground(DFONT);
+			} else {
+				component.setBackground(LPANEL_BACKGROUND);
+				component.setForeground(LFONT);
+			}
+		} else if (component instanceof JList) {
 			if (isDark) {
 				component.setBackground(DPANEL_BACKGROUND);
 				component.setForeground(DFONT);

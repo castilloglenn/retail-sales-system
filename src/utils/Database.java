@@ -219,6 +219,25 @@ public class Database {
 		return false;
 	}
 	
+	public int insertNewProduct(long product_id, String category, double quantity, 
+			String uom, String name, double purchase_value, double sell_value) 
+		throws SQLException {
+			ps = con.prepareStatement(
+				  "INSERT INTO product "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?);"
+			);
+			ps.setLong(1, product_id);
+			ps.setString(2, category);
+			ps.setDouble(3, quantity);
+			ps.setString(4, uom);
+			ps.setString(5, name);
+			ps.setDouble(6, purchase_value);
+			ps.setDouble(7, sell_value);
+			
+			return ps.executeUpdate();
+			
+	}
+	
 	public boolean updateExistingEmployee(Object[] data) {
 		// data format: id, position, fname, mname, lname, adress, basic, password
 		// data index:   0,        1,     2,     3,     4,      5,     6,		 7
@@ -311,7 +330,7 @@ public class Database {
 		return -1;
 	}
 	
-	public Object[][] fetchDataQuery(String table, String column, String query) {
+	public Object[][] fetchDataQuery(String table, String column, String query, String sort, String order) {
 		try {
 			int size = fetchDataQueryCount(table, column, query);
 			if (size != 0) {
@@ -321,7 +340,8 @@ public class Database {
 					+ "FROM " + table + " "
 					+ "WHERE " + column + " "
 					+ "LIKE \"%" + query + "%\" "
-					+ "ORDER BY " + column + " ASC;"
+					+ "ORDER BY " + sort + " "
+					+ order + ";"
 				);
 				
 				int index = 0;
@@ -530,6 +550,44 @@ public class Database {
 			e.printStackTrace();
 		}
 		return -1;
+	}
+	
+	public long fetchLastEntryByTable(String table, String column) {
+		try {
+			ps = con.prepareStatement(
+				  "SELECT MAX(" + column + ") "
+				+ "FROM " + table + ";"
+			);
+			
+			ResultSet pid = ps.executeQuery();
+			pid.next();
+			if (pid.getLong(1) != 0) return pid.getLong(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public String[] fetchProductCategories() {
+		try {
+			ps = con.prepareStatement(
+				  "SELECT DISTINCT category "
+				+ "FROM product "
+				+ "ORDER BY category;"
+			);
+			ResultSet categories = ps.executeQuery();
+			ArrayList<String> temp = new ArrayList<>();
+			while (categories.next()) {
+				temp.add(categories.getString(1));
+			}
+			if (temp.toArray(new String[0]).length == 0)
+				return new String[] {"--No existing record--"};
+			
+			return temp.toArray(new String[0]);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 }

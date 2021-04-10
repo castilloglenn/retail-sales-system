@@ -24,10 +24,9 @@ ex: 8210325001 ==== len(10)
  001 = autoincrement unique for every supplier
 ====================================================
 PROMO BIGINT(20) MAX: 9223372036854775807
-ex: 7001001 ==== len(7)
-    7-001-001-01
+ex: 700101 ==== len(6)
+    7-001-01
  7 = Promo Code
- 001 = Supplier's autoincrement code
  001 = Product's autoincrement code
  01 = autoincrement unique for every product
 ====================================================

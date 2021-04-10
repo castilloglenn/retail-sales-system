@@ -321,4 +321,37 @@ public class Utility {
 		
 		return Long.parseLong(markup.toString());
 	}
+	
+	/** SUPPLIER ID FORMAT:
+	 * example:
+	 * 	9210325001
+	 *  9-21-03-25-001
+	 *  9 is the Product Code, 21 is the Year 20(21), 03 is the Month
+	 *  25 for the day, and 001 is for auto increment
+	 */
+	public long generateSupplierID(long lastID) {
+		StringBuilder markup = new StringBuilder("9");
+		
+		Calendar c = Calendar.getInstance();
+		markup.append(Integer.toString(c.get(Calendar.YEAR)).substring(2));
+		
+		int month = c.get(Calendar.MONTH) + 1;
+		if (month < 10) markup.append("0");
+		markup.append(Integer.toString(month));
+		
+		int day = c.get(Calendar.DAY_OF_MONTH);
+		if (day < 10) markup.append("0");
+		markup.append(Integer.toString(c.get(Calendar.DAY_OF_MONTH)));
+		
+		long latest = lastID;
+		if (latest == -1) {
+			markup.append("001");
+		} else {
+			String lastNum = Long.toString(latest).substring(7);
+			int increment = Integer.parseInt(lastNum) + 1;
+			markup.append(String.format("%03d", increment));
+		}
+		
+		return Long.parseLong(markup.toString());
+	}
 }

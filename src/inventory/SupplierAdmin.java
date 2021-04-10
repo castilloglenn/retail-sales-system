@@ -43,10 +43,13 @@ public class SupplierAdmin extends JDialog {
 	
 	private JPanel container, manage, delivery;
 	private JMenuItem themeSwitcher;
-
-	private Gallery gl;
-	private Utility ut;
-	private Database db;
+	private JLabel manageTitle;
+	private JComboBox<String> comboBox;
+	private JLabel manageNameLabel;
+	private JLabel manageAddressLabel;
+	private JLabel manageContactLabel;
+	private JButton confirmButton;
+	private JLabel deliveryIDLabel;
 	private JTable table;
 	private JLabel manageIDLabel;
 	private JTextField manageIDField;
@@ -62,6 +65,10 @@ public class SupplierAdmin extends JDialog {
 	private JPanel panel;
 	private JButton cancelButton;
 	private JTextArea productArea;
+
+	private Gallery gl;
+	private Utility ut;
+	private Database db;
 	
 	public SupplierAdmin(Gallery gl, Utility ut, Database db) {
 		setResizable(false);
@@ -112,12 +119,12 @@ public class SupplierAdmin extends JDialog {
 		SpringLayout sl_manage = new SpringLayout();
 		manage.setLayout(sl_manage);
 		
-		JLabel manageTitle = new JLabel("Select Operation:");
+		manageTitle = new JLabel("Select Operation:");
 		sl_manage.putConstraint(SpringLayout.NORTH, manageTitle, 10, SpringLayout.NORTH, manage);
 		sl_manage.putConstraint(SpringLayout.WEST, manageTitle, 10, SpringLayout.WEST, manage);
 		manage.add(manageTitle);
 		
-		JComboBox<String> comboBox = new JComboBox<String>();
+		comboBox = new JComboBox<String>();
 		comboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"ADD", "UPDATE", "DELETE"}));
 		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
 		listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER);
@@ -141,7 +148,7 @@ public class SupplierAdmin extends JDialog {
 		manage.add(manageIDField);
 		manageIDField.setColumns(10);
 		
-		JLabel manageNameLabel = new JLabel("Name:");
+		manageNameLabel = new JLabel("Name:");
 		sl_manage.putConstraint(SpringLayout.NORTH, manageNameLabel, 6, SpringLayout.SOUTH, manageIDLabel);
 		sl_manage.putConstraint(SpringLayout.WEST, manageNameLabel, 0, SpringLayout.WEST, manageTitle);
 		manage.add(manageNameLabel);
@@ -154,8 +161,8 @@ public class SupplierAdmin extends JDialog {
 		sl_manage.putConstraint(SpringLayout.EAST, manageNameField, -10, SpringLayout.EAST, manage);
 		manage.add(manageNameField);
 		manageNameField.setColumns(10);
-		
-		JLabel manageAddressLabel = new JLabel("Address:");
+
+		manageAddressLabel = new JLabel("Address:");
 		sl_manage.putConstraint(SpringLayout.NORTH, manageAddressLabel, 6, SpringLayout.SOUTH, manageNameLabel);
 		sl_manage.putConstraint(SpringLayout.WEST, manageAddressLabel, 0, SpringLayout.WEST, manageTitle);
 		manage.add(manageAddressLabel);
@@ -168,8 +175,8 @@ public class SupplierAdmin extends JDialog {
 		sl_manage.putConstraint(SpringLayout.EAST, manageAddressField, -10, SpringLayout.EAST, manage);
 		manage.add(manageAddressField);
 		manageAddressField.setColumns(10);
-		
-		JLabel manageContactLabel = new JLabel("Contact #:");
+
+		manageContactLabel = new JLabel("Contact #:");
 		sl_manage.putConstraint(SpringLayout.NORTH, manageContactLabel, 6, SpringLayout.SOUTH, manageAddressLabel);
 		sl_manage.putConstraint(SpringLayout.WEST, manageContactLabel, 0, SpringLayout.WEST, manageTitle);
 		manage.add(manageContactLabel);
@@ -195,8 +202,8 @@ public class SupplierAdmin extends JDialog {
 		sl_manage.putConstraint(SpringLayout.WEST, separator_1, 10, SpringLayout.WEST, manage);
 		sl_manage.putConstraint(SpringLayout.EAST, separator_1, -10, SpringLayout.EAST, manage);
 		manage.add(separator_1);
-		
-		JButton confirmButton = new JButton("CONFIRM");
+
+		confirmButton = new JButton("CONFIRM");
 		sl_manage.putConstraint(SpringLayout.NORTH, confirmButton, 10, SpringLayout.SOUTH, separator_1);
 		sl_manage.putConstraint(SpringLayout.WEST, confirmButton, 10, SpringLayout.WEST, manage);
 		sl_manage.putConstraint(SpringLayout.EAST, confirmButton, -10, SpringLayout.EAST, manage);
@@ -207,8 +214,8 @@ public class SupplierAdmin extends JDialog {
 		delivery.setBounds(10, 264, 584, 146);
 		container.add(delivery);
 		delivery.setLayout(null);
-		
-		JLabel deliveryIDLabel = new JLabel("Delivery #:");
+
+		deliveryIDLabel = new JLabel("Delivery #:");
 		deliveryIDLabel.setBounds(16, 34, 70, 14);
 		delivery.add(deliveryIDLabel);
 		
@@ -255,17 +262,6 @@ public class SupplierAdmin extends JDialog {
 		productArea.setBounds(339, 34, 227, 92);
 		delivery.add(productArea);
 		productArea.setColumns(10);
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		
 		themeSwitcher.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

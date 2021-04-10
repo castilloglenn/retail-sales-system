@@ -238,6 +238,25 @@ public class Database {
 			
 	}
 	
+	public boolean insertNewSupplier(Object[] data) {
+		try {
+			ps = con.prepareStatement(
+				  "INSERT INTO supplier "
+				+ "VALUES (?, ?, ?, ?);"
+			);
+			ps.setLong(1, Long.parseLong(data[0].toString()));
+			ps.setString(2, data[1].toString());
+			ps.setString(3, data[2].toString());
+			ps.setString(4, data[3].toString());
+			
+			ps.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	public boolean updateExistingEmployee(Object[] data) {
 		// data format: id, position, fname, mname, lname, adress, basic, password
 		// data index:   0,        1,     2,     3,     4,      5,     6,		 7
@@ -311,6 +330,28 @@ public class Database {
 		}
 		
 		return (totalUpdated == columns.length);
+	}
+	
+	public boolean updateSupplier(Object[] data) {
+		try {
+			ps = con.prepareStatement(
+				    "UPDATE supplier "
+				  + "SET name=?, "
+				  	  + "address=?, "
+				  	  + "contact_no=? "
+				  + "WHERE supplier_id=?;"
+			);
+			ps.setString(1, data[1].toString());
+			ps.setString(2, data[2].toString());
+			ps.setString(3, data[3].toString());
+			ps.setLong(4, Long.parseLong(data[0].toString()));
+			
+			ps.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 	public boolean deleteEntry(String table, String column, long id) {

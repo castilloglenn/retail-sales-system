@@ -36,6 +36,7 @@ import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import javax.swing.JTextArea;
 
 @SuppressWarnings("serial")
 public class SupplierAdmin extends JDialog {
@@ -60,7 +61,7 @@ public class SupplierAdmin extends JDialog {
 	private JButton receiveButton;
 	private JPanel panel;
 	private JButton cancelButton;
-	private JTextField productField;
+	private JTextArea productArea;
 	
 	public SupplierAdmin(Gallery gl, Utility ut, Database db) {
 		setResizable(false);
@@ -248,12 +249,12 @@ public class SupplierAdmin extends JDialog {
 		cancelButton = new JButton("Cancel Deliver");
 		panel.add(cancelButton);
 		
-		productField = new JTextField();
-		productField.setBorder(new TitledBorder(null, "Product Details", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		productField.setMargin(new Insets(10, 10, 10, 10));
-		productField.setBounds(339, 34, 227, 92);
-		delivery.add(productField);
-		productField.setColumns(10);
+		productArea = new JTextArea();
+		productArea.setBorder(new TitledBorder(null, "Product Details", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		productArea.setMargin(new Insets(10, 10, 10, 10));
+		productArea.setBounds(339, 34, 227, 92);
+		delivery.add(productArea);
+		productArea.setColumns(10);
 		
 		
 		
@@ -313,7 +314,7 @@ public class SupplierAdmin extends JDialog {
 		delivery.setBorder(
 			new TitledBorder(null, "Receive Delivery", TitledBorder.LEADING, 
 				TitledBorder.TOP, null, (gl.isDark) ? gl.DFONT : gl.LFONT));
-		productField.setBorder(
+		productArea.setBorder(
 			new TitledBorder(null, "Product Details", TitledBorder.LEADING, 
 				TitledBorder.TOP, null, (gl.isDark) ? gl.DFONT : gl.LFONT));
 		

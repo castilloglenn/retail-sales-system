@@ -18,6 +18,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SpringLayout;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import main.Main;
 import utils.Database;
@@ -31,6 +32,7 @@ import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
@@ -296,7 +298,11 @@ public class InventoryDashboard extends JFrame {
 			@Override
 			public void windowActivated(WindowEvent e) {
 				table.setModel(ut.generateTable(db.fetchDataQuery("product", "product_id", "", "product_id", "ASC"), COLUMNS));
-				
+				DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+				centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+				for(int col=0; col < 7; col++){
+					table.getColumnModel().getColumn(col).setCellRenderer(centerRenderer);
+			    };
 				adjustTheme(false);
 			}
 		});

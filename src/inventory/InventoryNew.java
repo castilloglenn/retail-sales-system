@@ -198,7 +198,7 @@ public class InventoryNew extends JDialog {
 		
 		sellAmount = new JSpinner();
 		sellAmount.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		sellAmount.setModel(new SpinnerNumberModel(1.0, 1.0, 99999.0, 1.0));
+		sellAmount.setModel(new SpinnerNumberModel(1.0, 0.0, 99999.0, 1.0));
 		sellAmount.setBounds(124, 261, 230, 18);
 		panel.add(sellAmount);
 		

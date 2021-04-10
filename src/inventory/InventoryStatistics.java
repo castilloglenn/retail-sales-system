@@ -23,7 +23,6 @@ import main.Main;
 import utils.Database;
 import utils.Gallery;
 import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
 import java.awt.Insets;
 import javax.swing.JTextArea;
 
@@ -99,6 +98,7 @@ public class InventoryStatistics extends JDialog {
 		adjustTheme(false);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
+		setResizable(false);
 		setModal(true);
 		setVisible(true);
 	}

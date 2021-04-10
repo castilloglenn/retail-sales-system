@@ -11,7 +11,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.sql.SQLException;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -37,8 +36,6 @@ import javax.swing.event.ChangeListener;
 import main.Main;
 import utils.Database;
 import utils.Gallery;
-import utils.Utility;
-import java.awt.Color;
 
 @SuppressWarnings("serial")
 public class InventoryManage extends JDialog {
@@ -75,11 +72,10 @@ public class InventoryManage extends JDialog {
 	private JLabel newCategoryLabel;
 
 	private Gallery gl;
-	private Utility ut;
 	private Database db;
 	
-	public InventoryManage(Gallery gl, Utility ut, Database db) {
-		this.gl = gl; this.ut = ut; this.db = db;
+	public InventoryManage(Gallery gl, Database db) {
+		this.gl = gl; this.db = db;
 		
 		categories = db.fetchProductCategories();
 		

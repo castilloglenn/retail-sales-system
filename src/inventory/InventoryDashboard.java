@@ -259,12 +259,17 @@ public class InventoryDashboard extends JFrame {
 		});
 		manageButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new InventoryManage(gl, ut, db);
+				new InventoryManage(gl, db);
 			}
 		});
 		statisticsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new InventoryStatistics(gl, db);
+			}
+		});
+		supplierButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new SupplierAdmin(gl, ut, db);
 			}
 		});
 		addWindowStateListener(new WindowStateListener() {

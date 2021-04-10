@@ -39,8 +39,8 @@ public class Gallery {
 	public final Color DFONT = new Color(255, 255, 255);
 	public final Color DFONT_HOVER = new Color(105, 162, 176);
 	public final Color DFRAME_BACKGROUND = new Color(51, 51, 51);
-	public final Color DPANEL_BACKGROUND = new Color(22, 27, 51);
-	public final Color DCOMP_BACKGROUND = new Color(0, 0, 0);
+	public final Color DPANEL_BACKGROUND = new Color(5, 21, 33);
+	public final Color DCOMP_BACKGROUND = new Color(17, 17, 26);
 	public final Color DCOMP_FOREGROUND = new Color(255, 255, 255);
 	public final Color DHEADER_TABLE_BACKGROUND = new Color(255, 255, 255);
 

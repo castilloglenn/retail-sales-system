@@ -11,6 +11,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -23,6 +26,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import main.Main;
 import utils.Database;
 import utils.Gallery;
+import utils.LogConstants;
 import utils.Logger;
 import utils.Utility;
 import javax.swing.JLabel;
@@ -274,6 +278,21 @@ public class InventoryDashboard extends JFrame {
 				new SupplierAdmin(gl, ut, db, log, id);
 			}
 		});
+		promoButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new PromoAdmin(gl, ut, db, log, id);
+			}
+		});
+		exitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DateFormat sdf = new SimpleDateFormat("HH:mm");
+				Date date = new Date();
+				String dt = "OUT: " + sdf.format(date);
+				
+//				log.newLog(id, LogConstants.ATTENDANCE, LogConstants.MAIN, dt);
+				dispose();
+			}
+		});
 		addWindowStateListener(new WindowStateListener() {
 			public void windowStateChanged(WindowEvent e) {
 				if (e.getNewState() == 0) {
@@ -304,6 +323,14 @@ public class InventoryDashboard extends JFrame {
 					table.getColumnModel().getColumn(col).setCellRenderer(centerRenderer);
 			    };
 				adjustTheme(false);
+			}
+			@Override
+			public void windowClosing(WindowEvent e) {
+					DateFormat sdf = new SimpleDateFormat("HH:mm");
+					Date date = new Date();
+					String dt = "OUT: " + sdf.format(date);
+					
+//					log.newLog(id, LogConstants.ATTENDANCE, LogConstants.MAIN, dt);
 			}
 		});
 		

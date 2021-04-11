@@ -312,8 +312,8 @@ public class Logger {
 				sb.append(
 					String.format("[%s] %s: %s by %s\n", 
 						logs.getString(5), logs.getString(3), 
-						(message.length() > 15) ? 
-						message.substring(0, 15) : message,
+						(message.length() > 50) ? 
+						message.substring(0, 50) : message,
 						author[1] + " " + author[2] + " " + author[3]
 					)
 				);

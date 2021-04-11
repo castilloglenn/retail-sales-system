@@ -14,6 +14,7 @@ import java.awt.event.WindowStateListener;
 
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SpringLayout;
@@ -24,6 +25,7 @@ import utils.Gallery;
 import utils.Utility;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.border.TitledBorder;
 import javax.swing.JLabel;
@@ -37,9 +39,16 @@ import javax.swing.SwingConstants;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import javax.swing.JTextArea;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 @SuppressWarnings("serial")
 public class SupplierAdmin extends JDialog {
+	
+	private String[] COLUMNS = {
+			"Supplier ID", "Name", "Address", "Contact #"
+	};
+	private Object[] data;
 	
 	private JPanel container, manage, delivery;
 	private JMenuItem themeSwitcher;
@@ -101,15 +110,7 @@ public class SupplierAdmin extends JDialog {
 		scrollPane.setBounds(10, 11, 326, 242);
 		container.add(scrollPane);
 		
-		table = new JTable();
-		table.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null, null, null},
-			},
-			new String[] {
-				"New column", "New column", "New column", "New column"
-			}
-		));
+		table = new JTable(1, 4);
 		scrollPane.setViewportView(table);
 		
 		manage = new JPanel();
@@ -139,7 +140,8 @@ public class SupplierAdmin extends JDialog {
 		sl_manage.putConstraint(SpringLayout.WEST, manageIDLabel, 0, SpringLayout.WEST, manageTitle);
 		manage.add(manageIDLabel);
 		
-		manageIDField = new JTextField();
+		manageIDField = new JTextField(Long.toString(ut.generateSupplierID(db.fetchLastEntryByTable("supplier", "supplier_id"))));
+		manageIDField.setEditable(false);
 		manageIDField.setHorizontalAlignment(SwingConstants.CENTER);
 		sl_manage.putConstraint(SpringLayout.NORTH, manageIDField, -2, SpringLayout.NORTH, manageIDLabel);
 		sl_manage.putConstraint(SpringLayout.WEST, manageIDField, 6, SpringLayout.EAST, manageIDLabel);
@@ -215,12 +217,12 @@ public class SupplierAdmin extends JDialog {
 		container.add(delivery);
 		delivery.setLayout(null);
 
-		deliveryIDLabel = new JLabel("Delivery #:");
+		deliveryIDLabel = new JLabel("Supplier ID:");
 		deliveryIDLabel.setBounds(16, 34, 70, 14);
 		delivery.add(deliveryIDLabel);
 		
 		deliveryIDField = new JTextField();
-		deliveryIDField.setBounds(82, 34, 247, 18);
+		deliveryIDField.setBounds(88, 34, 241, 18);
 		deliveryIDField.setHorizontalAlignment(SwingConstants.CENTER);
 		delivery.add(deliveryIDField);
 		deliveryIDField.setColumns(10);
@@ -230,7 +232,7 @@ public class SupplierAdmin extends JDialog {
 		delivery.add(deliveryProductLabel);
 		
 		deliveryProductField = new JTextField();
-		deliveryProductField.setBounds(82, 54, 247, 18);
+		deliveryProductField.setBounds(88, 54, 241, 18);
 		deliveryProductField.setHorizontalAlignment(SwingConstants.CENTER);
 		delivery.add(deliveryProductField);
 		deliveryProductField.setColumns(10);
@@ -240,13 +242,13 @@ public class SupplierAdmin extends JDialog {
 		delivery.add(deliveryQtyLabel);
 		
 		textField = new JTextField();
-		textField.setBounds(82, 74, 247, 18);
+		textField.setBounds(88, 74, 241, 18);
 		textField.setHorizontalAlignment(SwingConstants.CENTER);
 		delivery.add(textField);
 		textField.setColumns(10);
 		
 		panel = new JPanel();
-		panel.setBounds(82, 103, 247, 23);
+		panel.setBounds(88, 103, 241, 23);
 		delivery.add(panel);
 		panel.setLayout(new GridLayout(0, 2, 10, 0));
 		
@@ -263,6 +265,174 @@ public class SupplierAdmin extends JDialog {
 		delivery.add(productArea);
 		productArea.setColumns(10);
 		
+		comboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// add
+				if (comboBox.getSelectedIndex() == 0) {
+					manageIDField.addKeyListener(null);
+					manageIDField.setText(
+						Long.toString(
+							ut.generateSupplierID(db.fetchLastEntryByTable("supplier", "supplier_id")
+						))
+					);
+					manageIDField.setEditable(false);
+					manageNameField.setEditable(true);
+					manageAddressField.setEditable(true);
+					manageContactField.setEditable(true);
+					confirmButton.setEnabled(true);
+				}
+				
+				// update
+				else if (comboBox.getSelectedIndex() == 1) {
+					manageIDField.setText("");
+					manageNameField.setText("");
+					manageAddressField.setText("");
+					manageContactField.setText("");
+					manageIDField.setEditable(true);
+					manageNameField.setEditable(false);
+					manageAddressField.setEditable(false);
+					manageContactField.setEditable(false);
+					confirmButton.setEnabled(false);
+
+					manageIDField.addKeyListener(new KeyAdapter() {
+						@Override
+						public void keyReleased(KeyEvent e) {
+							try {
+								data = db.fetchSupplierByID(Long.parseLong(manageIDField.getText()));
+								if (data != null) {
+									manageNameField.setText(data[1].toString());
+									manageAddressField.setText(data[2].toString());
+									manageContactField.setText(data[3].toString());
+									manageNameField.setEditable(true);
+									manageAddressField.setEditable(true);
+									manageContactField.setEditable(true);
+									confirmButton.setEnabled(true);
+								} else {
+									manageNameField.setText("");
+									manageAddressField.setText("");
+									manageContactField.setText("");
+									manageNameField.setEditable(false);
+									manageAddressField.setEditable(false);
+									manageContactField.setEditable(false);
+									confirmButton.setEnabled(false);
+								}
+							} catch (NumberFormatException e1) {}
+						}
+					});
+				}
+				
+				// delete
+				else if (comboBox.getSelectedIndex() == 2) {
+					manageIDField.setText("");
+					manageNameField.setText("");
+					manageAddressField.setText("");
+					manageContactField.setText("");
+					manageIDField.setEditable(true);
+					manageNameField.setEditable(false);
+					manageAddressField.setEditable(false);
+					manageContactField.setEditable(false);
+					confirmButton.setEnabled(true);
+
+					manageIDField.addKeyListener(new KeyAdapter() {
+						@Override
+						public void keyReleased(KeyEvent e) {
+							try {
+								data = db.fetchSupplierByID(Long.parseLong(manageIDField.getText()));
+								if (data != null) {
+									manageNameField.setText(data[1].toString());
+									manageAddressField.setText(data[2].toString());
+									manageContactField.setText(data[3].toString());
+									confirmButton.setEnabled(true);
+								} else {
+									manageNameField.setText("");
+									manageAddressField.setText("");
+									manageContactField.setText("");
+									confirmButton.setEnabled(false);
+								}
+							} catch (NumberFormatException e1) {}
+						}
+					});
+				}
+				
+			}
+		});
+		confirmButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// add
+				if (comboBox.getSelectedIndex() == 0) {
+					if (checkFields()) {
+						if (db.insertNewSupplier(new Object[] {
+							Long.parseLong(manageIDField.getText()),
+							manageNameField.getText(),
+							manageAddressField.getText(),
+							manageContactField.getText()
+						})) {
+							JOptionPane.showMessageDialog(
+								null, "Successfully created new supplier!", "Success | " + Main.SYSTEM_NAME, 
+								JOptionPane.INFORMATION_MESSAGE);
+							manageIDField.setText(
+								Long.toString(
+									ut.generateSupplierID(db.fetchLastEntryByTable("supplier", "supplier_id")
+								))
+							);
+							manageNameField.setText("");
+							manageAddressField.setText("");
+							manageContactField.setText("");
+						}
+					}
+				}
+				
+				// update
+				else if (comboBox.getSelectedIndex() == 1) {
+					if (checkFields()) {
+						if (db.updateSupplier(new Object[] {
+							Long.parseLong(manageIDField.getText()),
+							manageNameField.getText(),
+							manageAddressField.getText(),
+							manageContactField.getText()
+						})) {
+							JOptionPane.showMessageDialog(
+								null, "Successfully updated (" + manageNameField.getText() + ").", 
+								"Success | " + Main.SYSTEM_NAME, JOptionPane.INFORMATION_MESSAGE);
+							manageIDField.setText("");
+							manageNameField.setText("");
+							manageAddressField.setText("");
+							manageContactField.setText("");
+							manageNameField.setEditable(false);
+							manageAddressField.setEditable(false);
+							manageContactField.setEditable(false);
+							confirmButton.setEnabled(false);
+							
+						}
+					}
+				}
+				
+				
+				// delete
+				else if (comboBox.getSelectedIndex() == 2) {
+					int res = JOptionPane.showConfirmDialog(
+						null, "Are you sure you want to delete (" + manageNameField.getText() + ")?", 
+						"Please confirm | " + Main.SYSTEM_NAME, 
+						JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+					if (res == 0) {
+						if (db.deleteEntry("supplier", "supplier_id", Long.parseLong(manageIDField.getText()))) {
+							JOptionPane.showMessageDialog(
+								null, "Successfully updated (" + manageNameField.getText() + ").", 
+								"Success | " + Main.SYSTEM_NAME, JOptionPane.INFORMATION_MESSAGE);
+							manageIDField.setText("");
+							manageIDField.setEditable(true);
+							manageNameField.setEditable(false);
+							manageAddressField.setEditable(false);
+							manageContactField.setEditable(false);
+							confirmButton.setEnabled(true);
+							confirmButton.setEnabled(false);
+						}
+						
+					}
+				}
+				
+			}
+		});
 		themeSwitcher.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				adjustTheme(true);
@@ -271,6 +441,17 @@ public class SupplierAdmin extends JDialog {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowActivated(WindowEvent e) {
+				table.setModel(
+					ut.generateTable(
+						db.fetchDataQuery("supplier", "supplier_id", "", "supplier_id", "ASC"), COLUMNS
+					)
+				);
+				DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+				centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+				for(int col=0; col < 4; col++){
+					table.getColumnModel().getColumn(col).setCellRenderer(centerRenderer);
+			    };
+			    
 				adjustTheme(false);
 			}
 		});
@@ -319,5 +500,21 @@ public class SupplierAdmin extends JDialog {
 		} else {
 			
 		}
+	}
+	
+	private boolean checkFields() {
+		String errors = "Plase check your fields:\n";
+		int init = errors.length();
+		
+		if (manageNameField.getText().isBlank()) errors += "• Supplier's name cannot be empty.\n";
+		if (manageAddressField.getText().isBlank()) errors += "• Address cannot be empty.\n";
+		if (manageContactField.getText().isBlank()) errors += "• Contact number cannot be empty.\n";
+		
+		if (errors.length() > init) {
+			JOptionPane.showMessageDialog(
+				null, errors, "Check your inputs | " + Main.SYSTEM_NAME, 
+				JOptionPane.WARNING_MESSAGE);
+			return false;
+		} else return true;
 	}
 }

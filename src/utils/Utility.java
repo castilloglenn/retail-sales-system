@@ -290,7 +290,7 @@ public class Utility {
 	}
 	
 	/** PRODUCT ID FORMAT:
-	 * example:
+	 *  example:
 	 * 	8210325001
 	 *  8-21-03-25-001
 	 *  8 is the Product Code, 21 is the Year 20(21), 03 is the Month
@@ -323,7 +323,7 @@ public class Utility {
 	}
 	
 	/** SUPPLIER ID FORMAT:
-	 * example:
+	 *  example:
 	 * 	9210325001
 	 *  9-21-03-25-001
 	 *  9 is the Product Code, 21 is the Year 20(21), 03 is the Month

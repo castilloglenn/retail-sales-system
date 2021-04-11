@@ -539,6 +539,28 @@ public class Database {
 		return null;
 	}
 	
+	public Object[] fetchSupplierByID(long supplier_id) {
+		try {
+			ps = con.prepareStatement(
+				  "SELECT * "
+				+ "FROM supplier "
+				+ "WHERE supplier_id = ?;"
+			);
+			ps.setLong(1, supplier_id);
+			ResultSet details = ps.executeQuery();
+			details.next();
+			if (details.getLong(1) != 0) {
+				Object[] data = new Object[4];
+				data[0] = details.getLong(1);
+				data[1] = details.getString(2);
+				data[2] = details.getString(3);
+				data[3] = details.getString(4);
+				return data;
+			}
+		} catch (SQLException e) {}
+		return null;
+	}
+	
 	public long fetchLastIDByTable(String table, String idColumn) {
 		try {
 			ResultSet pid = stmt.executeQuery(

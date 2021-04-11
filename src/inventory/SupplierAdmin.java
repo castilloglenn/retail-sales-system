@@ -22,6 +22,8 @@ import javax.swing.SpringLayout;
 import main.Main;
 import utils.Database;
 import utils.Gallery;
+import utils.LogConstants;
+import utils.Logger;
 import utils.Utility;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -41,6 +43,7 @@ import java.awt.Insets;
 import javax.swing.JTextArea;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.Font;
 
 @SuppressWarnings("serial")
 public class SupplierAdmin extends JDialog {
@@ -69,7 +72,7 @@ public class SupplierAdmin extends JDialog {
 	private JLabel deliveryProductLabel;
 	private JTextField deliveryProductField;
 	private JLabel deliveryQtyLabel;
-	private JTextField textField;
+	private JTextField deliveryQtyField;
 	private JButton receiveButton;
 	private JPanel panel;
 	private JButton cancelButton;
@@ -78,10 +81,12 @@ public class SupplierAdmin extends JDialog {
 	private Gallery gl;
 	private Utility ut;
 	private Database db;
+	private Logger log;
+	private long id;
 	
-	public SupplierAdmin(Gallery gl, Utility ut, Database db) {
+	public SupplierAdmin(Gallery gl, Utility ut, Database db, Logger log, long id) {
 		setResizable(false);
-		this.gl = gl; this.ut = ut; this.db = db;
+		this.gl = gl; this.ut = ut; this.db = db; this.log = log; this.id = id;
 		
 		setTitle("Manage Suppliers | " + Main.SYSTEM_NAME);
 		setIconImage(gl.businessLogo);
@@ -241,11 +246,11 @@ public class SupplierAdmin extends JDialog {
 		deliveryQtyLabel.setBounds(16, 74, 70, 14);
 		delivery.add(deliveryQtyLabel);
 		
-		textField = new JTextField();
-		textField.setBounds(88, 74, 241, 18);
-		textField.setHorizontalAlignment(SwingConstants.CENTER);
-		delivery.add(textField);
-		textField.setColumns(10);
+		deliveryQtyField = new JTextField();
+		deliveryQtyField.setBounds(88, 74, 241, 18);
+		deliveryQtyField.setHorizontalAlignment(SwingConstants.CENTER);
+		delivery.add(deliveryQtyField);
+		deliveryQtyField.setColumns(10);
 		
 		panel = new JPanel();
 		panel.setBounds(88, 103, 241, 23);
@@ -259,6 +264,8 @@ public class SupplierAdmin extends JDialog {
 		panel.add(cancelButton);
 		
 		productArea = new JTextArea();
+		productArea.setEditable(false);
+		productArea.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		productArea.setBorder(new TitledBorder(null, "Product Details", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		productArea.setMargin(new Insets(10, 10, 10, 10));
 		productArea.setBounds(339, 34, 227, 92);
@@ -433,6 +440,92 @@ public class SupplierAdmin extends JDialog {
 				
 			}
 		});
+		deliveryProductField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				try {
+					displayProductDetails(Long.parseLong(deliveryProductField.getText()));
+				} catch (NumberFormatException e1) {}
+			}
+		});
+		receiveButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String errors = "Please check your inputs:\n";
+				int init = errors.length();
+				try {
+					if (deliveryIDField.getText().isBlank()) errors += "• Supplier cannot be empty.\n";
+					else if (!db.checkSupplier(Long.parseLong(deliveryIDField.getText()))) errors += "• Supplier does not exists.\n";
+					
+					if (deliveryProductField.getText().isBlank()) errors += "• Product cannot be empty.\n";
+					else if (!db.checkProduct(Long.parseLong(deliveryProductField.getText()))) errors += "• Product does not exists.\n";
+					
+					if (deliveryQtyField.getText().isBlank()) errors += "• Quantity cannot be empty.\n";
+				} catch (NumberFormatException e1) {
+					errors += "• One of the fields has an invalid input.\n";
+				}
+					
+				if (errors.length() > init) {
+					JOptionPane.showMessageDialog(
+						null, errors, "Check your inputs | " + Main.SYSTEM_NAME, 
+						JOptionPane.WARNING_MESSAGE);
+				} else {
+					long product_id = Long.parseLong(deliveryProductField.getText());
+					double quantity = Double.parseDouble(deliveryQtyField.getText());
+					data = db.fetchProductByID(product_id);
+					log.newLog(id, LogConstants.DELIVERY, LogConstants.MAIN, 
+						String.format("Supplier #%s delivered %s %s of %s.", 
+							deliveryIDField.getText(), deliveryQtyField.getText(), 
+							data[3], data[4]));
+					if (db.increaseProductStocks(product_id, quantity)) {
+						JOptionPane.showMessageDialog(
+							null, "Stocks successfully added to (" + data[4] + ").", 
+							"Success | " + Main.SYSTEM_NAME, JOptionPane.INFORMATION_MESSAGE);
+						deliveryIDField.setText("");
+						deliveryProductField.setText("");
+						deliveryQtyField.setText("");
+					}
+				}
+			}
+		});
+		cancelButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String errors = "Please check your inputs:\n";
+				int init = errors.length();
+				try {
+					if (deliveryIDField.getText().isBlank()) errors += "• Supplier cannot be empty.\n";
+					else if (!db.checkSupplier(Long.parseLong(deliveryIDField.getText()))) errors += "• Supplier does not exists.\n";
+					
+					if (deliveryProductField.getText().isBlank()) errors += "• Product cannot be empty.\n";
+					else if (!db.checkProduct(Long.parseLong(deliveryProductField.getText()))) errors += "• Product does not exists.\n";
+					
+					if (deliveryQtyField.getText().isBlank()) errors += "• Quantity cannot be empty.\n";
+				} catch (NumberFormatException e1) {
+					errors += "• One of the fields has an invalid input.\n";
+				}
+					
+				if (errors.length() > init) {
+					JOptionPane.showMessageDialog(
+						null, errors, "Check your inputs | " + Main.SYSTEM_NAME, 
+						JOptionPane.WARNING_MESSAGE);
+				} else {
+					long product_id = Long.parseLong(deliveryProductField.getText());
+					double quantity = Double.parseDouble(deliveryQtyField.getText());
+					data = db.fetchProductByID(product_id);
+					log.newLog(id, LogConstants.DELIVERY, LogConstants.MAIN, 
+						String.format("Supplier #%s cancels the delivery of %s %s of %s.", 
+							deliveryIDField.getText(), deliveryQtyField.getText(), 
+							data[3], data[4]));
+					if (db.increaseProductStocks(product_id, -quantity)) {
+						JOptionPane.showMessageDialog(
+							null, "Stocks of (" + data[4] + ") has been successfully decreased.", 
+							"Success | " + Main.SYSTEM_NAME, JOptionPane.INFORMATION_MESSAGE);
+						deliveryIDField.setText("");
+						deliveryProductField.setText("");
+						deliveryQtyField.setText("");
+					}
+				}
+			}
+		});
 		themeSwitcher.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				adjustTheme(true);
@@ -456,11 +549,12 @@ public class SupplierAdmin extends JDialog {
 			}
 		});
 		
+		displayProductDetails(-1);
 		adjustTheme(false);
 		setModal(true);
 		setVisible(true);
 	}
-	
+
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -516,5 +610,26 @@ public class SupplierAdmin extends JDialog {
 				JOptionPane.WARNING_MESSAGE);
 			return false;
 		} else return true;
+	}
+	
+	private void displayProductDetails(long id) {
+		Object[] data;
+		StringBuilder details = new StringBuilder();
+		
+		data = db.fetchProductByID(id);
+		if (data == null) {
+			details.append("Name:\nStocks:\nPurchase Price:\nSelling Price:\n");
+		} else {
+			details.append(
+				String.format(
+					  "Name: %s \n"
+					+ "Stocks: %,.2f %s \n"
+					+ "Purchase Price: Php %,.2f \n"
+					+ "Selling Price: Php %,.2f "
+					, data[4], data[2], data[3], data[5], data[6])
+			);
+		}
+		
+		productArea.setText(details.toString());
 	}
 }

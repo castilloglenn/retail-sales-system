@@ -8,13 +8,13 @@ description varchar 512
 date datetime
 
 LOG ID FORMAT: MAX: 9223372036854775807
-ex: 341000000010 ====== len(12)
-    3-4-1-00000001-0
- 3 = Log Code
+ex: 141000000010 ====== len(12)
+    1-4-1-00000001-0
+ 1 = Log Code
  4 = Log Type
  1 = Log Status
  00000001 = auto incremenet
- 01 = Message Part
+ 1 = Message Part
 
 TYPES OF LOG:
 0-PAYROLL

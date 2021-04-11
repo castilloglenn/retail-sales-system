@@ -354,6 +354,24 @@ public class Database {
 		return false;
 	}
 	
+	public boolean increaseProductStocks(long product_id, double amount) {
+		try {
+			ps = con.prepareStatement(
+				    "UPDATE product "
+				  + "SET quantity = quantity + ? "
+				  + "WHERE product_id=?;"
+			);
+			ps.setDouble(1, amount);
+			ps.setLong(2, product_id);
+			
+			ps.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	public boolean deleteEntry(String table, String column, long id) {
 		try {
 			ps = con.prepareStatement(
@@ -379,6 +397,42 @@ public class Database {
 			);
 			ps.setLong(1, Long.parseLong(user));
 			ps.setString(2, ut.hashData(pass));
+			ResultSet check = ps.executeQuery();
+			check.next();
+			// If this is an empty ResultSet if will throw error
+			check.getLong(1);
+			return true;
+		} catch (SQLException | NumberFormatException e) {
+			return false;
+		}
+	}
+	
+	public boolean checkProduct(long product_id) {
+		try {
+			ps = con.prepareStatement(
+				  "SELECT product_id "
+				+ "FROM product "
+				+ "WHERE product_id=?;"
+			);
+			ps.setLong(1, product_id);
+			ResultSet check = ps.executeQuery();
+			check.next();
+			// If this is an empty ResultSet if will throw error
+			check.getLong(1);
+			return true;
+		} catch (SQLException | NumberFormatException e) {
+			return false;
+		}
+	}
+	
+	public boolean checkSupplier(long supplier_id) {
+		try {
+			ps = con.prepareStatement(
+				  "SELECT supplier_id "
+				+ "FROM supplier "
+				+ "WHERE supplier_id=?;"
+			);
+			ps.setLong(1, supplier_id);
 			ResultSet check = ps.executeQuery();
 			check.next();
 			// If this is an empty ResultSet if will throw error
@@ -527,12 +581,12 @@ public class Database {
 			if (details.getLong(1) != 0) {
 				Object[] data = new Object[7];
 				data[0] = details.getLong(1);
-				data[1] = details.getString(2);
-				data[2] = details.getDouble(3);
-				data[3] = details.getString(4);
-				data[4] = details.getString(5);
-				data[5] = details.getDouble(6);
-				data[6] = details.getDouble(7);
+				data[1] = details.getString(2);	// category
+				data[2] = details.getDouble(3); // stock/qty
+				data[3] = details.getString(4); // uom
+				data[4] = details.getString(5); // name
+				data[5] = details.getDouble(6); // purch price
+				data[6] = details.getDouble(7); // sell price
 				return data;
 			}
 		} catch (SQLException e) {}

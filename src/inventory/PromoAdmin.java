@@ -11,6 +11,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
@@ -32,6 +35,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.border.TitledBorder;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JTextField;
@@ -48,29 +52,45 @@ import javax.swing.Box;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 import java.util.Date;
+import java.util.ArrayList;
 import java.util.Calendar;
 import javax.swing.SpinnerNumberModel;
 
 @SuppressWarnings("serial")
 public class PromoAdmin extends JDialog {
-	
-	private String[] COLUMNS = {
-			"Supplier ID", "Name", "Address", "Contact #"
-	};
-	private Object[] data;
-	
+
+	private JTextField productIDField;
+	private JTextField productNameField;
+	private JTextField promoTitleField;
+	private JTextField conditionField;
+	private JPanel panel;
+	private JScrollPane scrollPane;
+	private JTextArea textArea;
+	private JPanel manage;
+	private JLabel manageTitle;
+	private JComboBox<String> comboBox;
+	private JLabel productIDLabel;
+	private JLabel productNameLabel;
+	private JLabel promoTitleLabel;
+	private JLabel conditionLabel;
+	private JLabel discountLabel;
+	private JSpinner discountSpinner;
+	private JLabel startLabel;
+	private JSpinner startSpinner;
+	private JLabel endLabel;
+	private JSpinner endSpinner;
+	private JButton confirmButton;
 	private JPanel container;
 	private JMenuItem themeSwitcher;
+
+	private Object[] data;
+	private String startFinal, endFinal;
+	private long id;
 
 	private Gallery gl;
 	private Utility ut;
 	private Database db;
 	private Logger log;
-	private long id;
-	private JTextField productIDField;
-	private JTextField productNameField;
-	private JTextField promoTitleField;
-	private JTextField conditionField;
 	
 	public PromoAdmin(Gallery gl, Utility ut, Database db, Logger log, long id) {
 		setResizable(false);
@@ -78,8 +98,7 @@ public class PromoAdmin extends JDialog {
 		
 		setTitle("Manage Promos | " + Main.SYSTEM_NAME);
 		setIconImage(gl.businessLogo);
-		setMinimumSize(new Dimension(480, 360));
-		setSize(640, 360);
+		setSize(700, 360);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
 
@@ -99,30 +118,31 @@ public class PromoAdmin extends JDialog {
 		getContentPane().add(container);
 		container.setLayout(null);
 		
-		JPanel panel = new JPanel();
-		panel.setBounds(10, 11, 584, 279);
+		panel = new JPanel();
+		panel.setBounds(10, 11, 643, 279);
 		container.add(panel);
 		panel.setLayout(new GridLayout(0, 2, 10, 0));
-		
-		JScrollPane scrollPane = new JScrollPane();
+
+		scrollPane = new JScrollPane();
 		panel.add(scrollPane);
-		
-		JTextArea textArea = new JTextArea();
+
+		textArea = new JTextArea();
 		textArea.setEditable(false);
 		textArea.setMargin(new Insets(10, 10, 10, 10));
 		scrollPane.setViewportView(textArea);
-		
-		JPanel manage = new JPanel();
+
+		manage = new JPanel();
 		panel.add(manage);
 		SpringLayout sl_manage = new SpringLayout();
 		manage.setLayout(sl_manage);
-		
-		JLabel manageTitle = new JLabel("Select Operation:");
+
+		manageTitle = new JLabel("Select Operation:");
+		manageTitle.setFocusable(false);
 		sl_manage.putConstraint(SpringLayout.NORTH, manageTitle, 5, SpringLayout.NORTH, manage);
 		sl_manage.putConstraint(SpringLayout.WEST, manageTitle, 10, SpringLayout.WEST, manage);
 		manage.add(manageTitle);
-		
-		JComboBox<String> comboBox = new JComboBox<String>();
+
+		comboBox = new JComboBox<String>();
 		comboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"ADD", "UPDATE", "DELETE"}));
 		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
 		listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER);
@@ -138,8 +158,9 @@ public class PromoAdmin extends JDialog {
 		sl_manage.putConstraint(SpringLayout.WEST, separator, 0, SpringLayout.WEST, manageTitle);
 		sl_manage.putConstraint(SpringLayout.EAST, separator, -10, SpringLayout.EAST, manage);
 		manage.add(separator);
-		
-		JLabel productIDLabel = new JLabel("Product ID:");
+
+		productIDLabel = new JLabel("Product ID:");
+		productIDLabel.setFocusable(false);
 		sl_manage.putConstraint(SpringLayout.NORTH, productIDLabel, 10, SpringLayout.SOUTH, separator);
 		sl_manage.putConstraint(SpringLayout.WEST, productIDLabel, 0, SpringLayout.WEST, manageTitle);
 		manage.add(productIDLabel);
@@ -151,13 +172,15 @@ public class PromoAdmin extends JDialog {
 		sl_manage.putConstraint(SpringLayout.EAST, productIDField, -10, SpringLayout.EAST, manage);
 		manage.add(productIDField);
 		productIDField.setColumns(10);
-		
-		JLabel productNameLabel = new JLabel("Product Name:");
+
+		productNameLabel = new JLabel("Product Name:");
+		productNameLabel.setFocusable(false);
 		sl_manage.putConstraint(SpringLayout.NORTH, productNameLabel, 10, SpringLayout.SOUTH, productIDLabel);
 		sl_manage.putConstraint(SpringLayout.WEST, productNameLabel, 0, SpringLayout.WEST, manageTitle);
 		manage.add(productNameLabel);
 		
 		productNameField = new JTextField();
+		productNameField.setFocusable(false);
 		productNameField.setEditable(false);
 		productNameField.setHorizontalAlignment(SwingConstants.CENTER);
 		sl_manage.putConstraint(SpringLayout.WEST, productIDField, 0, SpringLayout.WEST, productNameField);
@@ -173,8 +196,9 @@ public class PromoAdmin extends JDialog {
 		sl_manage.putConstraint(SpringLayout.WEST, separator_1, 0, SpringLayout.WEST, manageTitle);
 		sl_manage.putConstraint(SpringLayout.EAST, separator_1, -10, SpringLayout.EAST, manage);
 		manage.add(separator_1);
-		
-		JLabel promoTitleLabel = new JLabel("Promo Title:");
+
+		promoTitleLabel = new JLabel("Promo Title:");
+		promoTitleLabel.setFocusable(false);
 		sl_manage.putConstraint(SpringLayout.NORTH, promoTitleLabel, 10, SpringLayout.SOUTH, separator_1);
 		sl_manage.putConstraint(SpringLayout.WEST, promoTitleLabel, 0, SpringLayout.WEST, manageTitle);
 		manage.add(promoTitleLabel);
@@ -187,8 +211,9 @@ public class PromoAdmin extends JDialog {
 		sl_manage.putConstraint(SpringLayout.EAST, promoTitleField, -10, SpringLayout.EAST, manage);
 		manage.add(promoTitleField);
 		promoTitleField.setColumns(10);
-		
-		JLabel conditionLabel = new JLabel("Condition:");
+
+		conditionLabel = new JLabel("Condition:");
+		conditionLabel.setFocusable(false);
 		sl_manage.putConstraint(SpringLayout.NORTH, conditionLabel, 10, SpringLayout.SOUTH, promoTitleLabel);
 		sl_manage.putConstraint(SpringLayout.WEST, conditionLabel, 0, SpringLayout.WEST, manageTitle);
 		manage.add(conditionLabel);
@@ -201,44 +226,59 @@ public class PromoAdmin extends JDialog {
 		sl_manage.putConstraint(SpringLayout.EAST, conditionField, -10, SpringLayout.EAST, manage);
 		manage.add(conditionField);
 		conditionField.setColumns(10);
-		
-		JLabel discountLabel = new JLabel("Discount:");
+
+		discountLabel = new JLabel("Discount:");
+		discountLabel.setFocusable(false);
 		sl_manage.putConstraint(SpringLayout.NORTH, discountLabel, 10, SpringLayout.SOUTH, conditionLabel);
 		sl_manage.putConstraint(SpringLayout.WEST, discountLabel, 0, SpringLayout.WEST, manageTitle);
 		manage.add(discountLabel);
-		
-		JSpinner discountSpinner = new JSpinner();
+
+		discountSpinner = new JSpinner();
 		discountSpinner.setModel(new SpinnerNumberModel(0.0, 0.0, 99999.0, 1.0));
+		JComponent de_dateSpinner3 = discountSpinner.getEditor();
+		JSpinner.DefaultEditor spinnerEditor3 = (JSpinner.DefaultEditor)de_dateSpinner3;
+		spinnerEditor3.getTextField().setHorizontalAlignment(JTextField.CENTER);
 		sl_manage.putConstraint(SpringLayout.NORTH, discountSpinner, -2, SpringLayout.NORTH, discountLabel);
 		sl_manage.putConstraint(SpringLayout.WEST, discountSpinner, 0, SpringLayout.WEST, productNameField);
 		sl_manage.putConstraint(SpringLayout.SOUTH, discountSpinner, 2, SpringLayout.SOUTH, discountLabel);
 		sl_manage.putConstraint(SpringLayout.EAST, discountSpinner, -10, SpringLayout.EAST, manage);
 		manage.add(discountSpinner);
-		
-		JLabel startLabel = new JLabel("Start:");
+
+		startLabel = new JLabel("Start:");
+		startLabel.setFocusable(false);
 		sl_manage.putConstraint(SpringLayout.NORTH, startLabel, 10, SpringLayout.SOUTH, discountLabel);
 		sl_manage.putConstraint(SpringLayout.WEST, startLabel, 0, SpringLayout.WEST, manageTitle);
 		manage.add(startLabel);
-		
-		JSpinner startSpinner = new JSpinner();
-		startSpinner.setModel(new SpinnerDateModel(new Date(1618156800000L), null, null, Calendar.DAY_OF_YEAR));
+
+		startSpinner = new JSpinner();
+		startSpinner.setModel(new SpinnerDateModel(Calendar.getInstance().getTime(), null, null, Calendar.DAY_OF_YEAR));
+		SimpleDateFormat model = new SimpleDateFormat("MM/dd/yyyy");
+		startSpinner.setEditor(new JSpinner.DateEditor(startSpinner, model.toPattern()));
+		JComponent de_dateSpinner = startSpinner.getEditor();
+		JSpinner.DefaultEditor spinnerEditor = (JSpinner.DefaultEditor)de_dateSpinner;
+		spinnerEditor.getTextField().setHorizontalAlignment(JTextField.CENTER);
 		sl_manage.putConstraint(SpringLayout.NORTH, startSpinner, -2, SpringLayout.NORTH, startLabel);
 		sl_manage.putConstraint(SpringLayout.WEST, startSpinner, 0, SpringLayout.WEST, productNameField);
 		sl_manage.putConstraint(SpringLayout.SOUTH, startSpinner, 2, SpringLayout.SOUTH, startLabel);
 		sl_manage.putConstraint(SpringLayout.EAST, startSpinner, -10, SpringLayout.EAST, manage);
 		manage.add(startSpinner);
-		
-		JLabel endLabel = new JLabel("End:");
+
+		endLabel = new JLabel("End:");
+		endLabel.setFocusable(false);
 		sl_manage.putConstraint(SpringLayout.NORTH, endLabel, 10, SpringLayout.SOUTH, startLabel);
 		sl_manage.putConstraint(SpringLayout.WEST, endLabel, 0, SpringLayout.WEST, manageTitle);
 		manage.add(endLabel);
-		
-		JSpinner endSpinner = new JSpinner();
+
+		endSpinner = new JSpinner();
 		sl_manage.putConstraint(SpringLayout.NORTH, endSpinner, -2, SpringLayout.NORTH, endLabel);
 		sl_manage.putConstraint(SpringLayout.WEST, endSpinner, 0, SpringLayout.WEST, productNameField);
 		sl_manage.putConstraint(SpringLayout.SOUTH, endSpinner, 2, SpringLayout.SOUTH, endLabel);
 		sl_manage.putConstraint(SpringLayout.EAST, endSpinner, -10, SpringLayout.EAST, manage);
-		endSpinner.setModel(new SpinnerDateModel(new Date(1618156800000L), null, null, Calendar.DAY_OF_YEAR));
+		endSpinner.setModel(new SpinnerDateModel(Calendar.getInstance().getTime(), null, null, Calendar.DAY_OF_YEAR));
+		endSpinner.setEditor(new JSpinner.DateEditor(endSpinner, model.toPattern()));
+		JComponent de_dateSpinner2 = endSpinner.getEditor();
+		JSpinner.DefaultEditor spinnerEditor2 = (JSpinner.DefaultEditor)de_dateSpinner2;
+		spinnerEditor2.getTextField().setHorizontalAlignment(JTextField.CENTER);
 		manage.add(endSpinner);
 		
 		JSeparator separator_2 = new JSeparator();
@@ -246,20 +286,63 @@ public class PromoAdmin extends JDialog {
 		sl_manage.putConstraint(SpringLayout.WEST, separator_2, 0, SpringLayout.WEST, manageTitle);
 		sl_manage.putConstraint(SpringLayout.EAST, separator_2, -10, SpringLayout.EAST, manage);
 		manage.add(separator_2);
-		
-		JButton confirmButton = new JButton("CONFIRM");
+
+		confirmButton = new JButton("CONFIRM");
 		sl_manage.putConstraint(SpringLayout.NORTH, confirmButton, 10, SpringLayout.SOUTH, separator_2);
 		sl_manage.putConstraint(SpringLayout.WEST, confirmButton, 0, SpringLayout.WEST, manageTitle);
 		sl_manage.putConstraint(SpringLayout.EAST, confirmButton, -10, SpringLayout.EAST, manage);
 		manage.add(confirmButton);
 		
 		
-		
-		
-		
-		
-		
-		
+
+		productIDField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				try {
+					long product_id = Long.parseLong(productIDField.getText());
+					Object[] product = db.fetchProductByID(product_id);
+					if (product != null) {
+						productNameField.setText(product[4].toString());
+					} else {
+						productNameField.setText("");
+					}
+				} catch (NumberFormatException | NullPointerException e1) {
+					productNameField.setText("");
+				}
+			}
+		});
+		confirmButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// ADD
+				if (comboBox.getSelectedIndex() == 0) {
+					if (checkFields()) {
+						if (db.insertNewPromo(new Object[] {
+								Long.parseLong(productIDField.getText()),
+								promoTitleField.getText(),
+								conditionField.getText(),
+								(double) discountSpinner.getValue(),
+								startFinal, endFinal})) {
+							JOptionPane.showMessageDialog(
+								null, "Successfully inserted new promo.", 
+								"Success | " + Main.SYSTEM_NAME, 
+								JOptionPane.INFORMATION_MESSAGE);
+							clearFields();
+							displayPromos();
+						}
+					}
+				}
+				
+				// UPDATE
+				else if (comboBox.getSelectedIndex() == 1) {
+					
+				}
+				
+				// DELETE
+				else if (comboBox.getSelectedIndex() == 2) {
+					
+				}
+			}
+		});
 		themeSwitcher.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				adjustTheme(true);
@@ -268,8 +351,8 @@ public class PromoAdmin extends JDialog {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowActivated(WindowEvent e) {
+				displayPromos();
 				
-			    
 				adjustTheme(false);
 			}
 		});
@@ -309,5 +392,85 @@ public class PromoAdmin extends JDialog {
 		} else {
 			
 		}
+	}
+	
+	private void displayPromos() {
+		ArrayList<ArrayList<ArrayList<Object>>> data = db.fetchPromos();
+		
+		StringBuilder sb = new StringBuilder("ACTIVE PROMOS:\n");
+		data.get(0).forEach(
+			(active) ->  sb.append(
+				(!active.isEmpty()) 
+				? String.format("• [%d]: %s-%s\n  %s %s %s\n", 
+					active.get(0), active.get(4), active.get(5), 
+					((double) active.get(3) < 1) ? ((double) active.get(3) * 100) + "%"
+						: String.format("Php %,.2f OFF ", active.get(3)),
+					active.get(1), active.get(2)
+					)
+				: ""
+			)
+		);
+		sb.append("\nINACTIVE PROMOS:\n");
+		data.get(1).forEach(
+			(inactive) ->  sb.append(
+				(!inactive.isEmpty()) 
+				? String.format("• [%d]: %s-%s\n  %s %s %s\n", 
+					inactive.get(0), inactive.get(4), inactive.get(5), 
+					((double) inactive.get(3) < 1) ? ((double) inactive.get(3) * 100) + "%"
+						: String.format("Php %,.2f OFF ", inactive.get(3)),
+					inactive.get(1), inactive.get(2)
+					)
+				: ""
+			)
+		);
+		
+		textArea.setText(sb.toString());
+	}
+	
+	private boolean checkFields() {
+		StringBuilder errors = new StringBuilder("Please check your inputs:\n");
+		int init = errors.length();
+		
+		if (productNameField.getText().isBlank()) errors.append("• Product ID is invalid.\n");
+		if (promoTitleField.getText().isBlank()) errors.append("• Promo title cannot be empty.\n");
+		if (conditionField.getText().isBlank()) errors.append("• Condition cannot be empty.\n");
+		if (((double) discountSpinner.getValue()) == 0) errors.append("• Discount cannot be zero.\n");
+		
+		try {
+			String start = startSpinner.getValue().toString();
+			String end = endSpinner.getValue().toString();
+			
+			DateFormat parser = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
+			
+			Date parsedStart = parser.parse(start);
+			Date parsedEnd = parser.parse(end);
+			
+			if (parsedStart.after(parsedEnd)) errors.append("• Promo start date cannot be after it ended, it does not make sense.\n");
+			if (parsedStart.equals(parsedEnd)) errors.append("• Start and end of promo cannot be the same.\n");
+			DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			
+			startFinal = sdf.format(parsedStart);
+			endFinal = sdf.format(parsedEnd);
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+		
+		if (errors.length() > init) {
+			JOptionPane.showMessageDialog(
+				null, errors.toString(), 
+				"Invalid inputs | " + Main.SYSTEM_NAME, 
+				JOptionPane.WARNING_MESSAGE);
+			return false;
+		} else return true;
+	}
+
+	private void clearFields() {
+		productIDField.setText("");
+		productNameField.setText("");
+		promoTitleField.setText("");
+		conditionField.setText("");
+		discountSpinner.setValue(0);
+		startSpinner.setValue(Calendar.getInstance().getTime());
+		endSpinner.setValue(Calendar.getInstance().getTime());
 	}
 }

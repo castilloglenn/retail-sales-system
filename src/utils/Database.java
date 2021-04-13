@@ -152,7 +152,9 @@ public class Database {
 					+ "conditions VARCHAR(255) NOT NULL,"
 					+ "discount DOUBLE(8, 2) NOT NULL,"
 					+ "start_date DATETIME NOT NULL,"
-					+ "end_date DATETIME NOT NULL"
+					+ "end_date DATETIME NOT NULL,"
+					+ "FOREIGN KEY(product_id) "
+					+ "REFERENCES product(product_id)"
 			+ ");"
 		);
 		stmt.execute(
@@ -244,10 +246,31 @@ public class Database {
 				  "INSERT INTO supplier "
 				+ "VALUES (?, ?, ?, ?);"
 			);
-			ps.setLong(1, Long.parseLong(data[0].toString()));
+			ps.setLong(1, (long) data[0]);
 			ps.setString(2, data[1].toString());
 			ps.setString(3, data[2].toString());
 			ps.setString(4, data[3].toString());
+			
+			ps.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean insertNewPromo(Object[] data) {
+		try {
+			ps = con.prepareStatement(
+				  "INSERT INTO promo "
+				+ "VALUES (?, ?, ?, ?, ?, ?);"
+			);
+			ps.setLong(1, (long) data[0]);
+			ps.setString(2, data[1].toString());
+			ps.setString(3, data[2].toString());
+			ps.setDouble(4, (double) data[3]);
+			ps.setString(5, data[4].toString());
+			ps.setString(6, data[5].toString());
 			
 			ps.executeUpdate();
 			return true;
@@ -612,6 +635,62 @@ public class Database {
 				return data;
 			}
 		} catch (SQLException e) {}
+		return null;
+	}
+	
+	public ArrayList<ArrayList<ArrayList<Object>>> fetchPromos() {
+		try {
+			ArrayList<ArrayList<Object>> activePromos = new ArrayList<>();
+			ArrayList<ArrayList<Object>> inactivePromos = new ArrayList<>();
+			
+			ps = con.prepareStatement(
+				  "SELECT * "
+				+ "FROM promo "
+				+ "WHERE end_date > now();"
+			);
+			ResultSet active = ps.executeQuery();
+			active.next();
+			try {
+				do {
+					ArrayList<Object> row = new ArrayList<>();
+					row.add(active.getLong(1));
+					row.add(active.getString(2));
+					row.add(active.getString(3));
+					row.add(active.getDouble(4));
+					row.add(active.getString(5));
+					row.add(active.getString(6));
+					activePromos.add(row);
+					
+				} while (active.next());
+			} catch (SQLException e) {}
+			
+			ps = con.prepareStatement(
+				  "SELECT * "
+				+ "FROM promo "
+				+ "WHERE end_date <= now();"
+			);
+			ResultSet inactive = ps.executeQuery();
+			inactive.next();
+			try {
+				do {
+					ArrayList<Object> row = new ArrayList<>();
+					row.add(inactive.getLong(1));
+					row.add(inactive.getString(2));
+					row.add(inactive.getString(3));
+					row.add(inactive.getDouble(4));
+					row.add(inactive.getString(5));
+					row.add(inactive.getString(6));
+					inactivePromos.add(row);
+				} while (inactive.next());
+			} catch (SQLException e) {}
+			
+			ArrayList<ArrayList<ArrayList<Object>>> data = new ArrayList<>();
+			data.add(activePromos);
+			data.add(inactivePromos);
+			return data;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 	

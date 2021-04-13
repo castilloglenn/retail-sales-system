@@ -41,11 +41,8 @@ public class JFrameFormat extends JFrame {
 	private SpringLayout sl_contentPane;
 	
 	private Gallery gl;
-	private Utility ut;
-	private Database db;
-	
 	public JFrameFormat(Gallery gl, Utility ut, Database db, Logger log, long id) {
-		this.gl = gl; this.ut = ut; this.db = db;  
+		this.gl = gl;    
 		
 		setTitle("Employee Management | " + Main.SYSTEM_NAME);
 		setIconImage(gl.businessLogo);
@@ -126,8 +123,6 @@ public class JFrameFormat extends JFrame {
 	}
 	
 	private void adjustFonts() {
-		int minTitle = 604;
-		int minDisplay = 469;
 		
 //		ut.adjustFont(titleTitle, title, minTitle, 18);
 	}

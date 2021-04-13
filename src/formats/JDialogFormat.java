@@ -4,13 +4,10 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
 
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
@@ -30,11 +27,8 @@ public class JDialogFormat extends JDialog {
 	private JMenuItem themeSwitcher;
 
 	private Gallery gl;
-	private Utility ut;
-	private Database db;
-	
 	public JDialogFormat(Gallery gl, Utility ut, Database db) {
-		this.gl = gl; this.ut = ut; this.db = db;
+		this.gl = gl;  
 		
 		setTitle("New Employee | " + Main.SYSTEM_NAME);
 		setIconImage(gl.businessLogo);

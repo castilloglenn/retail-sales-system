@@ -30,8 +30,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.Date;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -279,7 +277,66 @@ public class Main {
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				// Open password retrieval window here
+				if (new String(idField.getPassword()).isBlank()) {
+					JOptionPane.showMessageDialog(
+						null, "Please input your ID first on the ID Field.", 
+						"ID Field required | " + Main.SYSTEM_NAME, 
+						JOptionPane.WARNING_MESSAGE
+					);
+				} else {
+					try {
+						Object[] employee = db.fetchEmployeeByID(Long.parseLong(new String(idField.getPassword())));
+						if (employee == null) {
+							JOptionPane.showMessageDialog(
+								null, "No employee found matching your ID.", 
+								"Database error | " + Main.SYSTEM_NAME, 
+								JOptionPane.WARNING_MESSAGE
+							);
+						} else {
+							String id = JOptionPane.showInputDialog(
+								null, "Enter the ID of your supervisor/manager:", 
+								"Forgot Password | " + Main.SYSTEM_NAME, 
+								JOptionPane.INFORMATION_MESSAGE
+							);
+							if (id != null) {
+								try {
+									Object[] manager = db.fetchEmployeeByID(Long.parseLong(id));
+									if (manager == null) {
+										JOptionPane.showMessageDialog(
+											null, "No manager/supervisor found matching your ID.", 
+											"Database error | " + Main.SYSTEM_NAME, 
+											JOptionPane.WARNING_MESSAGE
+										);
+									} else {
+										log.newLog(
+											Long.parseLong(new String(idField.getPassword())), 
+											LogConstants.LOST_PASSWORD, 
+											LogConstants.MAIN, 
+											employee[0] + " " + employee[3] + " requests a reset of his/her password to " + manager[3]);
+										JOptionPane.showMessageDialog(
+											null, 
+											"Successfully sent a request, please ask the manager/supervisor to continue.", 
+											"Success | " + Main.SYSTEM_NAME, 
+											JOptionPane.INFORMATION_MESSAGE
+										);
+									}
+								} catch (NumberFormatException e1) {
+									JOptionPane.showMessageDialog(
+										null, "Please enter a valid ID.", 
+										"Invalid input | " + Main.SYSTEM_NAME, 
+										JOptionPane.WARNING_MESSAGE
+									);
+								}
+							}
+						}
+					} catch (NumberFormatException e1) {
+						JOptionPane.showMessageDialog(
+							null, "Please enter a valid ID.", 
+							"Invalid input | " + Main.SYSTEM_NAME, 
+							JOptionPane.WARNING_MESSAGE
+						);
+					}
+				}
 			}
 		});
 		theme.addActionListener(new ActionListener() {

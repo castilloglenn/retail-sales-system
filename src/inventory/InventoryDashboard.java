@@ -36,7 +36,6 @@ import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
@@ -82,10 +81,9 @@ public class InventoryDashboard extends JFrame {
 
 	private Gallery gl;
 	private Utility ut;
-	private Database db;
 	
 	public InventoryDashboard(Gallery gl, Utility ut, Database db, Logger log, long id) {
-		this.gl = gl; this.ut = ut; this.db = db;
+		this.gl = gl; this.ut = ut; 
 		
 		setTitle("Inventory Management | " + Main.SYSTEM_NAME);
 		setIconImage(gl.businessLogo);
@@ -289,7 +287,7 @@ public class InventoryDashboard extends JFrame {
 				Date date = new Date();
 				String dt = "OUT: " + sdf.format(date);
 				
-//				log.newLog(id, LogConstants.ATTENDANCE, LogConstants.MAIN, dt);
+				log.newLog(id, LogConstants.ATTENDANCE, LogConstants.MAIN, dt);
 				dispose();
 			}
 		});
@@ -330,7 +328,7 @@ public class InventoryDashboard extends JFrame {
 					Date date = new Date();
 					String dt = "OUT: " + sdf.format(date);
 					
-//					log.newLog(id, LogConstants.ATTENDANCE, LogConstants.MAIN, dt);
+					log.newLog(id, LogConstants.ATTENDANCE, LogConstants.MAIN, dt);
 			}
 		});
 		

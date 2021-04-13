@@ -1,16 +1,12 @@
 package inventory;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,18 +21,11 @@ import javax.swing.SpringLayout;
 import main.Main;
 import utils.Database;
 import utils.Gallery;
-import utils.LogConstants;
 import utils.Logger;
 import utils.Utility;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.border.TitledBorder;
 import javax.swing.JLabel;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JTextField;
 import javax.swing.JSeparator;
@@ -47,8 +36,6 @@ import java.awt.Insets;
 import javax.swing.JTextArea;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.Font;
-import javax.swing.Box;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 import java.util.Date;
@@ -82,16 +69,12 @@ public class PromoAdmin extends JDialog {
 	private JMenuItem themeSwitcher;
 
 	private String startFinal, endFinal;
-	private long id;
-
 	private Gallery gl;
-	private Utility ut;
 	private Database db;
-	private Logger log;
 	
 	public PromoAdmin(Gallery gl, Utility ut, Database db, Logger log, long id) {
 		setResizable(false);
-		this.gl = gl; this.ut = ut; this.db = db; this.log = log; this.id = id;
+		this.gl = gl; this.db = db;  
 		
 		setTitle("Manage Promos | " + Main.SYSTEM_NAME);
 		setIconImage(gl.businessLogo);

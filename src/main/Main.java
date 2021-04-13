@@ -76,17 +76,17 @@ public class Main {
 		db = new Database(ut);
 		log = new Logger(db, ut);
 
-//		if (db.fetchManagers() == 0) {
-//			new SetupSystem(gl, ut, db);
-//		} else {
-//			initialize();
-//		}
+		if (db.fetchManagers() == 0) {
+			new SetupSystem(gl, ut, db);
+		} else {
+			initialize();
+		}
 		
 //		======Tests========
 //		initialize();
 //		new SetupSystem(gl, ut, db);
 //		new EmployeeAdmin(gl, ut, db, log, 55210406001L);
-		new InventoryDashboard(gl, ut, db, log, 55210406001L);
+//		new InventoryDashboard(gl, ut, db, log, 55210406001L);
 	}
 
 	/**
@@ -217,15 +217,11 @@ public class Main {
 					DateFormat sdf = new SimpleDateFormat("HH:mm");
 					Date date = new Date();
 					String dt = "IN: " + sdf.format(date);
-					
 					log.newLog(Long.parseLong(new String(idField.getPassword())), LogConstants.ATTENDANCE, LogConstants.SUB, dt);
-					// Open Portal Here
-					
-					
-					
 					
 					mainFrame.setVisible(false);
 					new EmployeeAdmin(gl, ut, db, log, Long.parseLong(new String(idField.getPassword())));
+					new InventoryDashboard(gl, ut, db, log, Long.parseLong(new String(idField.getPassword())));
 				}
 			}
 		});

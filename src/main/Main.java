@@ -19,6 +19,7 @@ import javax.swing.border.BevelBorder;
 
 import employee.EmployeeAdmin;
 import inventory.InventoryDashboard;
+import pos.POS;
 
 import javax.swing.JPasswordField;
 import java.awt.Cursor;
@@ -74,17 +75,18 @@ public class Main {
 		db = new Database(ut);
 		log = new Logger(db, ut);
 
-		if (db.fetchManagers() == 0) {
-			new SetupSystem(gl, ut, db);
-		} else {
-			initialize();
-		}
+//		if (db.fetchManagers() == 0) {
+//			new SetupSystem(gl, ut, db);
+//		} else {
+//			initialize();
+//		}
 		
 //		======Tests========
 //		initialize();
 //		new SetupSystem(gl, ut, db);
 //		new EmployeeAdmin(gl, ut, db, log, 55210406001L);
 //		new InventoryDashboard(gl, ut, db, log, 55210406001L);
+		new POS(gl, ut, db, log, 55210406001L);
 	}
 
 	/**
@@ -218,8 +220,9 @@ public class Main {
 					log.newLog(Long.parseLong(new String(idField.getPassword())), LogConstants.ATTENDANCE, LogConstants.SUB, dt);
 					
 					mainFrame.setVisible(false);
-					new EmployeeAdmin(gl, ut, db, log, Long.parseLong(new String(idField.getPassword())));
-					new InventoryDashboard(gl, ut, db, log, Long.parseLong(new String(idField.getPassword())));
+//					portal here:
+//					new EmployeeAdmin(gl, ut, db, log, Long.parseLong(new String(idField.getPassword())));
+//					new InventoryDashboard(gl, ut, db, log, Long.parseLong(new String(idField.getPassword())));
 				}
 			}
 		});

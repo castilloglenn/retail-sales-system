@@ -116,7 +116,7 @@ public class Utility {
 		if (adaptiveWidth < minSize) adaptiveWidth = minSize;
 		
 		comp.setFont(new Font(
-			"Tahoma", (comp.getFont().isBold()) ? Font.BOLD : Font.PLAIN,
+			comp.getFont().getFontName(), (comp.getFont().isBold()) ? Font.BOLD : Font.PLAIN,
 			adaptiveWidth)
 		);
 	}

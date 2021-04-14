@@ -110,7 +110,7 @@ public class Payroll {
 				}
 				
 				double attendanceRatio = emp_attendance / emp_sched;
-				double netPay = (basic * attendanceRatio) - (contribution - deductions);
+				double netPay = (basic * attendanceRatio) - (contribution + deductions);
 				
 				format.append(ENTRY + employee_id + " " + fullName 
 					+ " Schedule Days: " + emp_sched

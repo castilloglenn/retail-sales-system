@@ -427,18 +427,6 @@ public class EmployeeAdmin extends JFrame {
 		
 		JMenuItem copyMenu = new JMenuItem("Copy");
 		popupMenu_1.add(copyMenu);
-		copyMenu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					ut.copyToClipboard(
-						manageTable.getValueAt(
-							manageTable.getSelectedRow(), 
-							manageTable.getSelectedColumn()
-						).toString()
-					);
-				} catch (ArrayIndexOutOfBoundsException e1) {}
-			}
-		});
 		
 		separator = new JSeparator();
 		popupMenu_1.add(separator);
@@ -460,7 +448,18 @@ public class EmployeeAdmin extends JFrame {
 		manageDeleteButton = new JButton("DELETE");
 		manageCrud.add(manageDeleteButton);
 
-		
+		copyMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ut.copyToClipboard(
+						manageTable.getValueAt(
+							manageTable.getSelectedRow(), 
+							manageTable.getSelectedColumn()
+						).toString()
+					);
+				} catch (ArrayIndexOutOfBoundsException e1) {}
+			}
+		});
 		dashboardLabel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				toggleOne(dashboardLabel);

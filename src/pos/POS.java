@@ -19,6 +19,7 @@ import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -41,6 +42,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.TitledBorder;
 import javax.swing.JSeparator;
 import javax.swing.DefaultComboBoxModel;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import javax.swing.AbstractListModel;
 
 
 /**
@@ -59,7 +63,6 @@ public class POS extends JFrame {
 	private JLabel totalLabel;
 	private JLabel totalAmount;
 	private JTextArea receiptArea;
-	private JList<String> searchList;
 	private JLabel searchLabel;
 	private JTextField searchField;
 	private JLabel qtyLabel;
@@ -85,6 +88,10 @@ public class POS extends JFrame {
 	private JLabel mnameLabel;
 	private JLabel lnameLabel;
 	private JLabel addressLabel;
+	private JList<String> searchList;
+	
+	private Object[][] data;
+	private String[] formattedData;
 	
 	private Gallery gl;
 	private Utility ut;
@@ -100,7 +107,7 @@ public class POS extends JFrame {
 		setTitle("Point of Sales | " + Main.SYSTEM_NAME);
 		setIconImage(gl.businessLogo);
 		setMinimumSize(new Dimension(640, 480));
-		setSize(640, 480);
+		setSize(1000, 605);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		
@@ -177,22 +184,13 @@ public class POS extends JFrame {
 		container.add(searchLabel);
 		
 		searchField = new JTextField();
-		searchField.setMargin(new Insets(2, 10, 2, 10));
 		sl_container.putConstraint(SpringLayout.NORTH, searchField, 10, SpringLayout.SOUTH, searchLabel);
 		sl_container.putConstraint(SpringLayout.WEST, searchField, 0, SpringLayout.WEST, searchLabel);
 		sl_container.putConstraint(SpringLayout.EAST, searchField, -10, SpringLayout.EAST, container);
 		container.add(searchField);
 		searchField.setColumns(10);
 		
-		searchList = new JList<String>();
-		sl_container.putConstraint(SpringLayout.NORTH, searchList, -1, SpringLayout.SOUTH, searchField);
-		searchList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		sl_container.putConstraint(SpringLayout.WEST, searchList, 0, SpringLayout.WEST, searchLabel);
-		sl_container.putConstraint(SpringLayout.EAST, searchList, 0, SpringLayout.EAST, searchField);
-		container.add(searchList);
-		
 		qtyLabel = new JLabel("Quantity:");
-		sl_container.putConstraint(SpringLayout.SOUTH, searchList, -10, SpringLayout.NORTH, qtyLabel);
 		qtyLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
 		sl_container.putConstraint(SpringLayout.WEST, qtyLabel, 0, SpringLayout.WEST, searchLabel);
 		container.add(qtyLabel);
@@ -376,10 +374,53 @@ public class POS extends JFrame {
 		sl_container.putConstraint(SpringLayout.SOUTH, separator, 0, SpringLayout.SOUTH, voidButton);
 		separator.setOrientation(SwingConstants.VERTICAL);
 		container.add(separator);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		sl_container.putConstraint(SpringLayout.NORTH, scrollPane_1, -1, SpringLayout.SOUTH, searchField);
+		sl_container.putConstraint(SpringLayout.WEST, scrollPane_1, 0, SpringLayout.WEST, searchField);
+		sl_container.putConstraint(SpringLayout.SOUTH, scrollPane_1, -10, SpringLayout.NORTH, qtyLabel);
+		sl_container.putConstraint(SpringLayout.EAST, scrollPane_1, 0, SpringLayout.EAST, searchField);
+		container.add(scrollPane_1);
+		
+		searchList = new JList<String>();
+		searchList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		scrollPane_1.setViewportView(searchList);
 		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
 		listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER);
 
-		
+
+		searchField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				String keyword = searchField.getText();
+				data = db.fetchProductByKeyword(keyword);
+				
+				populateList();
+			}
+		});
+		qtyButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					int index = searchList.getSelectedIndex();
+					long product_id = (long) data[index][0];
+					double quantity = Double.parseDouble(qtyField.getText());
+					rc.addPurchase(product_id, quantity);
+					refreshReceipt();
+					qtyField.setText("");
+				} catch (NumberFormatException e1) {
+					JOptionPane.showMessageDialog(
+						null, "Invalid quantity. Please input any positive number.", 
+						"Invalid input | " + Main.SYSTEM_NAME, 
+						JOptionPane.WARNING_MESSAGE);
+					qtyField.setText("");
+				} catch (ArrayIndexOutOfBoundsException e1) {
+					JOptionPane.showMessageDialog(
+						null, "Please select a product from the list.", 
+						"Invalid input | " + Main.SYSTEM_NAME, 
+						JOptionPane.WARNING_MESSAGE);
+				}
+			}
+		});
 		addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
@@ -390,8 +431,7 @@ public class POS extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowActivated(WindowEvent e) {
-				receiptArea.setText(rc.get());
-				totalAmount.setText(String.format("Php %,.2f", rc.getTotal()));
+				refreshReceipt();
 				
 				adjustTheme(false);
 			}
@@ -407,9 +447,11 @@ public class POS extends JFrame {
 		});
 
 		adjustTheme(false);
+		data = db.fetchProductByKeyword("");
+		populateList();
 		setVisible(true);
 	}
-	
+
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -433,10 +475,11 @@ public class POS extends JFrame {
 		
 		ut.adjustFont(totalLabel, container, minCont, 14);
 		ut.adjustFont(totalAmount, container, minCont, 14);
+		ut.adjustFont(finishButton, container, minCont, 11);
 	}
 	
 	private void adjustContainer() {
-		int maxWidth = 900;
+		int maxWidth = 950;
 		int maxHeight = 600;
 
 		int width = container.getSize().width;
@@ -464,5 +507,51 @@ public class POS extends JFrame {
 			new TitledBorder(null, "Manage Customer", TitledBorder.LEADING, 
 				TitledBorder.TOP, null, (gl.isDark) ? gl.DFONT : gl.LFONT)
 			);
+	}
+	
+	private void refreshReceipt() {
+		receiptArea.setText(rc.get());
+		totalAmount.setText(String.format("Php %,.2f", rc.getTotal()));
+		receiptArea.setCaretPosition(0);
+	}
+	
+	private void populateList() {
+		formatData();
+		searchList.setModel(new AbstractListModel<String>() {
+			String[] values = formattedData;
+			public int getSize() {
+				return values.length;
+			}
+			public String getElementAt(int index) {
+				return values[index];
+			}
+		});
+	}
+	
+	protected void formatData() {
+		if (data == null) {
+			formattedData = new String[] {"Search for a keyword in the search field."};
+		} else {
+			formattedData = new String[data.length];
+			int index = 0;
+			for (Object[] row : data) {
+				if (row != null) {
+					String name = (String) row[4];
+					double price = (double) row[6];
+					
+					Object[] promo = db.fetchPromoByID((long) row[0]);
+					if (promo != null) {
+						name += " " + promo[1] + " " + promo[0];
+						price = ((double) (promo[2]) < 1) 
+							? price * (1 - (double) (promo[2])) 
+							: price - (double) (promo[2]);
+					}
+					
+					formattedData[index] = String.format("[%d]: %s - %s | Price: %,.2f per %s", 
+						(long) row[0], (String) row[1], name, price, (String) row[3]);
+				index++;
+				}
+			}
+		}
 	}
 }

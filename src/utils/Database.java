@@ -616,6 +616,71 @@ public class Database {
 		return null;
 	}
 	
+	public Object[][] fetchProductByKeyword(String keyword) {
+		try {
+			keyword = "%" + keyword + "%";
+			ps = con.prepareStatement(
+				  "SELECT COUNT(*) FROM product "
+				+ "WHERE product_id LIKE ? "
+				+ "OR category LIKE ? "
+				+ "OR quantity LIKE ? "
+				+ "OR uom LIKE ? "
+				+ "OR name LIKE ? "
+				+ "OR purchase_value LIKE ? "
+				+ "OR sell_value LIKE ?;"
+			);
+			ps.setString(1, keyword);
+			ps.setString(2, keyword);
+			ps.setString(3, keyword);
+			ps.setString(4, keyword);
+			ps.setString(5, keyword);
+			ps.setString(6, keyword);
+			ps.setString(7, keyword);
+			ResultSet count = ps.executeQuery();
+			count.next();
+			int size = count.getInt(1);
+			
+			ps = con.prepareStatement(
+				  "SELECT * FROM product "
+				+ "WHERE product_id LIKE ? "
+				+ "OR category LIKE ? "
+				+ "OR quantity LIKE ? "
+				+ "OR uom LIKE ? "
+				+ "OR name LIKE ? "
+				+ "OR purchase_value LIKE ? "
+				+ "OR sell_value LIKE ?;"
+			);
+			ps.setString(1, keyword);
+			ps.setString(2, keyword);
+			ps.setString(3, keyword);
+			ps.setString(4, keyword);
+			ps.setString(5, keyword);
+			ps.setString(6, keyword);
+			ps.setString(7, keyword);
+			
+			ResultSet data = ps.executeQuery();
+			Object[][] products = new Object[size][7];
+			int index = 0;
+			while (data.next()) {
+				Object[] row = new Object[7];
+				row[0] = (long) data.getLong(1);
+				row[1] = (String) data.getString(2);
+				row[2] = (double) data.getDouble(3);
+				row[3] = (String) data.getString(4);
+				row[4] = (String) data.getString(5);
+				row[5] = (double) data.getDouble(6);
+				row[6] = (double) data.getDouble(7);
+				products[index] = row;
+				index++;
+			}
+			
+			return products;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	public Object[] fetchSupplierByID(long supplier_id) {
 		try {
 			ps = con.prepareStatement(
@@ -859,9 +924,9 @@ public class Database {
 			promo.next();
 			
 			Object[] details = new Object[6];
-			details[0] = (String) promo.getString(2);
-			details[1] = (String) promo.getString(3);
-			details[2] = (double) promo.getLong(4);
+			details[0] = (String) promo.getString(2); // name
+			details[1] = (String) promo.getString(3); // condition
+			details[2] = (double) promo.getDouble(4); // discount
 			
 			return details;
 		} catch (SQLException e) {

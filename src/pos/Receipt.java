@@ -50,7 +50,6 @@ public class Receipt {
 		cashierName = cashier[1] + " " + cashier[3].toString().substring(0, 1) + ".";
 		setHorizontalLine();
 		resetTransaction();
-		addPurchase(4210410004L, 52);
 	}
 	
 	private void resetTransaction() {
@@ -60,6 +59,7 @@ public class Receipt {
 		subTotal = 0;
 		tax = 0;
 		total = 0;
+		totalItems = 0;
 	}
 	
 	private void setHorizontalLine() {
@@ -73,20 +73,27 @@ public class Receipt {
 		transactionNo = ut.generateTransactionID(1);
 	}
 	
-	public boolean addPurchase(long product_id, double quantity) {
+	public void addPurchase(long product_id, double quantity) {
 		int size = purchases.size();
 		Object[] product = db.fetchProductByID(product_id);
 		Object[] withQuantity = new Object[8];
-		for (int index = 0; index < withQuantity.length; index++) {
-			if (index == 0) withQuantity[index] = quantity;
-			else withQuantity[index + 1] = product[index];
+		withQuantity[0] = quantity;
+		for (int index = 1; index < product.length; index++) {
+			withQuantity[index + 1] = product[index];
 		}
 		Object[] promo = db.fetchPromoByID(product_id);
 		if (promo != null) {
-			// change the name and the prize
+			withQuantity[5] = withQuantity[4] + " " + withQuantity[5] + " " + promo[1] + " " + promo[0];
+			withQuantity[7] = ((double) (promo[2]) < 1) 
+				? (double) (withQuantity[7]) * (1 - (double) (promo[2])) 
+				: (double) (withQuantity[7]) - (double) (promo[2]);
 		}
 		purchases.put(size + 1, withQuantity);
-		return false;
+		setDateTime();
+	}
+	
+	public void removePurchase(int index) {
+		purchases.remove(index);
 	}
 	
 	private String leftAlign(String message) {
@@ -119,64 +126,64 @@ public class Receipt {
     }
 
     private String center(HashMap<Integer, Object[]> purchases) {
-        if (purchases.isEmpty()) {
-            return center("Please provide atleast 1 purchase to continue.");
-        } else {
-        	StringBuilder purchaseList = new StringBuilder();
-            for (int key : purchases.keySet()) {
-                Object[] purchase = purchases.get(key);
-                double quantity = (double) purchase[0];
-                String description = (String) purchase[1];
-                double price = (double) purchase[2];
+        if (purchases.isEmpty()) return center("Please provide atleast 1 purchase to continue.") + "\n";
+        
+        StringBuilder purchaseList = new StringBuilder();
+        for (int key : purchases.keySet()) {
+            Object[] purchase = purchases.get(key);
+            double quantity = (double) purchase[0];
+            String description = (String) purchase[5];
+            double price = (double) purchase[7];
 
-                String firstLine = String.format("  %03d: %-" + description.length() + "s", 
-                        key, quantity + " pc(s) " + description);
-                String individual = String.format("Php %,.2f", price);
-                String totalPrice = String.format("Php %,.2f", quantity * price);
+            String firstLine = String.format("  %03d: %-" + description.length() + "s", 
+                    key, quantity + " " + description);
+            String individual = String.format("Php %,.2f", price);
+            String totalPrice = String.format("Php %,.2f", quantity * price);
 
-                String secondLine = String.format("    @ %s ",individual);
-                int centerSpace = WIDTH - (11 + individual.length() + totalPrice.length());
-                String totalLine = "";
-                for (int dot = 0; dot < centerSpace; dot++) {
-                    totalLine += ".";
-                }
-                totalLine += " ";
-
-                purchaseList.append(
-                    (firstLine.length() > WIDTH - 4)
-                    ? firstLine.substring(0, WIDTH - 5) + "..\n"
-                    : firstLine + "\n"
-                );
-                purchaseList.append(secondLine + totalLine + totalPrice + "\n");
-                
-                total += quantity * price;
-                totalItems += quantity;
-                tax = total * 0.12;
-                subTotal = total - tax;
+            String secondLine = String.format("    @ %s ",individual);
+            int centerSpace = WIDTH - (11 + individual.length() + totalPrice.length());
+            String totalLine = "";
+            for (int dot = 0; dot < centerSpace; dot++) {
+                totalLine += ".";
             }
-            String subTotalFormat = String.format("Php %,.2f", subTotal);
-            String taxFormat = String.format("Php %,.2f", tax);
-            String totalFormat = String.format("Php %,.2f", total);
+            totalLine += " ";
 
             purchaseList.append(
-        		String.format("\n  TOTAL ITEMS %," + (WIDTH - 16) + ".2f\n", 
-        			totalItems));
-            purchaseList.append(
-            	String.format("\n  SUB-TOTAL %" + (WIDTH - 14) + "s\n", 
-            		subTotalFormat));
-            purchaseList.append(
-            	String.format("  TAX %" + (WIDTH - 8) + "s\n",
-            		taxFormat));
-            purchaseList.append(
-        		String.format("  TOTAL %" + (WIDTH - 10) + "s\n", 
-        			totalFormat));
-
-            return purchaseList.toString();
+                (firstLine.length() > WIDTH - 4)
+                ? firstLine.substring(0, WIDTH - 5) + "..\n"
+                : firstLine + "\n"
+            );
+            purchaseList.append(secondLine + totalLine + totalPrice + "\n");
+            
+            total += quantity * price;
+            totalItems += quantity;
+            tax = total * 0.12;
+            subTotal = total - tax;
         }
+        
+        String subTotalFormat = String.format("Php %,.2f", subTotal);
+        String taxFormat = String.format("Php %,.2f", tax);
+        String totalFormat = String.format("Php %,.2f", total);
+
+        purchaseList.append(
+    		String.format("\n  TOTAL ITEMS %," + (WIDTH - 16) + ".2f\n", 
+    			totalItems));
+        purchaseList.append(
+        	String.format("\n  SUB-TOTAL %" + (WIDTH - 14) + "s\n", 
+        		subTotalFormat));
+        purchaseList.append(
+        	String.format("  TAX %" + (WIDTH - 8) + "s\n",
+        		taxFormat));
+        purchaseList.append(
+    		String.format("  TOTAL %" + (WIDTH - 10) + "s\n", 
+    			totalFormat));
+
+        return purchaseList.toString();
     }
     
     public String get() {
     	StringBuilder receipt = new StringBuilder();
+    	resetTransaction();
     	setDateTime();
     	
     	receipt.append(center(businessName1) + BR);
@@ -188,7 +195,7 @@ public class Receipt {
     	receipt.append(leftAlign("Transaction No: " + transactionNo) + BR);
     	receipt.append(leftAlign("Cashier: " + cashierName) + BR);
     	receipt.append(leftAlign("Customer: " + customerName) + BR);
-    	receipt.append(horizontalLine + BR);
+    	receipt.append(horizontalLine + BR + BR);
     	receipt.append(center(purchases) + BR);
     	receipt.append(horizontalLine + BR);
     	receipt.append(center(footer) + BR + BR);

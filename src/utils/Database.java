@@ -845,6 +845,30 @@ public class Database {
 		return null;
 	}
 	
+	public Object[] fetchPromoByID(long product_id) {
+		try {
+			ps = con.prepareStatement(
+				  "SELECT * "
+				+ "FROM promo "
+				+ "WHERE product_id=? "
+				+ "AND end_date > now() "
+				+ "LIMIT 1;"
+			);
+			ps.setLong(1, product_id);
+			ResultSet promo = ps.executeQuery();
+			promo.next();
+			
+			Object[] details = new Object[6];
+			details[0] = (String) promo.getString(2);
+			details[1] = (String) promo.getString(3);
+			details[2] = (double) promo.getLong(4);
+			
+			return details;
+		} catch (SQLException e) {
+			return null;
+		}
+	}
+	
 	public int fetchTotalCount() {
 		try {
 			ps = con.prepareStatement(

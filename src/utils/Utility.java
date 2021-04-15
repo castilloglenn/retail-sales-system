@@ -354,4 +354,19 @@ public class Utility {
 		
 		return Long.parseLong(markup.toString());
 	}
+	
+	/** TRANSACTION ID FORMAT:
+	 *  ex: 1011616644307939 ===== len(16)
+     *  1-01-1616644307939
+ 	 *  1 = Transaction Code (can range from 1-4)
+ 	 *  01 = Machine Code (can range from 01-99)
+ 	 *  1616644307939 = Timestamp (In millis)
+	 */
+	public long generateTransactionID(int machineCode) {
+		StringBuilder markup = new StringBuilder("1");
+		markup.append(String.format("%02d", machineCode));
+		markup.append(Calendar.getInstance().getTimeInMillis());
+		
+		return Long.parseLong(markup.toString());
+	}
 }

@@ -90,10 +90,12 @@ public class POS extends JFrame {
 	private Utility ut;
 	private Database db;
 	private Logger log;
+	private Receipt rc;
 	private long id;
 	
 	public POS(Gallery gl, Utility ut, Database db, Logger log, long id) {
 		this.gl = gl; this.ut = ut; this.db = db; this.log = log; this.id = id;
+		rc = new Receipt(db, ut, id);
 		
 		setTitle("Point of Sales | " + Main.SYSTEM_NAME);
 		setIconImage(gl.businessLogo);
@@ -388,6 +390,8 @@ public class POS extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowActivated(WindowEvent e) {
+				receiptArea.setText(rc.get());
+				totalAmount.setText(String.format("Php %,.2f", rc.getTotal()));
 				
 				adjustTheme(false);
 			}
@@ -432,7 +436,7 @@ public class POS extends JFrame {
 	}
 	
 	private void adjustContainer() {
-		int maxWidth = 1100;
+		int maxWidth = 900;
 		int maxHeight = 600;
 
 		int width = container.getSize().width;
@@ -446,8 +450,9 @@ public class POS extends JFrame {
 		sl_contentPane.putConstraint(SpringLayout.NORTH, container, heightOverflow, SpringLayout.NORTH, contentPane);
 		sl_contentPane.putConstraint(SpringLayout.SOUTH, container, -heightOverflow, SpringLayout.SOUTH, contentPane);
 		
-		int frameWidth = this.getSize().width;
-		sl_container.putConstraint(SpringLayout.EAST, scrollPane, (int) (frameWidth / 2.5), SpringLayout.WEST, container);
+		int frameWidth = (int) (this.getSize().width / 2.5);
+		int receipt = 400;
+		sl_container.putConstraint(SpringLayout.EAST, scrollPane, (frameWidth > receipt) ? receipt : frameWidth, SpringLayout.WEST, container);
 	}
 	
 	private void adjustTheme(boolean change) {

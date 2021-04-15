@@ -28,7 +28,7 @@ Cashier: <CASHIER.fname>
 
  TOTAL ITEMS		<TOTAL_ITEMS>
 
-========================================*MAX-WIDTH
+==================================================
 
  THANK YOU FOR VISITING OUR STORE.
  COME AGAIN!!!

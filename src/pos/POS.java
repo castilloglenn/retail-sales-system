@@ -27,10 +27,7 @@ import java.awt.event.WindowAdapter;
 import javax.swing.DefaultListCellRenderer;
 
 import main.Main;
-import java.awt.GridLayout;
 import javax.swing.JButton;
-import javax.swing.JTabbedPane;
-import java.awt.CardLayout;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
@@ -38,11 +35,12 @@ import javax.swing.JComboBox;
 import java.awt.Font;
 import javax.swing.SwingConstants;
 import java.awt.Insets;
-import javax.swing.border.BevelBorder;
 import javax.swing.JTextField;
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
-import javax.swing.AbstractListModel;
+import javax.swing.border.TitledBorder;
+import javax.swing.JSeparator;
+import javax.swing.DefaultComboBoxModel;
 
 
 /**
@@ -62,16 +60,37 @@ public class POS extends JFrame {
 	private JLabel totalAmount;
 	private JTextArea receiptArea;
 	private JList<String> searchList;
+	private JLabel searchLabel;
+	private JTextField searchField;
+	private JLabel qtyLabel;
+	private JLabel voidLabel;
+	private JTextField qtyField;
+	private JTextField voidField;
+	private JButton qtyButton;
+	private JButton voidButton;
+	private JButton finishButton;
+	private JPanel customer;
+	private JTextField idField;
+	private JTextField fnameField;
+	private JTextField mnameField;
+	private JTextField lnameField;
+	private JTextField addressField;
+	private JLabel contactLabel;
+	private JTextField contactField;
+	private JButton confirmButton;
+	private JLabel operationLabel;
+	private JComboBox<String> comboBox;
+	private JLabel idLabel;
+	private JLabel fnameLabel;
+	private JLabel mnameLabel;
+	private JLabel lnameLabel;
+	private JLabel addressLabel;
 	
 	private Gallery gl;
 	private Utility ut;
 	private Database db;
 	private Logger log;
 	private long id;
-	private JLabel searchLabel;
-	private JTextField searchField;
-	private JLabel qtyLabel;
-	private JLabel voidLabel;
 	
 	public POS(Gallery gl, Utility ut, Database db, Logger log, long id) {
 		this.gl = gl; this.ut = ut; this.db = db; this.log = log; this.id = id;
@@ -124,11 +143,11 @@ public class POS extends JFrame {
 		container.add(totalLabel);
 		
 		scrollPane = new JScrollPane();
+		sl_container.putConstraint(SpringLayout.SOUTH, scrollPane, -10, SpringLayout.NORTH, totalLabel);
 		scrollPane.setBorder(null);
 		sl_container.putConstraint(SpringLayout.EAST, customerComboBox, 0, SpringLayout.EAST, scrollPane);
 		sl_container.putConstraint(SpringLayout.NORTH, scrollPane, 10, SpringLayout.SOUTH, customerLabel);
 		sl_container.putConstraint(SpringLayout.WEST, scrollPane, 10, SpringLayout.WEST, container);
-		sl_container.putConstraint(SpringLayout.SOUTH, scrollPane, -10, SpringLayout.NORTH, totalLabel);
 		int frameWidth = this.getSize().width;
 		sl_container.putConstraint(SpringLayout.EAST, scrollPane, (int) (frameWidth / 2.5), SpringLayout.WEST, container);
 		container.add(scrollPane);
@@ -156,6 +175,7 @@ public class POS extends JFrame {
 		container.add(searchLabel);
 		
 		searchField = new JTextField();
+		searchField.setMargin(new Insets(2, 10, 2, 10));
 		sl_container.putConstraint(SpringLayout.NORTH, searchField, 10, SpringLayout.SOUTH, searchLabel);
 		sl_container.putConstraint(SpringLayout.WEST, searchField, 0, SpringLayout.WEST, searchLabel);
 		sl_container.putConstraint(SpringLayout.EAST, searchField, -10, SpringLayout.EAST, container);
@@ -163,33 +183,197 @@ public class POS extends JFrame {
 		searchField.setColumns(10);
 		
 		searchList = new JList<String>();
-		searchList.setModel(new AbstractListModel<String>() {
-			String[] values = new String[] {"sample1", "sample2", "sample3", "sample4", "sample5"};
-			public int getSize() {
-				return values.length;
-			}
-			public String getElementAt(int index) {
-				return values[index];
-			}
-		});
+		sl_container.putConstraint(SpringLayout.NORTH, searchList, -1, SpringLayout.SOUTH, searchField);
 		searchList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		sl_container.putConstraint(SpringLayout.NORTH, searchList, 0, SpringLayout.SOUTH, searchField);
 		sl_container.putConstraint(SpringLayout.WEST, searchList, 0, SpringLayout.WEST, searchLabel);
-		sl_container.putConstraint(SpringLayout.SOUTH, searchList, 100, SpringLayout.SOUTH, searchField);
 		sl_container.putConstraint(SpringLayout.EAST, searchList, 0, SpringLayout.EAST, searchField);
 		container.add(searchList);
 		
 		qtyLabel = new JLabel("Quantity:");
+		sl_container.putConstraint(SpringLayout.SOUTH, searchList, -10, SpringLayout.NORTH, qtyLabel);
 		qtyLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
-		sl_container.putConstraint(SpringLayout.NORTH, qtyLabel, 6, SpringLayout.SOUTH, searchList);
 		sl_container.putConstraint(SpringLayout.WEST, qtyLabel, 0, SpringLayout.WEST, searchLabel);
 		container.add(qtyLabel);
 		
 		voidLabel = new JLabel("Remove:");
-		sl_container.putConstraint(SpringLayout.NORTH, voidLabel, 6, SpringLayout.SOUTH, qtyLabel);
+		sl_container.putConstraint(SpringLayout.SOUTH, qtyLabel, -6, SpringLayout.NORTH, voidLabel);
 		sl_container.putConstraint(SpringLayout.WEST, voidLabel, 0, SpringLayout.WEST, searchLabel);
 		voidLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
 		container.add(voidLabel);
+		
+		qtyField = new JTextField();
+		qtyField.setHorizontalAlignment(SwingConstants.CENTER);
+		sl_container.putConstraint(SpringLayout.NORTH, qtyField, -2, SpringLayout.NORTH, qtyLabel);
+		sl_container.putConstraint(SpringLayout.WEST, qtyField, 6, SpringLayout.EAST, qtyLabel);
+		sl_container.putConstraint(SpringLayout.SOUTH, qtyField, 2, SpringLayout.SOUTH, qtyLabel);
+		sl_container.putConstraint(SpringLayout.EAST, qtyField, 50, SpringLayout.EAST, qtyLabel);
+		container.add(qtyField);
+		qtyField.setColumns(10);
+		
+		voidField = new JTextField();
+		voidField.setHorizontalAlignment(SwingConstants.CENTER);
+		sl_container.putConstraint(SpringLayout.NORTH, voidField, -2, SpringLayout.NORTH, voidLabel);
+		sl_container.putConstraint(SpringLayout.WEST, voidField, 0, SpringLayout.WEST, qtyField);
+		sl_container.putConstraint(SpringLayout.SOUTH, voidField, 2, SpringLayout.SOUTH, voidLabel);
+		sl_container.putConstraint(SpringLayout.EAST, voidField, 0, SpringLayout.EAST, qtyField);
+		container.add(voidField);
+		voidField.setColumns(10);
+		
+		qtyButton = new JButton("ADD");
+		sl_container.putConstraint(SpringLayout.NORTH, qtyButton, 0, SpringLayout.NORTH, qtyField);
+		sl_container.putConstraint(SpringLayout.WEST, qtyButton, 0, SpringLayout.EAST, qtyField);
+		sl_container.putConstraint(SpringLayout.SOUTH, qtyButton, 0, SpringLayout.SOUTH, qtyField);
+		qtyButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+		qtyButton.setMargin(new Insets(2, 2, 2, 2));
+		sl_container.putConstraint(SpringLayout.EAST, qtyButton, 50, SpringLayout.EAST, qtyField);
+		container.add(qtyButton);
+		
+		voidButton = new JButton("VOID");
+		sl_container.putConstraint(SpringLayout.NORTH, voidButton, 0, SpringLayout.NORTH, voidField);
+		sl_container.putConstraint(SpringLayout.SOUTH, voidButton, 0, SpringLayout.SOUTH, voidField);
+		voidButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+		voidButton.setMargin(new Insets(2, 2, 2, 2));
+		sl_container.putConstraint(SpringLayout.WEST, voidButton, 0, SpringLayout.WEST, qtyButton);
+		sl_container.putConstraint(SpringLayout.EAST, voidButton, 50, SpringLayout.EAST, voidField);
+		container.add(voidButton);
+		
+		finishButton = new JButton("Finish Transaction");
+		finishButton.setMargin(new Insets(2, 2, 2, 2));
+		finishButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+		sl_container.putConstraint(SpringLayout.NORTH, finishButton, 0, SpringLayout.NORTH, qtyButton);
+		sl_container.putConstraint(SpringLayout.SOUTH, finishButton, 0, SpringLayout.SOUTH, voidButton);
+		sl_container.putConstraint(SpringLayout.EAST, finishButton, -10, SpringLayout.EAST, container);
+		container.add(finishButton);
+		
+		customer = new JPanel();
+		sl_container.putConstraint(SpringLayout.SOUTH, voidLabel, -10, SpringLayout.NORTH, customer);
+		sl_container.putConstraint(SpringLayout.NORTH, customer, -210, SpringLayout.SOUTH, container);
+		customer.setBorder(new TitledBorder(null, "Manage Customer", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		sl_container.putConstraint(SpringLayout.WEST, customer, 0, SpringLayout.WEST, searchLabel);
+		sl_container.putConstraint(SpringLayout.SOUTH, customer, -10, SpringLayout.SOUTH, container);
+		sl_container.putConstraint(SpringLayout.EAST, customer, -10, SpringLayout.EAST, container);
+		container.add(customer);
+		SpringLayout sl_customer = new SpringLayout();
+		customer.setLayout(sl_customer);
+		
+		operationLabel = new JLabel("Select Operation:");
+		sl_customer.putConstraint(SpringLayout.NORTH, operationLabel, 5, SpringLayout.NORTH, customer);
+		sl_customer.putConstraint(SpringLayout.WEST, operationLabel, 10, SpringLayout.WEST, customer);
+		customer.add(operationLabel);
+		
+		comboBox = new JComboBox<String>();
+		sl_customer.putConstraint(SpringLayout.EAST, comboBox, 100, SpringLayout.EAST, operationLabel);
+		comboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"ADD", "UPDATE", "REMOVE"}));
+		sl_customer.putConstraint(SpringLayout.NORTH, comboBox, -2, SpringLayout.NORTH, operationLabel);
+		sl_customer.putConstraint(SpringLayout.WEST, comboBox, 6, SpringLayout.EAST, operationLabel);
+		sl_customer.putConstraint(SpringLayout.SOUTH, comboBox, 2, SpringLayout.SOUTH, operationLabel);
+		customer.add(comboBox);
+		
+		JSeparator separator_1 = new JSeparator();
+		sl_customer.putConstraint(SpringLayout.NORTH, separator_1, 10, SpringLayout.SOUTH, operationLabel);
+		sl_customer.putConstraint(SpringLayout.WEST, separator_1, 10, SpringLayout.WEST, customer);
+		sl_customer.putConstraint(SpringLayout.EAST, separator_1, -10, SpringLayout.EAST, customer);
+		customer.add(separator_1);
+		
+		idLabel = new JLabel("Customer ID:");
+		sl_customer.putConstraint(SpringLayout.NORTH, idLabel, 10, SpringLayout.SOUTH, separator_1);
+		sl_customer.putConstraint(SpringLayout.WEST, idLabel, 0, SpringLayout.WEST, operationLabel);
+		customer.add(idLabel);
+		
+		idField = new JTextField();
+		idField.setMargin(new Insets(2, 10, 2, 10));
+		sl_customer.putConstraint(SpringLayout.NORTH, idField, -2, SpringLayout.NORTH, idLabel);
+		sl_customer.putConstraint(SpringLayout.WEST, idField, 0, SpringLayout.WEST, comboBox);
+		sl_customer.putConstraint(SpringLayout.SOUTH, idField, 2, SpringLayout.SOUTH, idLabel);
+		sl_customer.putConstraint(SpringLayout.EAST, idField, -10, SpringLayout.EAST, customer);
+		customer.add(idField);
+		idField.setColumns(10);
+		
+		fnameLabel = new JLabel("First Name:");
+		sl_customer.putConstraint(SpringLayout.NORTH, fnameLabel, 6, SpringLayout.SOUTH, idLabel);
+		sl_customer.putConstraint(SpringLayout.WEST, fnameLabel, 0, SpringLayout.WEST, operationLabel);
+		customer.add(fnameLabel);
+		
+		fnameField = new JTextField();
+		fnameField.setMargin(new Insets(2, 10, 2, 10));
+		sl_customer.putConstraint(SpringLayout.NORTH, fnameField, -2, SpringLayout.NORTH, fnameLabel);
+		sl_customer.putConstraint(SpringLayout.WEST, fnameField, 0, SpringLayout.WEST, comboBox);
+		sl_customer.putConstraint(SpringLayout.SOUTH, fnameField, 2, SpringLayout.SOUTH, fnameLabel);
+		sl_customer.putConstraint(SpringLayout.EAST, fnameField, -10, SpringLayout.EAST, customer);
+		customer.add(fnameField);
+		fnameField.setColumns(10);
+		
+		mnameLabel = new JLabel("Middle Name:");
+		sl_customer.putConstraint(SpringLayout.NORTH, mnameLabel, 6, SpringLayout.SOUTH, fnameLabel);
+		sl_customer.putConstraint(SpringLayout.WEST, mnameLabel, 0, SpringLayout.WEST, operationLabel);
+		customer.add(mnameLabel);
+		
+		mnameField = new JTextField();
+		mnameField.setMargin(new Insets(2, 10, 2, 10));
+		sl_customer.putConstraint(SpringLayout.NORTH, mnameField, -2, SpringLayout.NORTH, mnameLabel);
+		sl_customer.putConstraint(SpringLayout.WEST, mnameField, 0, SpringLayout.WEST, comboBox);
+		sl_customer.putConstraint(SpringLayout.SOUTH, mnameField, 2, SpringLayout.SOUTH, mnameLabel);
+		sl_customer.putConstraint(SpringLayout.EAST, mnameField, -10, SpringLayout.EAST, customer);
+		customer.add(mnameField);
+		mnameField.setColumns(10);
+		
+		lnameLabel = new JLabel("Last Name:");
+		sl_customer.putConstraint(SpringLayout.NORTH, lnameLabel, 6, SpringLayout.SOUTH, mnameLabel);
+		sl_customer.putConstraint(SpringLayout.WEST, lnameLabel, 0, SpringLayout.WEST, operationLabel);
+		customer.add(lnameLabel);
+		
+		lnameField = new JTextField();
+		lnameField.setMargin(new Insets(2, 10, 2, 10));
+		sl_customer.putConstraint(SpringLayout.NORTH, lnameField, -2, SpringLayout.NORTH, lnameLabel);
+		sl_customer.putConstraint(SpringLayout.WEST, lnameField, 0, SpringLayout.WEST, comboBox);
+		sl_customer.putConstraint(SpringLayout.SOUTH, lnameField, 2, SpringLayout.SOUTH, lnameLabel);
+		sl_customer.putConstraint(SpringLayout.EAST, lnameField, -10, SpringLayout.EAST, customer);
+		customer.add(lnameField);
+		lnameField.setColumns(10);
+		
+		addressLabel = new JLabel("Address:");
+		sl_customer.putConstraint(SpringLayout.NORTH, addressLabel, 6, SpringLayout.SOUTH, lnameLabel);
+		sl_customer.putConstraint(SpringLayout.WEST, addressLabel, 0, SpringLayout.WEST, operationLabel);
+		customer.add(addressLabel);
+		
+		addressField = new JTextField();
+		addressField.setMargin(new Insets(2, 10, 2, 10));
+		sl_customer.putConstraint(SpringLayout.NORTH, addressField, -2, SpringLayout.NORTH, addressLabel);
+		sl_customer.putConstraint(SpringLayout.WEST, addressField, 0, SpringLayout.WEST, comboBox);
+		sl_customer.putConstraint(SpringLayout.SOUTH, addressField, 2, SpringLayout.SOUTH, addressLabel);
+		sl_customer.putConstraint(SpringLayout.EAST, addressField, -10, SpringLayout.EAST, customer);
+		customer.add(addressField);
+		addressField.setColumns(10);
+		
+		contactLabel = new JLabel("Contact #:");
+		sl_customer.putConstraint(SpringLayout.NORTH, contactLabel, 6, SpringLayout.SOUTH, addressLabel);
+		sl_customer.putConstraint(SpringLayout.WEST, contactLabel, 0, SpringLayout.WEST, operationLabel);
+		customer.add(contactLabel);
+		
+		contactField = new JTextField();
+		contactField.setMargin(new Insets(2, 10, 2, 10));
+		sl_customer.putConstraint(SpringLayout.NORTH, contactField, -2, SpringLayout.NORTH, contactLabel);
+		sl_customer.putConstraint(SpringLayout.WEST, contactField, 0, SpringLayout.WEST, comboBox);
+		sl_customer.putConstraint(SpringLayout.SOUTH, contactField, 2, SpringLayout.SOUTH, contactLabel);
+		sl_customer.putConstraint(SpringLayout.EAST, contactField, -10, SpringLayout.EAST, customer);
+		customer.add(contactField);
+		contactField.setColumns(10);
+		
+		confirmButton = new JButton("CONFIRM");
+		confirmButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+		sl_customer.putConstraint(SpringLayout.NORTH, confirmButton, 0, SpringLayout.NORTH, comboBox);
+		sl_customer.putConstraint(SpringLayout.WEST, confirmButton, 10, SpringLayout.EAST, comboBox);
+		sl_customer.putConstraint(SpringLayout.SOUTH, confirmButton, 0, SpringLayout.SOUTH, comboBox);
+		sl_customer.putConstraint(SpringLayout.EAST, confirmButton, -10, SpringLayout.EAST, customer);
+		customer.add(confirmButton);
+		
+		JSeparator separator = new JSeparator();
+		sl_container.putConstraint(SpringLayout.WEST, finishButton, 10, SpringLayout.EAST, separator);
+		sl_container.putConstraint(SpringLayout.NORTH, separator, 0, SpringLayout.NORTH, qtyButton);
+		sl_container.putConstraint(SpringLayout.WEST, separator, 10, SpringLayout.EAST, qtyButton);
+		sl_container.putConstraint(SpringLayout.SOUTH, separator, 0, SpringLayout.SOUTH, voidButton);
+		separator.setOrientation(SwingConstants.VERTICAL);
+		container.add(separator);
 		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
 		listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER);
 
@@ -271,11 +455,9 @@ public class POS extends JFrame {
 		
 		gl.designOptionPanes();
 		gl.getAllComponentsChangeTheme(this, 9);
-		
-		if (gl.isDark) {
-			
-		} else {
-			
-		}
+		customer.setBorder(
+			new TitledBorder(null, "Manage Customer", TitledBorder.LEADING, 
+				TitledBorder.TOP, null, (gl.isDark) ? gl.DFONT : gl.LFONT)
+			);
 	}
 }

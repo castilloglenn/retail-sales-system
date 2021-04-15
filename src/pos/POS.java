@@ -184,6 +184,7 @@ public class POS extends JFrame {
 		container.add(searchLabel);
 		
 		searchField = new JTextField();
+		searchField.setFocusTraversalKeysEnabled(false);
 		sl_container.putConstraint(SpringLayout.NORTH, searchField, 10, SpringLayout.SOUTH, searchLabel);
 		sl_container.putConstraint(SpringLayout.WEST, searchField, 0, SpringLayout.WEST, searchLabel);
 		sl_container.putConstraint(SpringLayout.EAST, searchField, -10, SpringLayout.EAST, container);
@@ -238,6 +239,7 @@ public class POS extends JFrame {
 		container.add(voidButton);
 		
 		finishButton = new JButton("Finish Transaction");
+		finishButton.setFocusTraversalKeysEnabled(false);
 		finishButton.setMargin(new Insets(2, 2, 2, 2));
 		finishButton.setFont(new Font("Tahoma", Font.BOLD, 11));
 		sl_container.putConstraint(SpringLayout.NORTH, finishButton, 0, SpringLayout.NORTH, qtyButton);
@@ -397,6 +399,13 @@ public class POS extends JFrame {
 				
 				populateList();
 			}
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == 9) {
+					searchList.setSelectedIndex(0);
+					searchList.requestFocus();
+				}
+			}
 		});
 		qtyButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -406,7 +415,11 @@ public class POS extends JFrame {
 					double quantity = Double.parseDouble(qtyField.getText());
 					rc.addPurchase(product_id, quantity);
 					refreshReceipt();
+					searchField.setText("");
 					qtyField.setText("");
+					data = db.fetchProductByKeyword("");
+					populateList();
+					searchField.requestFocus();
 				} catch (NumberFormatException e1) {
 					JOptionPane.showMessageDialog(
 						null, "Invalid quantity. Please input any positive number.", 
@@ -418,6 +431,14 @@ public class POS extends JFrame {
 						null, "Please select a product from the list.", 
 						"Invalid input | " + Main.SYSTEM_NAME, 
 						JOptionPane.WARNING_MESSAGE);
+				}
+			}
+		});
+		finishButton.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == 9) {
+					searchField.requestFocus();
 				}
 			}
 		});

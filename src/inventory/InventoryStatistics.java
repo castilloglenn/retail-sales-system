@@ -46,7 +46,7 @@ public class InventoryStatistics extends JDialog {
 		JPopupMenu popupMenu = new JPopupMenu();
 		addPopup(this, popupMenu);
 		
-		themeSwitcher = new JMenuItem("Switch to Dark Theme");
+		themeSwitcher = new JMenuItem((gl.isDark) ? "Switch to Light Theme" : "Switch to Dark Theme");
 		popupMenu.add(themeSwitcher);
 		
 		JPanel panel = new JPanel();
@@ -127,12 +127,6 @@ public class InventoryStatistics extends JDialog {
 		gl.designOptionPanes();
 		gl.getAllComponentsChangeTheme(this, 7);
 		themeSwitcher.setText((gl.isDark) ? "Switch to Light Theme" : "Switch to Dark Theme");
-		
-		if (gl.isDark) {
-			
-		} else {
-			
-		}
 	}
 	
 	public String constructStatistics() {

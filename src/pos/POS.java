@@ -89,6 +89,7 @@ public class POS extends JFrame {
 	private JLabel lnameLabel;
 	private JLabel addressLabel;
 	private JList<String> searchList;
+	private JMenuItem themeSwitcher;
 	
 	private Object[][] data;
 	private String[] formattedData;
@@ -114,7 +115,7 @@ public class POS extends JFrame {
 		JPopupMenu popupMenu = new JPopupMenu();
 		addPopup(this, popupMenu);
 		
-		JMenuItem themeSwitcher = new JMenuItem("Switch to Dark Theme");
+		themeSwitcher = new JMenuItem((gl.isDark) ? "Switch to Light Theme" : "Switch to Dark Theme");
 		popupMenu.add(themeSwitcher);
 		
 		contentPane = new JPanel();
@@ -462,6 +463,24 @@ public class POS extends JFrame {
 				}
 			}
 		});
+		finishButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (rc.verify()) {
+					if (rc.make()) {
+						JOptionPane.showMessageDialog(
+							null, "Transaction successful.", 
+							"Sucess | " + Main.SYSTEM_NAME, 
+							JOptionPane.INFORMATION_MESSAGE);
+						rc = new Receipt(db, ut, id);
+					}
+				} else {
+					JOptionPane.showMessageDialog(
+						null, "You can't make a transaction without a purchase.", 
+						"Error | " + Main.SYSTEM_NAME, 
+						JOptionPane.WARNING_MESSAGE);
+				}
+			}
+		});
 		finishButton.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -556,6 +575,10 @@ public class POS extends JFrame {
 			new TitledBorder(null, "Manage Customer", TitledBorder.LEADING, 
 				TitledBorder.TOP, null, (gl.isDark) ? gl.DFONT : gl.LFONT)
 			);
+		themeSwitcher.setText(
+			(gl.isDark) 
+			? "Switch to Light Theme" 
+			: "Switch to Dark Theme");
 	}
 	
 	private void refreshReceipt() {

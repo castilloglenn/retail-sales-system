@@ -390,11 +390,6 @@ public class InventoryDashboard extends JFrame {
 		gl.getAllComponentsChangeTheme(this, 7);
 		themeSwitcher.setText((gl.isDark) ? "Switch to Light Theme" : "Switch to Dark Theme");
 		
-		if (gl.isDark) {
-			
-		} else {
-			
-		}
 	}
 	
 	public void resetFields() {

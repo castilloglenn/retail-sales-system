@@ -207,6 +207,17 @@ public class Receipt {
     	return receipt.toString();
     }
     
+    public boolean make() {
+    	
+    	
+    	return true;
+    }
+    
+    public boolean verify() {
+    	if (purchases.isEmpty()) return false;
+    	else return true;
+    }
+    
     public double getTotal() {return total;}
     public double getSubTotal() {return subTotal;}
     public double getTax() {return tax;}

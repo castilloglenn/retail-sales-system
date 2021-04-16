@@ -332,12 +332,6 @@ public class PromoAdmin extends JDialog {
 		gl.designOptionPanes();
 		gl.getAllComponentsChangeTheme(this, 8);
 		themeSwitcher.setText((gl.isDark) ? "Switch to Light Theme" : "Switch to Dark Theme");
-		
-		if (gl.isDark) {
-			
-		} else {
-			
-		}
 	}
 	
 	private void displayPromos() {

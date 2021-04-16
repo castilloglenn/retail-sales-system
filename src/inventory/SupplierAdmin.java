@@ -580,12 +580,6 @@ public class SupplierAdmin extends JDialog {
 		productArea.setBorder(
 			new TitledBorder(null, "Product Details", TitledBorder.LEADING, 
 				TitledBorder.TOP, null, (gl.isDark) ? gl.DFONT : gl.LFONT));
-		
-		if (gl.isDark) {
-			
-		} else {
-			
-		}
 	}
 	
 	private boolean checkFields() {

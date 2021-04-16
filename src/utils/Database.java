@@ -182,8 +182,11 @@ public class Database {
 			+ ");"
 		);
 		stmt.execute(
-			  "INSERT INTO customer"
-			+ "VALUES (1, 0, \"WALK\", \"-\", \"IN\", \"System\", \"System\");"
+			  "INSERT INTO customer "
+			+ "SELECT * FROM (SELECT 1, 0, \"WALK\", \"-\", \"IN\", \"System\", \"None\") AS tmp "
+			+ "WHERE NOT EXISTS ("
+			+ "    SELECT customer_id FROM customer WHERE customer_id = 1"
+			+ ") LIMIT 1;"
 		);
 	}
 	
@@ -267,6 +270,27 @@ public class Database {
 		try {
 			ps = con.prepareStatement(
 				  "INSERT INTO promo "
+				+ "VALUES (?, ?, ?, ?, ?, ?);"
+			);
+			ps.setLong(1, (long) data[0]);
+			ps.setString(2, data[1].toString());
+			ps.setString(3, data[2].toString());
+			ps.setDouble(4, (double) data[3]);
+			ps.setString(5, data[4].toString());
+			ps.setString(6, data[5].toString());
+			
+			ps.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean insertNewTransaction(Object[] data) {
+		try {
+			ps = con.prepareStatement(
+				  "INSERT INTO transaction "
 				+ "VALUES (?, ?, ?, ?, ?, ?);"
 			);
 			ps.setLong(1, (long) data[0]);

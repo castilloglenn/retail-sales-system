@@ -181,6 +181,10 @@ public class Database {
 					+ "REFERENCES product(product_id)"
 			+ ");"
 		);
+		stmt.execute(
+			  "INSERT INTO customer"
+			+ "VALUES (1, 0, \"WALK\", \"-\", \"IN\", \"System\", \"System\");"
+		);
 	}
 	
 	public Connection getConnection() {

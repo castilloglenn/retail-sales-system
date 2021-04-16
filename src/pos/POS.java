@@ -434,6 +434,34 @@ public class POS extends JFrame {
 				}
 			}
 		});
+		voidButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					int receiptOrderNo = Integer.parseInt(voidField.getText());
+					Object result = rc.removePurchase(receiptOrderNo);
+					if (result == null) {
+						JOptionPane.showMessageDialog(
+							null, "Invalid receipt order number, please check the "
+								+ "receipt model to verify.", 
+							"Invalid input | " + Main.SYSTEM_NAME, 
+							JOptionPane.WARNING_MESSAGE);
+						voidField.setText("");
+					} else {
+						refreshReceipt();
+						data = db.fetchProductByKeyword("");
+						populateList();
+						voidField.setText("");
+						searchField.requestFocus();
+					}
+				} catch (NumberFormatException e1) {
+					JOptionPane.showMessageDialog(
+						null, "Invalid quantity. Please input any positive number.", 
+						"Invalid input | " + Main.SYSTEM_NAME, 
+						JOptionPane.WARNING_MESSAGE);
+					voidField.setText("");
+				}
+			}
+		});
 		finishButton.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {

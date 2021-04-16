@@ -2,13 +2,9 @@ package pos;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 
-import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 
 import main.Main;
 import utils.Database;
@@ -74,13 +70,19 @@ public class Receipt {
 	}
 	
 	public void addPurchase(long product_id, double quantity) {
-		int size = purchases.size();
+		int key;
+		
+		if (purchases.isEmpty()) key = 1;
+		else for (key = 1; purchases.containsKey(key); key++);
+		
 		Object[] product = db.fetchProductByID(product_id);
 		Object[] withQuantity = new Object[8];
 		withQuantity[0] = quantity;
+		
 		for (int index = 1; index < product.length; index++) {
 			withQuantity[index + 1] = product[index];
 		}
+		
 		Object[] promo = db.fetchPromoByID(product_id);
 		if (promo != null) {
 			withQuantity[5] = withQuantity[4] + " " + withQuantity[5] + " " + promo[1] + " " + promo[0];
@@ -88,12 +90,13 @@ public class Receipt {
 				? (double) (withQuantity[7]) * (1 - (double) (promo[2])) 
 				: (double) (withQuantity[7]) - (double) (promo[2]);
 		}
-		purchases.put(size + 1, withQuantity);
+		
+		purchases.put(key, withQuantity);
 		setDateTime();
 	}
 	
-	public void removePurchase(int index) {
-		purchases.remove(index);
+	public Object removePurchase(int index) {
+		return purchases.remove(index);
 	}
 	
 	private String leftAlign(String message) {
@@ -103,7 +106,7 @@ public class Receipt {
         if (length > WIDTH - 4) {
             return "  " + message.substring(0, WIDTH - 4) + "\n" + 
                 center(message.substring(WIDTH - 4));
-        } 
+        }
         
         return "  " + message;
 	}

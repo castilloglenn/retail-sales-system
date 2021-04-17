@@ -86,7 +86,7 @@ public class Main {
 //		new SetupSystem(gl, ut, db);
 //		new EmployeeAdmin(gl, ut, db, log, 55210406001L);
 //		new InventoryDashboard(gl, ut, db, log, 55210406001L);
-		new POS(gl, ut, db, log, 55210406001L);
+//		new POS(gl, ut, db, log, 55210406001L);
 	}
 
 	/**

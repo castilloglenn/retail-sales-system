@@ -247,7 +247,7 @@ public class Receipt {
     }
     
     public boolean verify() {return !purchases.isEmpty();}
-    public boolean verifyPayment() {return amountTendered > total;}
+    public boolean verifyPayment() {return amountTendered >= total;}
     
     public void setCustomer(long customerID, String customerName) {
     	this.customerID = customerID;

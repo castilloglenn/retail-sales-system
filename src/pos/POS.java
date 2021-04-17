@@ -96,6 +96,7 @@ public class POS extends JFrame {
 	private String[] formattedData;
 	private Object[][] customers;
 	private String[] formattedCustomers;
+	private Object[] customerData;
 	
 	private Gallery gl;
 	private Utility ut;
@@ -605,6 +606,13 @@ public class POS extends JFrame {
 									null, "Customer (" + fnameField.getText() + ") has created his/her new account!", 
 									"Sucess | " + Main.SYSTEM_NAME, 
 									JOptionPane.INFORMATION_MESSAGE);
+								idField.setText(Long.toString(ut.generateCustomerID(1)));
+								idField.setEnabled(false);
+								fnameField.setText("");
+								mnameField.setText("");
+								lnameField.setText("");
+								addressField.setText("");
+								contactField.setText("");
 							}
 							populateCustomers();
 							comboBox.setSelectedIndex(0);
@@ -615,33 +623,62 @@ public class POS extends JFrame {
 								JOptionPane.WARNING_MESSAGE);
 						}
 					}
-//					idField.setText(Long.toString(ut.generateCustomerID(1)));
-//					idField.setEnabled(false);
-//					fnameField.setEnabled(true);
-//					mnameField.setEnabled(true);
-//					lnameField.setEnabled(true);
-//					addressField.setEnabled(true);
-//					contactField.setEnabled(true);
 				} 
 				
 				else if (comboBox.getSelectedIndex() == 1) {
-//					idField.setText("");
-//					idField.setEnabled(true);
-//					fnameField.setEnabled(false);
-//					mnameField.setEnabled(false);
-//					lnameField.setEnabled(false);
-//					addressField.setEnabled(false);
-//					contactField.setEnabled(false);
+					if (customerData == null) {
+						JOptionPane.showMessageDialog(
+							null, "Please type the existing customer's ID number on the field to start.", 
+							"Customer not found | " + Main.SYSTEM_NAME, 
+							JOptionPane.WARNING_MESSAGE);
+					} else {
+						if (db.updateCustomer(
+							new Object[] {
+								Long.parseLong(idField.getText()),
+								fnameField.getText().toUpperCase(),
+								(mnameField.getText().isBlank())
+									? null : mnameField.getText().toUpperCase(),
+								lnameField.getText().toUpperCase(),
+								addressField.getText().toUpperCase(),
+								contactField.getText().toUpperCase()})) {
+							JOptionPane.showMessageDialog(
+								null, "Customer (" + fnameField.getText() + ") has updated his/her account.", 
+								"Sucess | " + Main.SYSTEM_NAME, 
+								JOptionPane.INFORMATION_MESSAGE);
+						}
+						
+						fnameField.setText("");
+						mnameField.setText("");
+						lnameField.setText("");
+						addressField.setText("");
+						contactField.setText("");
+						populateCustomers();
+						comboBox.setSelectedIndex(1);
+					}
 				} 
 				
 				else if (comboBox.getSelectedIndex() == 2) {
-//					idField.setText("");
-//					idField.setEnabled(true);
-//					fnameField.setEnabled(false);
-//					mnameField.setEnabled(false);
-//					lnameField.setEnabled(false);
-//					addressField.setEnabled(false);
-//					contactField.setEnabled(false);
+					if (customerData == null) {
+						JOptionPane.showMessageDialog(
+							null, "Please type the existing customer's ID number on the field to start.", 
+							"Customer not found | " + Main.SYSTEM_NAME, 
+							JOptionPane.WARNING_MESSAGE);
+					} else {
+						if (db.deleteEntry("customer", "customer_id", Long.parseLong(idField.getText()))) {
+							JOptionPane.showMessageDialog(
+								null, "Customer (" + fnameField.getText() + ")'s account has been deleted.", 
+								"Sucess | " + Main.SYSTEM_NAME, 
+								JOptionPane.INFORMATION_MESSAGE);
+						}
+						
+						fnameField.setText("");
+						mnameField.setText("");
+						lnameField.setText("");
+						addressField.setText("");
+						contactField.setText("");
+						populateCustomers();
+						comboBox.setSelectedIndex(2);
+					}
 				}
 			}
 		});
@@ -649,14 +686,15 @@ public class POS extends JFrame {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				try {
-					Object[] customer = db.fetchCustomerByID(Long.parseLong(idField.getText()));
-					if (customer != null) {
-						fnameField.setText(customer[2].toString());
-						String mname = (customer[3] == null) ? "" : customer[3].toString();
+					customerData = db.fetchCustomerByID(Long.parseLong(idField.getText()));
+					if (customerData != null) {
+						fnameField.setText(customerData[2].toString());
+						String mname = (customerData[3] == null) ? "" : customerData[3].toString();
 						mnameField.setText(mname);
-						lnameField.setText(customer[4].toString());
-						addressField.setText(customer[5].toString());
-						contactField.setText(customer[6].toString());
+						lnameField.setText(customerData[4].toString());
+						addressField.setText(customerData[5].toString());
+						contactField.setText(customerData[6].toString());
+						
 						fnameField.setEnabled(true);
 						mnameField.setEnabled(true);
 						lnameField.setEnabled(true);
@@ -675,6 +713,7 @@ public class POS extends JFrame {
 						contactField.setEnabled(false);
 					}
 				} catch (NumberFormatException e1) {
+					customerData = null;
 					fnameField.setText("");
 					mnameField.setText("");
 					lnameField.setText("");

@@ -464,6 +464,12 @@ public class SupplierAdmin extends JDialog {
 					long product_id = Long.parseLong(deliveryProductField.getText());
 					double quantity = Double.parseDouble(deliveryQtyField.getText());
 					data = db.fetchProductByID(product_id);
+					db.insertNewSupplies(new Object[] {
+						Long.parseLong(deliveryIDField.getText()),
+						Long.parseLong(data[0].toString()),
+						quantity,
+						quantity * ((double) data[5])
+					});
 					log.newLog(id, LogConstants.DELIVERY, LogConstants.MAIN, 
 						String.format("Supplier #%s delivered %s %s of %s.", 
 							deliveryIDField.getText(), deliveryQtyField.getText(), 
@@ -503,11 +509,17 @@ public class SupplierAdmin extends JDialog {
 					long product_id = Long.parseLong(deliveryProductField.getText());
 					double quantity = Double.parseDouble(deliveryQtyField.getText());
 					data = db.fetchProductByID(product_id);
+					db.insertNewSupplies(new Object[] {
+						Long.parseLong(deliveryIDField.getText()),
+						Long.parseLong(data[0].toString()),
+						-quantity,
+						-(quantity * ((double) data[5]))
+					});
 					log.newLog(id, LogConstants.DELIVERY, LogConstants.MAIN, 
 						String.format("Supplier #%s cancels the delivery of %s %s of %s.", 
 							deliveryIDField.getText(), deliveryQtyField.getText(), 
 							data[3], data[4]));
-					if (db.increaseProductStocks(product_id, -quantity)) {
+					if (db.decreaseProductStocks(product_id, quantity)) {
 						JOptionPane.showMessageDialog(
 							null, "Stocks of (" + data[4] + ") has been successfully decreased.", 
 							"Success | " + Main.SYSTEM_NAME, JOptionPane.INFORMATION_MESSAGE);

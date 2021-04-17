@@ -266,6 +266,25 @@ public class Database {
 		return false;
 	}
 	
+	public boolean insertNewSupplies(Object[] data) {
+		try {
+			ps = con.prepareStatement(
+				  "INSERT INTO supplies "
+				+ "VALUES (?, ?, ?, ?);"
+			);
+			ps.setLong(1, (long) data[0]);
+			ps.setLong(2, (long) data[1]);
+			ps.setDouble(3, (double) data[2]);
+			ps.setDouble(4, (double) data[3]);
+			
+			ps.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	public boolean insertNewPromo(Object[] data) {
 		try {
 			ps = con.prepareStatement(
@@ -437,6 +456,32 @@ public class Database {
 			ps.setString(2, data[2].toString());
 			ps.setString(3, data[3].toString());
 			ps.setLong(4, Long.parseLong(data[0].toString()));
+			
+			ps.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean updateCustomer(Object[] data) {
+		try {
+			ps = con.prepareStatement(
+				    "UPDATE customer "
+				  + "SET fname=?, "
+				  	  + "mname=?, "
+				  	  + "lname=?, "
+				  	  + "address=?, "
+				  	  + "contact_no=? "
+				  + "WHERE customer_id=?;"
+			);
+			ps.setString(1, data[1].toString());
+			ps.setString(2, (String) data[2]);
+			ps.setString(3, data[3].toString());
+			ps.setString(4, data[4].toString());
+			ps.setString(5, data[5].toString());
+			ps.setLong(6, Long.parseLong(data[0].toString()));
 			
 			ps.executeUpdate();
 			return true;

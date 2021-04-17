@@ -10,14 +10,10 @@ import java.awt.event.ComponentEvent;
 
 import utils.Database;
 import utils.Gallery;
-import utils.LogConstants;
 import utils.Logger;
 import utils.Utility;
 
 import java.awt.event.WindowStateListener;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.awt.event.WindowEvent;
 import javax.swing.JPopupMenu;
 import java.awt.Component;
@@ -40,6 +36,7 @@ import javax.swing.ListSelectionModel;
 import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JTextField;
@@ -124,7 +121,7 @@ public class EmployeeAdmin extends JFrame {
 		setIconImage(gl.businessLogo);
 		setMinimumSize(new Dimension(640, 480));
 		setSize(900, 550);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
 		
 		JPopupMenu popupMenu = new JPopupMenu();

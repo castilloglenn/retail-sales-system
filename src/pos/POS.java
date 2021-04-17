@@ -35,6 +35,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
+
 import java.awt.Font;
 import javax.swing.SwingConstants;
 import java.awt.Insets;
@@ -112,7 +114,7 @@ public class POS extends JFrame {
 		setIconImage(gl.businessLogo);
 		setMinimumSize(new Dimension(640, 480));
 		setSize(1000, 605);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
 		
 		JPopupMenu popupMenu = new JPopupMenu();

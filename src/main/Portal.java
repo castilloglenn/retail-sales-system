@@ -1,7 +1,6 @@
 package main;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -20,7 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SpringLayout;
 
-import main.Main;
 import pos.POS;
 import utils.Database;
 import utils.Gallery;
@@ -36,7 +34,6 @@ import employee.EmployeeAdmin;
 import inventory.InventoryDashboard;
 
 import java.awt.Insets;
-import javax.swing.ImageIcon;
 
 @SuppressWarnings("serial")
 public class Portal extends JFrame {
@@ -51,8 +48,6 @@ public class Portal extends JFrame {
 	private JButton timeinButton;
 
 	private Gallery gl;
-	private Utility ut;
-	private Database db;
 	private Logger log;
 	private long id;
 	
@@ -60,7 +55,7 @@ public class Portal extends JFrame {
 	private int access;
 	
 	public Portal(Gallery gl, Utility ut, Database db, Logger log, long id) {
-		this.gl = gl; this.ut = ut; this.db = db; this.log = log; this.id = id;
+		this.gl = gl;  this.log = log; this.id = id;
 		employee = db.fetchEmployeeByID(id);
 		access = Integer.parseInt(Long.toString(id).substring(1, 2));
 		

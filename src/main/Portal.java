@@ -298,6 +298,4 @@ public class Portal extends JFrame {
 			null, "Successfully time-in at " + sdf.format(date), 
 			"TIME IN | " + Main.SYSTEM_NAME, JOptionPane.INFORMATION_MESSAGE);
 	}
-	
-	public Portal getInstance() { return this; }
 }

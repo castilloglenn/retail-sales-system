@@ -864,7 +864,7 @@ public class POS extends JFrame {
 					
 					formattedData[index] = String.format("[%d]: %s - %s | Price: %,.2f per %s", 
 						(long) row[0], (String) row[1], name, price, (String) row[3]);
-				index++;
+					index++;
 				}
 			}
 		}

@@ -157,7 +157,14 @@ public class Portal extends JFrame {
 		});
 		timeinButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				timeInAttendance();
+				DateFormat sdf = new SimpleDateFormat("HH:mm");
+				Date date = new Date();
+				String dt = "IN: " + sdf.format(date);
+				log.newLog(id, LogConstants.ATTENDANCE, LogConstants.SUB, dt);
+				
+				JOptionPane.showMessageDialog(
+					null, "Successfully time-in at " + sdf.format(date), 
+					"TIME IN | " + Main.SYSTEM_NAME, JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
 		logoutButton.addActionListener(new ActionListener() {
@@ -286,16 +293,5 @@ public class Portal extends JFrame {
 				}
 			}
 		}
-	}
-	
-	private void timeInAttendance() {
-		DateFormat sdf = new SimpleDateFormat("HH:mm");
-		Date date = new Date();
-		String dt = "IN: " + sdf.format(date);
-		log.newLog(id, LogConstants.ATTENDANCE, LogConstants.SUB, dt);
-		
-		JOptionPane.showMessageDialog(
-			null, "Successfully time-in at " + sdf.format(date), 
-			"TIME IN | " + Main.SYSTEM_NAME, JOptionPane.INFORMATION_MESSAGE);
 	}
 }

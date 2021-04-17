@@ -75,11 +75,11 @@ public class Main {
 		db = new Database(ut);
 		log = new Logger(db, ut);
 
-//		if (db.fetchManagers() == 0) {
-//			new SetupSystem(gl, ut, db);
-//		} else {
-//			initialize();
-//		}
+		if (db.fetchManagers() == 0) {
+			new SetupSystem(gl, ut, db);
+		} else {
+			initialize();
+		}
 		
 //		======Tests========
 //		initialize();
@@ -214,15 +214,8 @@ public class Main {
 		submitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (checkFields()) {
-					DateFormat sdf = new SimpleDateFormat("HH:mm");
-					Date date = new Date();
-					String dt = "IN: " + sdf.format(date);
-					log.newLog(Long.parseLong(new String(idField.getPassword())), LogConstants.ATTENDANCE, LogConstants.SUB, dt);
-					
 					mainFrame.setVisible(false);
-//					portal here:
-//					new EmployeeAdmin(gl, ut, db, log, Long.parseLong(new String(idField.getPassword())));
-//					new InventoryDashboard(gl, ut, db, log, Long.parseLong(new String(idField.getPassword())));
+					new Portal(gl, ut, db, log, Long.parseLong(new String(idField.getPassword())));
 				}
 			}
 		});

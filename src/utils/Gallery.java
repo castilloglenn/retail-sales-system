@@ -59,6 +59,7 @@ public class Gallery {
 	public ImageIcon lightShow, lightHide;
 	public ImageIcon darkSymbol, lightSymbol;
 	public ImageIcon darkEmployee, lightEmployee;
+	public ImageIcon employee, inventory, pos;
 	
 	public boolean isDark = true;
 	
@@ -67,6 +68,10 @@ public class Gallery {
 		
 		loginIcon = new ImageIcon("images/icon.png").getImage();
 		businessLogo = new ImageIcon("images/logo.png").getImage();
+		
+		employee = resizeImage("images/employee.png", 64, 64);
+		inventory = resizeImage("images/inventory.png", 64, 64);
+		pos = resizeImage("images/pos.png", 64, 64);
 		
 		darkLogo = resizeImage("images/dark/logo.png", 64, 64);
 	    darkShow = resizeImage("images/dark/show.png", 24, 24);

@@ -24,6 +24,7 @@ import javax.swing.SpringLayout;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import main.Main;
+import main.Portal;
 import utils.Database;
 import utils.Gallery;
 import utils.LogConstants;
@@ -324,11 +325,7 @@ public class InventoryDashboard extends JFrame {
 			}
 			@Override
 			public void windowClosing(WindowEvent e) {
-					DateFormat sdf = new SimpleDateFormat("HH:mm");
-					Date date = new Date();
-					String dt = "OUT: " + sdf.format(date);
-					
-					log.newLog(id, LogConstants.ATTENDANCE, LogConstants.MAIN, dt);
+				new Portal(gl, ut, db, log, id);
 			}
 		});
 		

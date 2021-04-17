@@ -28,6 +28,8 @@ import java.awt.event.WindowAdapter;
 import javax.swing.DefaultListCellRenderer;
 
 import main.Main;
+import main.Portal;
+
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -101,12 +103,9 @@ public class POS extends JFrame {
 	private Gallery gl;
 	private Utility ut;
 	private Database db;
-	private Logger log;
 	private Receipt rc;
-	private long id;
-	
 	public POS(Gallery gl, Utility ut, Database db, Logger log, long id) {
-		this.gl = gl; this.ut = ut; this.db = db; this.log = log; this.id = id;
+		this.gl = gl; this.ut = ut; this.db = db;  
 		rc = new Receipt(db, ut, id);
 		
 		setTitle("Point of Sales | " + Main.SYSTEM_NAME);
@@ -745,7 +744,7 @@ public class POS extends JFrame {
 			}
 			@Override
 			public void windowClosing(WindowEvent e) {
-					
+				new Portal(gl, ut, db, log, id);
 			}
 		});
 		themeSwitcher.addActionListener(new ActionListener() {
@@ -753,7 +752,7 @@ public class POS extends JFrame {
 				adjustTheme(true);
 			}
 		});
-
+		
 		adjustTheme(false);
 		data = db.fetchProductByKeyword("");
 		populateList();

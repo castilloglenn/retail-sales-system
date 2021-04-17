@@ -50,6 +50,8 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import main.Main;
+import main.Portal;
+
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JSeparator;
 import java.awt.event.KeyAdapter;
@@ -651,11 +653,7 @@ public class EmployeeAdmin extends JFrame {
 			}
 			@Override
 			public void windowClosing(WindowEvent e) {
-					DateFormat sdf = new SimpleDateFormat("HH:mm");
-					Date date = new Date();
-					String dt = "OUT: " + sdf.format(date);
-					
-					log.newLog(id, LogConstants.ATTENDANCE, LogConstants.MAIN, dt);
+				new Portal(gl, ut, db, log, id);
 			}
 		});
 		

@@ -369,4 +369,19 @@ public class Utility {
 		
 		return Long.parseLong(markup.toString());
 	}
+	
+	/** CUSTOMER ID FORMAT:
+	 *  ex: 6011616644307939 ==== len(16)
+     *  6-01-1616644307939
+ 	 *  6 = Customer Code
+ 	 *  01 = Machine Code
+ 	 *  1616644307939 = Timestamp (in millis)
+	 */
+	public long generateCustomerID(int machineCode) {
+		StringBuilder markup = new StringBuilder("6");
+		markup.append(String.format("%02d", machineCode));
+		markup.append(Calendar.getInstance().getTimeInMillis());
+		
+		return Long.parseLong(markup.toString());
+	}
 }

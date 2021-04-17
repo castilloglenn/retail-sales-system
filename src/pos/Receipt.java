@@ -29,14 +29,18 @@ public class Receipt {
 	
 	private DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss aa");
 	private String dateTime;
+	
 	private long transactionNo;
+	private String transactionType = "CASH";
 	private Object[] cashier;
 	private String cashierName;
-	private String customerName = "WALK-IN";
+	private long customerID;
+	private String customerName;
 
 	private HashMap<Integer, Object[]> purchases = new HashMap<>();
 	
 	private double subTotal, tax, total, totalItems;
+	private double amountTendered, change;
 	private Database db;
 	private Utility ut;
 
@@ -49,9 +53,6 @@ public class Receipt {
 	}
 	
 	private void resetTransaction() {
-		dateTime = null;
-		transactionNo = 0;
-		customerName = "WALK-IN";
 		subTotal = 0;
 		tax = 0;
 		total = 0;
@@ -79,7 +80,7 @@ public class Receipt {
 		Object[] withQuantity = new Object[8];
 		withQuantity[0] = quantity;
 		
-		for (int index = 1; index < product.length; index++) {
+		for (int index = 0; index < product.length; index++) {
 			withQuantity[index + 1] = product[index];
 		}
 		
@@ -162,11 +163,14 @@ public class Receipt {
             totalItems += quantity;
             tax = total * 0.12;
             subTotal = total - tax;
+            change = amountTendered - total;
         }
         
         String subTotalFormat = String.format("Php %,.2f", subTotal);
         String taxFormat = String.format("Php %,.2f", tax);
         String totalFormat = String.format("Php %,.2f", total);
+        String amountTenderedFormat = String.format("Php %,.2f", amountTendered);
+        String changeFormat = String.format("Php %,.2f", change);
 
         purchaseList.append(
     		String.format("\n  TOTAL ITEMS %," + (WIDTH - 16) + ".2f\n", 
@@ -178,16 +182,22 @@ public class Receipt {
         	String.format("  TAX %" + (WIDTH - 8) + "s\n",
         		taxFormat));
         purchaseList.append(
-    		String.format("  TOTAL %" + (WIDTH - 10) + "s\n", 
+    		String.format("  TOTAL %" + (WIDTH - 10) + "s\n\n", 
     			totalFormat));
+        purchaseList.append(
+        	String.format("  AMOUNT TENDERED %" + (WIDTH - 20) + "s\n",
+    			amountTenderedFormat));
+        purchaseList.append(
+        	String.format("  CHANGE %" + (WIDTH - 11) + "s\n",
+    			changeFormat));
 
         return purchaseList.toString();
     }
     
-    public String get() {
+    public String get(boolean setDate) {
     	StringBuilder receipt = new StringBuilder();
     	resetTransaction();
-    	setDateTime();
+    	if (setDate) setDateTime();
     	
     	receipt.append(center(businessName1) + BR);
     	receipt.append(center(businessName2) + BR);
@@ -207,15 +217,45 @@ public class Receipt {
     	return receipt.toString();
     }
     
-    public boolean make() {
+    public boolean make(long employee_id) {
+    	Object[] mainTransaction = {
+    			transactionNo, employee_id, customerID, transactionType, total, amountTendered
+    	};
     	
+    	if (db.insertNewTransaction(mainTransaction)) {
+    		for (int key : purchases.keySet()) {
+                Object[] purchase = purchases.get(key);
+    			
+    			long transactionID = (long) mainTransaction[0];
+    			long productID = (long) purchase[1];
+    			double quantity = (double) purchase[0];
+    			double totalPrice = (double) (purchase[7]) * quantity;
+    			
+    			Object[] subTransaction = {
+    				transactionID, productID, quantity, totalPrice
+    			};
+    			
+    			db.decreaseProductStocks(productID, quantity);
+    			db.insertNewSubTransaction(subTransaction);
+    		}
+    		
+    		ut.writeFile("Transaction #" + transactionNo, get(false));
+    		return true;
+    	}
     	
-    	return true;
+    	return false;
     }
     
-    public boolean verify() {
-    	if (purchases.isEmpty()) return false;
-    	else return true;
+    public boolean verify() {return !purchases.isEmpty();}
+    public boolean verifyPayment() {return amountTendered > total;}
+    
+    public void setCustomer(long customerID, String customerName) {
+    	this.customerID = customerID;
+    	this.customerName = customerName;
+    }
+    public void setAmountTendered(double amount) {
+    	amountTendered = amount;
+    	change = total - amountTendered;
     }
     
     public double getTotal() {return total;}

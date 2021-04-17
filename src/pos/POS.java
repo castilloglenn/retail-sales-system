@@ -90,9 +90,12 @@ public class POS extends JFrame {
 	private JLabel addressLabel;
 	private JList<String> searchList;
 	private JMenuItem themeSwitcher;
+	private JTextField tenderedField;
 	
 	private Object[][] data;
 	private String[] formattedData;
+	private Object[][] customers;
+	private String[] formattedCustomers;
 	
 	private Gallery gl;
 	private Utility ut;
@@ -141,6 +144,9 @@ public class POS extends JFrame {
 		
 		customerComboBox = new JComboBox<String>();
 		customerComboBox.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
+		listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER);
+		customerComboBox.setRenderer(listRenderer);
 		sl_container.putConstraint(SpringLayout.NORTH, customerComboBox, -2, SpringLayout.NORTH, customerLabel);
 		sl_container.putConstraint(SpringLayout.WEST, customerComboBox, 6, SpringLayout.EAST, customerLabel);
 		sl_container.putConstraint(SpringLayout.SOUTH, customerComboBox, 2, SpringLayout.SOUTH, customerLabel);
@@ -265,7 +271,7 @@ public class POS extends JFrame {
 		customer.add(operationLabel);
 		
 		comboBox = new JComboBox<String>();
-		sl_customer.putConstraint(SpringLayout.EAST, comboBox, 100, SpringLayout.EAST, operationLabel);
+		sl_customer.putConstraint(SpringLayout.EAST, comboBox, 125, SpringLayout.EAST, operationLabel);
 		comboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"ADD", "UPDATE", "REMOVE"}));
 		sl_customer.putConstraint(SpringLayout.NORTH, comboBox, -2, SpringLayout.NORTH, operationLabel);
 		sl_customer.putConstraint(SpringLayout.WEST, comboBox, 6, SpringLayout.EAST, operationLabel);
@@ -283,7 +289,8 @@ public class POS extends JFrame {
 		sl_customer.putConstraint(SpringLayout.WEST, idLabel, 0, SpringLayout.WEST, operationLabel);
 		customer.add(idLabel);
 		
-		idField = new JTextField();
+		idField = new JTextField(Long.toString(ut.generateCustomerID(1)));
+		idField.setEnabled(false);
 		idField.setMargin(new Insets(2, 10, 2, 10));
 		sl_customer.putConstraint(SpringLayout.NORTH, idField, -2, SpringLayout.NORTH, idLabel);
 		sl_customer.putConstraint(SpringLayout.WEST, idField, 0, SpringLayout.WEST, comboBox);
@@ -363,6 +370,7 @@ public class POS extends JFrame {
 		contactField.setColumns(10);
 		
 		confirmButton = new JButton("CONFIRM");
+		confirmButton.setMargin(new Insets(2, 2, 2, 2));
 		confirmButton.setFont(new Font("Tahoma", Font.BOLD, 11));
 		sl_customer.putConstraint(SpringLayout.NORTH, confirmButton, 0, SpringLayout.NORTH, comboBox);
 		sl_customer.putConstraint(SpringLayout.WEST, confirmButton, 10, SpringLayout.EAST, comboBox);
@@ -371,7 +379,6 @@ public class POS extends JFrame {
 		customer.add(confirmButton);
 		
 		JSeparator separator = new JSeparator();
-		sl_container.putConstraint(SpringLayout.WEST, finishButton, 10, SpringLayout.EAST, separator);
 		sl_container.putConstraint(SpringLayout.NORTH, separator, 0, SpringLayout.NORTH, qtyButton);
 		sl_container.putConstraint(SpringLayout.WEST, separator, 10, SpringLayout.EAST, qtyButton);
 		sl_container.putConstraint(SpringLayout.SOUTH, separator, 0, SpringLayout.SOUTH, voidButton);
@@ -388,24 +395,49 @@ public class POS extends JFrame {
 		searchList = new JList<String>();
 		searchList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPane_1.setViewportView(searchList);
-		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
-		listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER);
+		
+		JLabel tenderedLabel = new JLabel("Amount Tendered:");
+		sl_container.putConstraint(SpringLayout.WEST, finishButton, 10, SpringLayout.EAST, tenderedLabel);
+		tenderedLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
+		sl_container.putConstraint(SpringLayout.NORTH, tenderedLabel, 0, SpringLayout.NORTH, qtyLabel);
+		sl_container.putConstraint(SpringLayout.WEST, tenderedLabel, 10, SpringLayout.EAST, separator);
+		container.add(tenderedLabel);
+		
+		tenderedField = new JTextField();
+		tenderedField.setHorizontalAlignment(SwingConstants.CENTER);
+		sl_container.putConstraint(SpringLayout.NORTH, tenderedField, 0, SpringLayout.NORTH, voidField);
+		sl_container.putConstraint(SpringLayout.WEST, tenderedField, 0, SpringLayout.WEST, tenderedLabel);
+		sl_container.putConstraint(SpringLayout.SOUTH, tenderedField, 0, SpringLayout.SOUTH, voidField);
+		sl_container.putConstraint(SpringLayout.EAST, tenderedField, 0, SpringLayout.EAST, tenderedLabel);
+		container.add(tenderedField);
+		tenderedField.setColumns(10);
 
 
-		searchField.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				String keyword = searchField.getText();
-				data = db.fetchProductByKeyword(keyword);
-				
-				populateList();
+		customerComboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Object[] customer = customers[customerComboBox.getSelectedIndex()];
+				long customerID = (long) customer[0];
+				String customerName = customer[2] + " " + ((customer[3] == null) ? "" : customer[3] + " ") + customer[4];
+				rc.setCustomer(
+					customerID, (customerID == 1) ? "WALK-IN" : customerName
+				);
+				refreshReceipt();
 			}
+		});
+		searchField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == 9) {
 					searchList.setSelectedIndex(0);
 					searchList.requestFocus();
 				}
+			}
+			@Override
+			public void keyReleased(KeyEvent e) {
+				String keyword = searchField.getText();
+				data = db.fetchProductByKeyword(keyword);
+				
+				populateList();
 			}
 		});
 		qtyButton.addActionListener(new ActionListener() {
@@ -463,21 +495,49 @@ public class POS extends JFrame {
 				}
 			}
 		});
+		tenderedField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				try {
+					double amount = Double.parseDouble(tenderedField.getText());
+					rc.setAmountTendered(amount);
+					refreshReceipt();
+				} catch (NumberFormatException e1) {
+					rc.setAmountTendered(0);
+					refreshReceipt();
+				}
+			}
+		});
 		finishButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (rc.verify()) {
-					if (rc.make()) {
-						JOptionPane.showMessageDialog(
-							null, "Transaction successful.", 
-							"Sucess | " + Main.SYSTEM_NAME, 
-							JOptionPane.INFORMATION_MESSAGE);
-						rc = new Receipt(db, ut, id);
-					}
-				} else {
+				if (!rc.verify()) {
 					JOptionPane.showMessageDialog(
 						null, "You can't make a transaction without a purchase.", 
 						"Error | " + Main.SYSTEM_NAME, 
 						JOptionPane.WARNING_MESSAGE);
+				} else if (!rc.verifyPayment()) {
+					JOptionPane.showMessageDialog(
+						null, "The amount tendered by the customer did not reached the total bill.", 
+						"Insufficient Payment | " + Main.SYSTEM_NAME, 
+						JOptionPane.WARNING_MESSAGE);
+				} else {
+					refreshReceipt();
+					int result = JOptionPane.showConfirmDialog(
+						null, "Please confirm the transaction.", 
+						"Confirmation | " + Main.SYSTEM_NAME, 
+						JOptionPane.YES_NO_OPTION, 
+						JOptionPane.INFORMATION_MESSAGE
+					);
+					if (result == 0) {
+						if (rc.make(id)) {
+							JOptionPane.showMessageDialog(
+								null, "Transaction successful.", 
+								"Sucess | " + Main.SYSTEM_NAME, 
+								JOptionPane.INFORMATION_MESSAGE);
+							rc = new Receipt(db, ut, id);
+							tenderedField.setText("");
+						}
+					}
 				}
 			}
 		});
@@ -486,6 +546,145 @@ public class POS extends JFrame {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == 9) {
 					searchField.requestFocus();
+				}
+			}
+		});
+		comboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (comboBox.getSelectedIndex() == 0) {
+					idField.setText(Long.toString(ut.generateCustomerID(1)));
+					idField.setEnabled(false);
+					fnameField.setEnabled(true);
+					mnameField.setEnabled(true);
+					lnameField.setEnabled(true);
+					addressField.setEnabled(true);
+					contactField.setEnabled(true);
+				} 
+				
+				else if (comboBox.getSelectedIndex() == 1) {
+					idField.setText("");
+					idField.setEnabled(true);
+					fnameField.setEnabled(false);
+					mnameField.setEnabled(false);
+					lnameField.setEnabled(false);
+					addressField.setEnabled(false);
+					contactField.setEnabled(false);
+				} 
+				
+				else if (comboBox.getSelectedIndex() == 2) {
+					idField.setText("");
+					idField.setEnabled(true);
+					fnameField.setEnabled(false);
+					mnameField.setEnabled(false);
+					lnameField.setEnabled(false);
+					addressField.setEnabled(false);
+					contactField.setEnabled(false);
+				}
+				
+				fnameField.setText("");
+				mnameField.setText("");
+				lnameField.setText("");
+				addressField.setText("");
+				contactField.setText("");
+			}
+		});
+		confirmButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (comboBox.getSelectedIndex() == 0) {
+					if (checkFields()) {
+						Object[] customer = {
+							Long.parseLong(idField.getText()),
+							0.0, fnameField.getText().toUpperCase(),
+							(mnameField.getText().isBlank()) ? null : mnameField.getText().toUpperCase(),
+							lnameField.getText().toUpperCase(),
+							addressField.getText().toUpperCase(),
+							contactField.getText().toUpperCase()};
+						if (db.checkCustomer(customer) ) {
+							if (db.insertNewCustomer(customer)) {
+								JOptionPane.showMessageDialog(
+									null, "Customer (" + fnameField.getText() + ") has created his/her new account!", 
+									"Sucess | " + Main.SYSTEM_NAME, 
+									JOptionPane.INFORMATION_MESSAGE);
+							}
+							populateCustomers();
+							comboBox.setSelectedIndex(0);
+						} else {
+							JOptionPane.showMessageDialog(
+								null, "Customer (" + fnameField.getText() + ") already exists.", 
+								"Error | " + Main.SYSTEM_NAME, 
+								JOptionPane.WARNING_MESSAGE);
+						}
+					}
+//					idField.setText(Long.toString(ut.generateCustomerID(1)));
+//					idField.setEnabled(false);
+//					fnameField.setEnabled(true);
+//					mnameField.setEnabled(true);
+//					lnameField.setEnabled(true);
+//					addressField.setEnabled(true);
+//					contactField.setEnabled(true);
+				} 
+				
+				else if (comboBox.getSelectedIndex() == 1) {
+//					idField.setText("");
+//					idField.setEnabled(true);
+//					fnameField.setEnabled(false);
+//					mnameField.setEnabled(false);
+//					lnameField.setEnabled(false);
+//					addressField.setEnabled(false);
+//					contactField.setEnabled(false);
+				} 
+				
+				else if (comboBox.getSelectedIndex() == 2) {
+//					idField.setText("");
+//					idField.setEnabled(true);
+//					fnameField.setEnabled(false);
+//					mnameField.setEnabled(false);
+//					lnameField.setEnabled(false);
+//					addressField.setEnabled(false);
+//					contactField.setEnabled(false);
+				}
+			}
+		});
+		idField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				try {
+					Object[] customer = db.fetchCustomerByID(Long.parseLong(idField.getText()));
+					if (customer != null) {
+						fnameField.setText(customer[2].toString());
+						String mname = (customer[3] == null) ? "" : customer[3].toString();
+						mnameField.setText(mname);
+						lnameField.setText(customer[4].toString());
+						addressField.setText(customer[5].toString());
+						contactField.setText(customer[6].toString());
+						fnameField.setEnabled(true);
+						mnameField.setEnabled(true);
+						lnameField.setEnabled(true);
+						addressField.setEnabled(true);
+						contactField.setEnabled(true);
+					} else {
+						fnameField.setText("");
+						mnameField.setText("");
+						lnameField.setText("");
+						addressField.setText("");
+						contactField.setText("");
+						fnameField.setEnabled(false);
+						mnameField.setEnabled(false);
+						lnameField.setEnabled(false);
+						addressField.setEnabled(false);
+						contactField.setEnabled(false);
+					}
+				} catch (NumberFormatException e1) {
+					fnameField.setText("");
+					mnameField.setText("");
+					lnameField.setText("");
+					addressField.setText("");
+					contactField.setText("");
+					fnameField.setEnabled(false);
+					mnameField.setEnabled(false);
+					lnameField.setEnabled(false);
+					addressField.setEnabled(false);
+					contactField.setEnabled(false);
 				}
 			}
 		});
@@ -499,6 +698,8 @@ public class POS extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowActivated(WindowEvent e) {
+				populateCustomers();
+				rc.setCustomer(1, "WALK-IN");
 				refreshReceipt();
 				
 				adjustTheme(false);
@@ -582,7 +783,7 @@ public class POS extends JFrame {
 	}
 	
 	private void refreshReceipt() {
-		receiptArea.setText(rc.get());
+		receiptArea.setText(rc.get(true));
 		totalAmount.setText(String.format("Php %,.2f", rc.getTotal()));
 		receiptArea.setCaretPosition(0);
 	}
@@ -600,9 +801,11 @@ public class POS extends JFrame {
 		});
 	}
 	
-	protected void formatData() {
+	private void formatData() {
 		if (data == null) {
 			formattedData = new String[] {"Search for a keyword in the search field."};
+		} else if (data.length == 0) {
+			formattedData = new String[] {"Keywords \"" + searchField.getText() + "\" found nothing on the database."};
 		} else {
 			formattedData = new String[data.length];
 			int index = 0;
@@ -625,5 +828,40 @@ public class POS extends JFrame {
 				}
 			}
 		}
+	}
+	
+	private void populateCustomers() {
+		customers = db.fetchDataQuery("customer", "customer_id", "", "customer_id", "ASC");
+		formattedCustomers = new String[customers.length];
+		
+		int index = 0;
+		for (Object[] customer : customers) {
+			if ((long) (customer[0]) == 1) formattedCustomers[index] = "WALK-IN";
+			else formattedCustomers[index] = 
+				String.format("%s %s%s : %,.2f", customer[2], (customer[3] == null) 
+					? "" : customer[3] + " ", customer[4], customer[1]);
+			index++;
+		}
+
+		customerComboBox.setModel(new DefaultComboBoxModel<String>(formattedCustomers));
+	}
+	
+	private boolean checkFields() {
+		StringBuilder err = new StringBuilder("Please check your inputs:\n");
+		int init = err.length();
+		
+		if (fnameField.getText().isBlank()) err.append("• First name field cannot be empty\n");
+		if (lnameField.getText().isBlank()) err.append("• Last name field cannot be empty\n");
+		if (addressField.getText().isBlank()) err.append("• Address field cannot be empty\n");
+		if (contactField.getText().isBlank()) err.append("• Contact number field cannot be empty\n");
+		
+		if (err.length() > init) {
+			JOptionPane.showMessageDialog(
+				null, err.toString(), 
+				"Error | " + Main.SYSTEM_NAME, 
+				JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+		return true;
 	}
 }

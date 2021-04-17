@@ -291,14 +291,55 @@ public class Database {
 		try {
 			ps = con.prepareStatement(
 				  "INSERT INTO transaction "
-				+ "VALUES (?, ?, ?, ?, ?, ?);"
+				+ "VALUES (?, ?, ?, ?, ?, ?, NOW());"
 			);
 			ps.setLong(1, (long) data[0]);
-			ps.setString(2, data[1].toString());
-			ps.setString(3, data[2].toString());
+			ps.setLong(2, (long) data[1]);
+			ps.setLong(3, (long) data[2]);
+			ps.setString(4, data[3].toString());
+			ps.setDouble(5, (double) data[4]);
+			ps.setDouble(6, (double) data[5]);
+			
+			ps.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean insertNewSubTransaction(Object[] data) {
+		try {
+			ps = con.prepareStatement(
+				  "INSERT INTO transacts "
+				+ "VALUES (?, ?, ?, ?);"
+			);
+			ps.setLong(1, (long) data[0]);
+			ps.setLong(2, (long) data[1]);
+			ps.setDouble(3, (double) data[2]);
 			ps.setDouble(4, (double) data[3]);
-			ps.setString(5, data[4].toString());
-			ps.setString(6, data[5].toString());
+			
+			ps.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean insertNewCustomer(Object[] data) {
+		try {
+			ps = con.prepareStatement(
+				  "INSERT INTO customer "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?);"
+			);
+			ps.setLong(1, (long) data[0]);
+			ps.setDouble(2, (double) data[1]);
+			ps.setString(3, (String) data[2]);
+			ps.setString(4, (String) data[3]);
+			ps.setString(5, (String) data[4]);
+			ps.setString(6, (String) data[5]);
+			ps.setString(7, (String) data[6]);
 			
 			ps.executeUpdate();
 			return true;
@@ -423,6 +464,24 @@ public class Database {
 		return false;
 	}
 	
+	public boolean decreaseProductStocks(long product_id, double amount) {
+		try {
+			ps = con.prepareStatement(
+				    "UPDATE product "
+				  + "SET quantity = quantity - ? "
+				  + "WHERE product_id=?;"
+			);
+			ps.setDouble(1, amount);
+			ps.setLong(2, product_id);
+			
+			ps.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	public boolean deleteEntry(String table, String column, long id) {
 		try {
 			ps = con.prepareStatement(
@@ -492,6 +551,33 @@ public class Database {
 		} catch (SQLException | NumberFormatException e) {
 			return false;
 		}
+	}
+	
+	public boolean checkCustomer(Object[] data) {
+		try {
+			ps = con.prepareStatement(
+			    "SELECT COUNT(*) "
+			  + "FROM customer "
+			  + "WHERE fname=? "
+			  + "AND mname=? "
+			  + "AND lname=? "
+			  + "AND address=? "
+			  + "AND contact_no=?;"
+			);
+			ps.setString(1, (String) data[2]);
+			ps.setString(2, (String) data[3]);
+			ps.setString(3, (String) data[4]);
+			ps.setString(4, (String) data[5]);
+			ps.setString(5, (String) data[6]);
+			
+			ResultSet check = ps.executeQuery();
+			check.next();
+			// If this is an empty ResultSet if will throw error
+			return (check.getInt(1) == 0);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 	public int fetchManagers() {
@@ -627,19 +713,19 @@ public class Database {
 				+ "WHERE product_id = ?;"
 			);
 			ps.setLong(1, product_id);
+			Object[] data = new Object[7];
 			ResultSet details = ps.executeQuery();
 			details.next();
-			if (details.getLong(1) != 0) {
-				Object[] data = new Object[7];
-				data[0] = details.getLong(1);
-				data[1] = details.getString(2);	// category
-				data[2] = details.getDouble(3); // stock/qty
-				data[3] = details.getString(4); // uom
-				data[4] = details.getString(5); // name
-				data[5] = details.getDouble(6); // purch price
-				data[6] = details.getDouble(7); // sell price
-				return data;
-			}
+			
+			data[0] = details.getLong(1);	// product id
+			data[1] = details.getString(2);	// category
+			data[2] = details.getDouble(3); // stock/qty
+			data[3] = details.getString(4); // uom
+			data[4] = details.getString(5); // name
+			data[5] = details.getDouble(6); // purch price
+			data[6] = details.getDouble(7); // sell price
+			
+			return data;
 		} catch (SQLException e) {}
 		return null;
 	}
@@ -725,6 +811,31 @@ public class Database {
 				data[1] = details.getString(2);
 				data[2] = details.getString(3);
 				data[3] = details.getString(4);
+				return data;
+			}
+		} catch (SQLException e) {}
+		return null;
+	}
+	
+	public Object[] fetchCustomerByID(long customer_id) {
+		try {
+			ps = con.prepareStatement(
+				  "SELECT * "
+				+ "FROM customer "
+				+ "WHERE customer_id = ?;"
+			);
+			ps.setLong(1, customer_id);
+			ResultSet details = ps.executeQuery();
+			details.next();
+			if (details.getLong(1) != 0) {
+				Object[] data = new Object[7];
+				data[0] = details.getLong(1);
+				data[1] = details.getDouble(2);
+				data[2] = details.getString(3);
+				data[3] = details.getString(4);
+				data[4] = details.getString(5);
+				data[5] = details.getString(6);
+				data[6] = details.getString(7);
 				return data;
 			}
 		} catch (SQLException e) {}

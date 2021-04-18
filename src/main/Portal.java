@@ -48,14 +48,11 @@ public class Portal extends JFrame {
 	private JButton timeinButton;
 
 	private Gallery gl;
-	private Logger log;
-	private long id;
-	
 	private Object[] employee;
 	private int access;
 	
 	public Portal(Gallery gl, Utility ut, Database db, Logger log, long id) {
-		this.gl = gl;  this.log = log; this.id = id;
+		this.gl = gl;   
 		employee = db.fetchEmployeeByID(id);
 		access = Integer.parseInt(Long.toString(id).substring(1, 2));
 		

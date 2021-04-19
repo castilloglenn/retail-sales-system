@@ -111,7 +111,8 @@ public class EmployeeAdmin extends JFrame {
 	private String[] payrollColumns = {
 			"ID", "DATE", "PAYROLL", "CREATED BY"
 		};
-	
+
+	private int previous = 0;
 	private Gallery gl;
 	private Utility ut;
 	private Database db;
@@ -659,8 +660,14 @@ public class EmployeeAdmin extends JFrame {
 		
 		timer = new Timer(1000, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				dashboardArea.setText(log.getDashboard());
-				dashboardArea.setCaretPosition(0);
+				System.out.println(previous);
+				String dashboard = log.getDashboard();
+				int current = dashboard.length();
+				if (current != previous) {
+					dashboardArea.setText(dashboard);
+					dashboardArea.setCaretPosition(0);
+					previous = current;
+				}
 			}
 		});
 		timer.start();

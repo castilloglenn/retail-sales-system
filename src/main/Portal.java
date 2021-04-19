@@ -56,9 +56,6 @@ public class Portal extends JFrame {
 		employee = db.fetchEmployeeByID(id);
 		access = Integer.parseInt(Long.toString(id).substring(1, 2));
 		
-		setTitle("Portal | " + Main.SYSTEM_NAME);
-		setIconImage(gl.businessLogo);
-		
 		switch (access) {
 		case 0: setSize(440, 265); break;
 		case 1: case 2: setSize(440, 340); break;
@@ -66,6 +63,8 @@ public class Portal extends JFrame {
 		case 4: case 5: setSize(440, 490); break;
 		}
 
+		setTitle("Portal | " + Main.SYSTEM_NAME);
+		setIconImage(gl.businessLogo);
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		setLocationRelativeTo(null);
 

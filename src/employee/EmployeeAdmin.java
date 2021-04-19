@@ -83,9 +83,11 @@ public class EmployeeAdmin extends JFrame {
 	private SpringLayout sl_contentPane;
 	private JMenuItem themeSwitcher_2;
 	private JTextArea dashboardArea;
+	private JScrollPane scrollPane;
 	private JTable scheduleTable;
 	private JSeparator separator;
 	private CardLayout cl;
+	private Timer timer;
 	
 	private String[] employeeColumns = {
 		"EMPLOYEE ID", "POSITION", "FIRST NAME", "MIDDLE NAME", "LAST NAME", 
@@ -237,7 +239,7 @@ public class EmployeeAdmin extends JFrame {
 		sl_dashboard.putConstraint(SpringLayout.WEST, dashboardTitle, 10, SpringLayout.WEST, dashboard);
 		dashboard.add(dashboardTitle);
 		
-		JScrollPane scrollPane = new JScrollPane();
+		scrollPane = new JScrollPane();
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		sl_dashboard.putConstraint(SpringLayout.NORTH, scrollPane, 10, SpringLayout.SOUTH, dashboardTitle);
 		sl_dashboard.putConstraint(SpringLayout.WEST, scrollPane, 10, SpringLayout.WEST, dashboard);
@@ -650,11 +652,12 @@ public class EmployeeAdmin extends JFrame {
 			}
 			@Override
 			public void windowClosing(WindowEvent e) {
+				timer.stop();
 				new Portal(gl, ut, db, log, id);
 			}
 		});
 		
-		Timer timer = new Timer(1000, new ActionListener() {
+		timer = new Timer(1000, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dashboardArea.setText(log.getDashboard());
 				dashboardArea.setCaretPosition(0);

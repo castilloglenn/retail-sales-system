@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
+import main.Main;
+
 /**
  * 
  * @author Allen Glenn E. Castillo
@@ -43,9 +45,9 @@ public class Database {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(
 				null, 
-				"Please open MySQL Server/XAMPP in order to continue.\n"
-				+ "Communications with the server is unreachable.", 
-				"No database found", 
+				"Communications with the server is unreachable.\n"
+				+ "Error message:\n" + e.getMessage(), 
+				"Error | " + Main.SYSTEM_NAME, 
 				JOptionPane.WARNING_MESSAGE
 			);
 			System.exit(0);

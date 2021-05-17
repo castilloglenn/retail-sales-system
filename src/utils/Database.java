@@ -1393,4 +1393,155 @@ public class Database {
 		return -1;
 	}
 	
+	public double fetchTotalSales() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT SUM(total_amount) FROM transaction;"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getDouble(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public double fetchTodaySales() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT SUM(total_amount) FROM transaction WHERE DATE(date) = CURDATE();"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getDouble(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public int fetchTotalEmployees() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT COUNT(employee_id) FROM employee;"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getInt(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public int fetchPresentEmployees() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT COUNT(DISTINCT(employee_id)) FROM logs WHERE DATE(date) = CURDATE();"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getInt(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	} 
+	/*
+SELECT CONCAT(e.fname, ' ', e.mname, ' ', e.lname) as name, SUM(t.total_amount) as total_sales
+FROM employee e, transaction t
+WHERE e.employee_id = t.employee_id
+GROUP BY t.employee_id
+ORDER BY total_sales DESC;
+
+SELECT COUNT(*)
+FROM employee e, transaction t
+WHERE e.employee_id = t.employee_id
+GROUP BY t.employee_id;
+	 */
+	
+	public Object[][] fetchCashierSales() {
+		try {
+			ps = con.prepareStatement(
+				  "SELECT COUNT(*) "
+				+ "FROM employee e, transaction t "
+				+ "WHERE e.employee_id = t.employee_id "
+				+ "GROUP BY t.employee_id;"
+			);
+			ResultSet count = ps.executeQuery();
+			count.next();
+			int size = count.getInt(1);
+			
+			ps = con.prepareStatement(
+				  "SELECT CONCAT(e.fname, ' ', e.mname, ' ', e.lname) as name, SUM(t.total_amount) as total_sales "
+				+ "FROM employee e, transaction t "
+				+ "WHERE e.employee_id = t.employee_id "
+				+ "GROUP BY t.employee_id "
+				+ "ORDER BY total_sales DESC; "
+			);
+			
+			ResultSet data = ps.executeQuery();
+			Object[][] products = new Object[size][2];
+			int index = 0;
+			while (data.next()) {
+				Object[] row = new Object[2];
+				row[0] = (String) data.getString(1);
+				row[1] = (double) data.getDouble(2);
+				products[index] = row;
+				index++;
+			}
+			
+			return products;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+/*
+ * SELECT CONCAT(c.fname, ' ', c.mname, ' ', c.lname) as name, SUM(t.total_amount) as total_sales
+FROM customer c, transaction t
+WHERE c.customer_id = t.customer_id
+GROUP BY t.customer_id
+ORDER BY total_sales DESC;
+
+SELECT COUNT(*)
+FROM customer c, transaction t
+WHERE c.customer_id = t.customer_id
+GROUP BY t.customer_id;
+ */
+	
+	public Object[][] fetchCustomerSales() {
+		try {
+			ps = con.prepareStatement(
+				  "SELECT COUNT(*) "
+				+ "FROM customer c, transaction t "
+				+ "WHERE c.customer_id = t.customer_id "
+				+ "GROUP BY t.customer_id;"
+			);
+			ResultSet count = ps.executeQuery();
+			count.next();
+			int size = count.getInt(1);
+			
+			ps = con.prepareStatement(
+				  "SELECT CONCAT(c.fname, ' ', c.mname, ' ', c.lname) as name, SUM(t.total_amount) as total_sales "
+				+ "FROM customer c, transaction t "
+				+ "WHERE c.customer_id = t.customer_id "
+				+ "GROUP BY t.customer_id "
+				+ "ORDER BY total_sales DESC; "
+			);
+			
+			ResultSet data = ps.executeQuery();
+			Object[][] products = new Object[size][2];
+			int index = 0;
+			while (data.next()) {
+				Object[] row = new Object[2];
+				row[0] = (String) data.getString(1);
+				row[1] = (double) data.getDouble(2);
+				products[index] = row;
+				index++;
+			}
+			
+			return products;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 }

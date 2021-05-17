@@ -261,7 +261,7 @@ public class EmployeeAdmin extends JFrame {
 		dashboard.add(dashboardTitle);
 		
 		totalSalesLabel = new JLabel("<html>\r\n<p style=\"text-align: center;\">\r\nTotal Sales<br>\r\nPhp "+String.format("%,.2f", db.fetchTotalSales())+"\r\n</p>\r\n</html>");
-		sl_dashboard.putConstraint(SpringLayout.WEST, totalSalesLabel, 25, SpringLayout.WEST, dashboard);
+		sl_dashboard.putConstraint(SpringLayout.WEST, totalSalesLabel, 10, SpringLayout.WEST, dashboard);
 		totalSalesLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		sl_dashboard.putConstraint(SpringLayout.NORTH, totalSalesLabel, 25, SpringLayout.SOUTH, dashboardTitle);
 		dashboard.add(totalSalesLabel);

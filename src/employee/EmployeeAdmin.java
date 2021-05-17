@@ -303,7 +303,10 @@ public class EmployeeAdmin extends JFrame {
 		else {
 			int numbering = 1;
 			for (Object[] row : cashierData) {
-				cashierList.append(numbering + ". " + row[0].toString() + String.format(" - Php %,.2f", (double) row[1]) + "<br>");
+				if (row != null ) {
+					cashierList.append(numbering + ". " + row[0] + String.format("<br>  = Php %,.2f", (double) row[1]) + "<br><br>");
+				}
+				numbering++;
 			}
 		}
 		
@@ -331,7 +334,10 @@ public class EmployeeAdmin extends JFrame {
 		else {
 			int numbering = 1;
 			for (Object[] row : customerData) {
-				customerList.append(numbering + ". " + row[0].toString() + String.format(" - Php %,.2f", (double) row[1]) + "<br>");
+				if (row != null) {
+					customerList.append(numbering + ". " + row[0] + String.format("<br>  = Php %,.2f", (double) row[1]) + "<br><br>");
+				}
+				numbering++;
 			}
 		}
 		

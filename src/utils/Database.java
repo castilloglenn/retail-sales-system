@@ -3,6 +3,7 @@ package utils;
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.JOptionPane;
 
@@ -1450,42 +1451,35 @@ FROM employee e, transaction t
 WHERE e.employee_id = t.employee_id
 GROUP BY t.employee_id
 ORDER BY total_sales DESC;
-
-SELECT COUNT(*)
-FROM employee e, transaction t
-WHERE e.employee_id = t.employee_id
-GROUP BY t.employee_id;
+);
 	 */
 	
 	public Object[][] fetchCashierSales() {
 		try {
 			ps = con.prepareStatement(
-				  "SELECT COUNT(*) "
-				+ "FROM employee e, transaction t "
-				+ "WHERE e.employee_id = t.employee_id "
-				+ "GROUP BY t.employee_id;"
-			);
-			ResultSet count = ps.executeQuery();
-			count.next();
-			int size = count.getInt(1);
-			
-			ps = con.prepareStatement(
 				  "SELECT CONCAT(e.fname, ' ', e.mname, ' ', e.lname) as name, SUM(t.total_amount) as total_sales "
 				+ "FROM employee e, transaction t "
 				+ "WHERE e.employee_id = t.employee_id "
 				+ "GROUP BY t.employee_id "
-				+ "ORDER BY total_sales DESC; "
+				+ "ORDER BY total_sales DESC;"
 			);
 			
 			ResultSet data = ps.executeQuery();
-			Object[][] products = new Object[size][2];
+			Object[][] products = new Object[1][2];
 			int index = 0;
 			while (data.next()) {
 				Object[] row = new Object[2];
 				row[0] = (String) data.getString(1);
 				row[1] = (double) data.getDouble(2);
-				products[index] = row;
+				try {
+					products[index] = row;
+				} catch (ArrayIndexOutOfBoundsException e) {
+					Object[][] newArray = Arrays.copyOf(products, products.length * 2);
+					products = newArray;
+					products[index] = row;
+				}
 				index++;
+				
 			}
 			
 			return products;
@@ -1500,25 +1494,10 @@ FROM customer c, transaction t
 WHERE c.customer_id = t.customer_id
 GROUP BY t.customer_id
 ORDER BY total_sales DESC;
-
-SELECT COUNT(*)
-FROM customer c, transaction t
-WHERE c.customer_id = t.customer_id
-GROUP BY t.customer_id;
  */
 	
 	public Object[][] fetchCustomerSales() {
 		try {
-			ps = con.prepareStatement(
-				  "SELECT COUNT(*) "
-				+ "FROM customer c, transaction t "
-				+ "WHERE c.customer_id = t.customer_id "
-				+ "GROUP BY t.customer_id;"
-			);
-			ResultSet count = ps.executeQuery();
-			count.next();
-			int size = count.getInt(1);
-			
 			ps = con.prepareStatement(
 				  "SELECT CONCAT(c.fname, ' ', c.mname, ' ', c.lname) as name, SUM(t.total_amount) as total_sales "
 				+ "FROM customer c, transaction t "
@@ -1528,13 +1507,19 @@ GROUP BY t.customer_id;
 			);
 			
 			ResultSet data = ps.executeQuery();
-			Object[][] products = new Object[size][2];
+			Object[][] products = new Object[1][2];
 			int index = 0;
 			while (data.next()) {
 				Object[] row = new Object[2];
 				row[0] = (String) data.getString(1);
 				row[1] = (double) data.getDouble(2);
-				products[index] = row;
+				try {
+					products[index] = row;
+				} catch (ArrayIndexOutOfBoundsException e) {
+					Object[][] newArray = Arrays.copyOf(products, products.length * 2);
+					products = newArray;
+					products[index] = row;
+				}
 				index++;
 			}
 			

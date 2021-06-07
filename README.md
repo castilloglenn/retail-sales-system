@@ -17,3 +17,6 @@ Inventory Dashboard<br />
 
 Point of Sales (Interface)<br />
 ![point of sales dashboard](https://user-images.githubusercontent.com/55197203/117822430-24178f00-b29f-11eb-9b6d-9b6e54388f57.JPG)
+
+Point of Sales (Interface) (Light Mode)<br />
+![point of sales dashboard (light theme)](https://user-images.githubusercontent.com/55197203/120975686-196bef00-c7a4-11eb-97b1-6bc3bb354830.JPG)

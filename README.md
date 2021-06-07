@@ -9,8 +9,11 @@ Login<br />
 Portal<br />
 ![portal](https://user-images.githubusercontent.com/55197203/117822226-f2062d00-b29e-11eb-93e9-7bedd2fe1b87.JPG)
 
-Employee CRUD (Add)<br />
-![employee manage add](https://user-images.githubusercontent.com/55197203/117822302-034f3980-b29f-11eb-9720-cb901a19315a.JPG)
+Employee Dashboard<br />
+![employee business dashboard](https://user-images.githubusercontent.com/55197203/120976049-8a130b80-c7a4-11eb-8a91-b11926f13055.JPG)
+
+Employee Logs<br />
+![employee system logs](https://user-images.githubusercontent.com/55197203/120976107-97c89100-c7a4-11eb-8428-4b1f19eadc37.JPG)
 
 Inventory Dashboard<br />
 ![inventory dashboard](https://user-images.githubusercontent.com/55197203/117822345-0fd39200-b29f-11eb-96fe-5107c167e5d3.JPG)

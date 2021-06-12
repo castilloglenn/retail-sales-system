@@ -1,5 +1,5 @@
 # Primordial Retail and Sales Management System
-Final project in DCIT55C Advance Database Management System
+Final project in DCIT55C Advance Database Management System, Basic enrollment system with minimal functionality but with randomization algorithms in the backend to generate automated schedules and courses, also gets data from an XML file, and generates dynamic student registration form that adapts to the maximum width of a certain paper for printing in a dot matrix printer which is used by most universities. Created using Java, XML and MySQL.
 
 Screenshots of the system:
 

@@ -1,3 +1,5 @@
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fcastilloglenn%2Fretail-sales-system&count_bg=%230C82D3&title_bg=%23555555&icon=myspace.svg&icon_color=%23E7E7E7&title=Visits&edge_flat=false)](https://hits.seeyoufarm.com)
+
 # Primordial Retail and Sales Management System
 Final project in DCIT55C Advance Database Management System, Employee Management System + Inventory System + Point-Of-Sales Integrated all in one system, with dark and light theme, automated reports and schedules, receipt generator and integrated with xml and java properties technology. Created using Java, Java Properties File, XML and MySQL Database.
 
